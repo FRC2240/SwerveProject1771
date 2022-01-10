@@ -4,10 +4,10 @@
 
 #include <frc/MathUtil.h>
 #include <frc/TimedRobot.h>
-#include <frc/XboxController.h>
+#include <frc/PS4Controller.h>
 #include <frc/filter/SlewRateLimiter.h>
 
-#include "Drivetrain.h"
+#include "Drivetrain.hpp"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -19,7 +19,7 @@ class Robot : public frc::TimedRobot {
   void TeleopPeriodic() override { DriveWithJoystick(true); }
 
  private:
-  frc::XboxController m_controller{0};
+  frc::PS4Controller m_controller{0};
   Drivetrain m_swerve;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0
@@ -29,9 +29,8 @@ class Robot : public frc::TimedRobot {
   frc::SlewRateLimiter<units::scalar> m_rotLimiter{3 / 1_s};
 
   void DriveWithJoystick(bool fieldRelative) {
-    // Get the x speed. We are inverting this because Xbox controllers return
-    // negative values when we push forward.
-    const auto xSpeed = -m_xspeedLimiter.Calculate(
+    // Get the x speed.
+    const auto xSpeed = m_xspeedLimiter.Calculate(
                             frc::ApplyDeadband(m_controller.GetLeftY(), 0.02)) *
                         Drivetrain::kMaxSpeed;
 

@@ -10,7 +10,7 @@
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <wpi/numbers>
 
-#include "SwerveModule.h"
+#include "SwerveModule.hpp"
 
 /**
  * Represents a swerve drive style drivetrain.
