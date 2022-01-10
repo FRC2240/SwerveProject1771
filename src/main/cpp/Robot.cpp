@@ -1,25 +1,22 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+#include "Drivetrain.hpp"
+#include "Buttons.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/TimedRobot.h>
-#include <frc/PS4Controller.h>
 #include <frc/filter/SlewRateLimiter.h>
 
-#include "Drivetrain.hpp"
-
-class Robot : public frc::TimedRobot {
- public:
-  void AutonomousPeriodic() override {
+class Robot : public frc::TimedRobot
+{
+public:
+  void AutonomousPeriodic() override
+  {
     DriveWithJoystick(false);
     m_swerve.UpdateOdometry();
   }
 
   void TeleopPeriodic() override { DriveWithJoystick(true); }
 
- private:
-  frc::PS4Controller m_controller{0};
+private:
   Drivetrain m_swerve;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0
@@ -28,33 +25,25 @@ class Robot : public frc::TimedRobot {
   frc::SlewRateLimiter<units::scalar> m_yspeedLimiter{3 / 1_s};
   frc::SlewRateLimiter<units::scalar> m_rotLimiter{3 / 1_s};
 
-  void DriveWithJoystick(bool fieldRelative) {
+  void DriveWithJoystick(bool fieldRelative)
+  {
     // Get the x speed.
     const auto xSpeed = m_xspeedLimiter.Calculate(
-                            frc::ApplyDeadband(m_controller.GetLeftY(), 0.02)) *
+                            frc::ApplyDeadband(BUTTON::ps5.GetX(), 0.04)) *
                         Drivetrain::kMaxSpeed;
-
-    // Get the y speed or sideways/strafe speed. We are inverting this because
-    // we want a positive value when we pull to the left. Xbox controllers
-    // return positive values when you pull to the right by default.
     const auto ySpeed = -m_yspeedLimiter.Calculate(
-                            frc::ApplyDeadband(m_controller.GetLeftX(), 0.02)) *
+                            frc::ApplyDeadband(BUTTON::ps5.GetY(), 0.04)) *
                         Drivetrain::kMaxSpeed;
-
-    // Get the rate of angular rotation. We are inverting this because we want a
-    // positive value when we pull to the left (remember, CCW is positive in
-    // mathematics). Xbox controllers return positive values when you pull to
-    // the right by default.
-    const auto rot = -m_rotLimiter.Calculate(
-                         frc::ApplyDeadband(m_controller.GetRightX(), 0.02)) *
+    const auto rot = m_rotLimiter.Calculate( //Might need to be inverted in the future
+                         frc::ApplyDeadband(BUTTON::ps5.GetZ(), 0.04)) *
                      Drivetrain::kMaxAngularSpeed;
-
     m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative);
   }
 };
 
 #ifndef RUNNING_FRC_TESTS
-int main() {
+int main()
+{
   return frc::StartRobot<Robot>();
 }
 #endif
