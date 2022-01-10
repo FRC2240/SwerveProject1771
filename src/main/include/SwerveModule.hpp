@@ -25,8 +25,8 @@ class SwerveModule {
   void SetDesiredState(const frc::SwerveModuleState& state);
 
  private:
-  static constexpr double kWheelRadius = 0.0508;
-  static constexpr int kEncoderResolution = 4096;
+  static constexpr units::meter_t kWheelRadius = units::inch_t{2};
+  static constexpr int kEncoderResolution = 2048;
 
   static constexpr auto kModuleMaxAngularVelocity =
       wpi::numbers::pi * 1_rad_per_s;  // radians per second
