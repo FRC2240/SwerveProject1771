@@ -10,6 +10,7 @@
 
 static constexpr units::meter_t K_WHEEL_RADIUS = units::inch_t{2};
 static constexpr int K_ENCODER_TICKS_PER_ROTATION = 2048;
+static constexpr int CANCODER_TICKS_PER_ROTATION = 4096;
 static constexpr double GEAR_RATIO = 8.16;
 
 double constexpr K_ENCODER_TICKS_PER_MOTOR_RADIAN =
@@ -20,6 +21,9 @@ double constexpr K_ENCODER_TICKS_PER_WHEEL_RADIAN =
 
 double constexpr HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
 double constexpr ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
+
+static constexpr double K_ENCODER_DEGREES_TO_TICKS = K_ENCODER_TICKS_PER_ROTATION / 360;
+static constexpr double CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
 
 static constexpr auto K_MODULE_MAX_ANGULAR_VELOCITY = wpi::numbers::pi * 1_rad_per_s;           // radians per second
 static constexpr auto K_MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s / 1_s; // radians per second^2
@@ -96,10 +100,10 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     frc::Rotation2d delta_rotation = optimized_desired_state.angle - current_rotation;
 
     // Convert change in angle to change in ticks
-    double const delta_ticks = delta_rotation.Degrees().value() / 360 * K_ENCODER_TICKS_PER_ROTATION;
+    double const delta_ticks = delta_rotation.Degrees().value() * K_ENCODER_DEGREES_TO_TICKS;
 
     // Convert the CANCoder from it's position reading back to ticks
-    double const current_ticks = direction_encoder.GetAbsolutePosition() / .0878;
+    double const current_ticks = direction_encoder.GetAbsolutePosition() * CANCODER_DEGREES_TO_TICKS;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
