@@ -4,17 +4,10 @@
 #include "RobotState.hpp"
 
 #include <frc/MathUtil.h>
-#include <frc/filter/SlewRateLimiter.h>
 
 /******************************************************************/
 /*                        Private Variables                       */
 /******************************************************************/
-
-// Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0
-// to 1.
-frc::SlewRateLimiter<units::scalar> m_xspeedLimiter{3 / 1_s};
-frc::SlewRateLimiter<units::scalar> m_yspeedLimiter{3 / 1_s};
-frc::SlewRateLimiter<units::scalar> m_rotLimiter{3 / 1_s};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -43,25 +36,20 @@ Robot::Robot()
 
 void Robot::AutonomousPeriodic()
 {
-  // DriveWithJoystick(false);
+  // driveWithJoystick(false);
   Drivetrain::updateOdometry();
 }
 
-void Robot::TeleopPeriodic() { DriveWithJoystick(true); }
+void Robot::TeleopPeriodic() { driveWithJoystick(true); }
 
-void Robot::DriveWithJoystick(bool fieldRelative)
+void Robot::driveWithJoystick(bool field_relative)
 {
   // Get the x speed.
-  auto const xSpeed = m_xspeedLimiter.Calculate(
-                          frc::ApplyDeadband(BUTTON::ps5.GetX(), 0.04)) *
-                      Drivetrain::K_MAX_SPEED;
-  auto const ySpeed = -m_yspeedLimiter.Calculate(
-                          frc::ApplyDeadband(BUTTON::ps5.GetY(), 0.04)) *
-                      Drivetrain::K_MAX_SPEED;
-  auto const rot = m_rotLimiter.Calculate( // Might need to be inverted in the future
-                       frc::ApplyDeadband(BUTTON::ps5.GetZ(), 0.04)) *
-                   Drivetrain::K_MAX_ANGULAR_SPEED;
-  Drivetrain::drive(xSpeed, ySpeed, rot, fieldRelative);
+  auto const x_speed = frc::ApplyDeadband(BUTTON::ps5.GetX(), 0.04) * Drivetrain::K_MAX_SPEED;
+
+  auto const y_speed = -frc::ApplyDeadband(BUTTON::ps5.GetY(), 0.04) * Drivetrain::K_MAX_SPEED;
+  auto const rot = frc::ApplyDeadband(BUTTON::ps5.GetZ(), 0.04) * Drivetrain::K_MAX_ANGULAR_SPEED; // Might need to be inverted in the future
+  Drivetrain::drive(x_speed, y_speed, rot, field_relative);
 }
 
 #ifndef RUNNING_FRC_TESTS

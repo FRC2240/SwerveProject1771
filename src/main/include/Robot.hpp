@@ -26,6 +26,6 @@ private:
 /*                 Private Function Declarations                  */
 /******************************************************************/
 
-    void DriveWithJoystick(bool fieldRelative);
+    void driveWithJoystick(bool field_relative);
 
 };

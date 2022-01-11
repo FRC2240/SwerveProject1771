@@ -103,11 +103,11 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     double const delta_ticks = delta_rotation.Degrees().value() * K_ENCODER_DEGREES_TO_TICKS;
 
     // Convert the CANCoder from it's position reading back to ticks
-    double const current_ticks = direction_encoder.GetAbsolutePosition() * CANCODER_DEGREES_TO_TICKS;
+    double const current_ticks = current_rotation.Degrees().value() * CANCODER_DEGREES_TO_TICKS;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
 
-    driver.Set(ControlMode::Velocity, desired_driver_velocity_ticks);
-    turner.Set(ControlMode::Position, desired_turner_pos_ticks);
+    driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
+    turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
 }
