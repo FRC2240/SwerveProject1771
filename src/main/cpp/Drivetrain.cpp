@@ -1,9 +1,14 @@
 #include "Drivetrain.hpp"
 
+#include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/kinematics/SwerveDriveOdometry.h>
+#include <AHRS.h>
+
 /******************************************************************/
-/*                        Private Variables                       */
+/*                       Private Constants                        */
 /******************************************************************/
-namespace Modules
+
+namespace MODULES
 {
   SwerveModule FRONT_LEFT{40, 41, 12, {11_in, 11_in}};
   SwerveModule FRONT_RIGHT{30, 31, 11, {11_in, -11_in}};
@@ -11,41 +16,58 @@ namespace Modules
   SwerveModule BACK_RIGHT{60, 61, 14, {-11_in, -11_in}};
 }
 
-frc::AnalogGyro m_gyro{0};
+/******************************************************************/
+/*                        Private Variables                       */
+/******************************************************************/
 
 frc::SwerveDriveKinematics<4> m_kinematics{
-    Modules::FRONT_LEFT,
-    Modules::FRONT_RIGHT,
-    Modules::BACK_LEFT,
-    Modules::BACK_RIGHT};
+    MODULES::FRONT_LEFT,
+    MODULES::FRONT_RIGHT,
+    MODULES::BACK_LEFT,
+    MODULES::BACK_RIGHT};
 
-frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, m_gyro.GetRotation2d()};
+inline static std::unique_ptr<AHRS> navx{std::make_unique<AHRS>(frc::SPI::Port::kMXP)};
+
+frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, Drivetrain::getHeading()};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
-void Drivetrain::Drive(units::meters_per_second_t xSpeed,
+
+void Drivetrain::init() { resetGyro(); }
+
+void Drivetrain::resetGyro() { navx->ZeroYaw(); }
+
+units::degree_t Drivetrain::getAngle() { return units::degree_t{-navx->GetAngle() - 90}; }
+
+frc::Pose2d Drivetrain::getOdometryPose() { return m_odometry.GetPose(); }
+
+frc::Rotation2d Drivetrain::getHeading() { return {getAngle()}; }
+
+void Drivetrain::drive(units::meters_per_second_t xSpeed,
                        units::meters_per_second_t ySpeed,
-                       units::radians_per_second_t rot, bool fieldRelative)
+                       units::radians_per_second_t rot,
+                       bool fieldRelative)
 {
   auto states = m_kinematics.ToSwerveModuleStates(
-      fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-                          xSpeed, ySpeed, rot, m_gyro.GetRotation2d())
+      fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading())
                     : frc::ChassisSpeeds{xSpeed, ySpeed, rot});
 
-  m_kinematics.DesaturateWheelSpeeds(&states, kMaxSpeed);
+  m_kinematics.DesaturateWheelSpeeds(&states, K_MAX_SPEED);
 
   auto [fl, fr, bl, br] = states;
 
-  Modules::FRONT_LEFT.setDesiredState(fl);
-  Modules::FRONT_RIGHT.setDesiredState(fr);
-  Modules::BACK_LEFT.setDesiredState(bl);
-  Modules::BACK_RIGHT.setDesiredState(br);
+  MODULES::FRONT_LEFT.setDesiredState(fl);
+  MODULES::FRONT_RIGHT.setDesiredState(fr);
+  MODULES::BACK_LEFT.setDesiredState(bl);
+  MODULES::BACK_RIGHT.setDesiredState(br);
 }
 
-void Drivetrain::UpdateOdometry()
+void Drivetrain::updateOdometry()
 {
-  m_odometry.Update(m_gyro.GetRotation2d(), Modules::FRONT_LEFT.getState(),
-                    Modules::FRONT_RIGHT.getState(), Modules::BACK_LEFT.getState(),
-                    Modules::BACK_RIGHT.getState());
+  m_odometry.Update(getHeading(),
+                    MODULES::FRONT_LEFT.getState(),
+                    MODULES::FRONT_RIGHT.getState(),
+                    MODULES::BACK_LEFT.getState(),
+                    MODULES::BACK_RIGHT.getState());
 }
