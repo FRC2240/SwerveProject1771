@@ -52,13 +52,13 @@ void Robot::TeleopPeriodic() { DriveWithJoystick(true); }
 void Robot::DriveWithJoystick(bool fieldRelative)
 {
   // Get the x speed.
-  const auto xSpeed = m_xspeedLimiter.Calculate(
+  auto const xSpeed = m_xspeedLimiter.Calculate(
                           frc::ApplyDeadband(BUTTON::ps5.GetX(), 0.04)) *
                       Drivetrain::K_MAX_SPEED;
-  const auto ySpeed = -m_yspeedLimiter.Calculate(
+  auto const ySpeed = -m_yspeedLimiter.Calculate(
                           frc::ApplyDeadband(BUTTON::ps5.GetY(), 0.04)) *
                       Drivetrain::K_MAX_SPEED;
-  const auto rot = m_rotLimiter.Calculate( // Might need to be inverted in the future
+  auto const rot = m_rotLimiter.Calculate( // Might need to be inverted in the future
                        frc::ApplyDeadband(BUTTON::ps5.GetZ(), 0.04)) *
                    Drivetrain::K_MAX_ANGULAR_SPEED;
   Drivetrain::drive(xSpeed, ySpeed, rot, fieldRelative);

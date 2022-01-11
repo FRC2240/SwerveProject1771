@@ -12,14 +12,14 @@ static constexpr units::meter_t K_WHEEL_RADIUS = units::inch_t{2};
 static constexpr int K_ENCODER_TICKS_PER_ROTATION = 2048;
 static constexpr double GEAR_RATIO = 8.16;
 
-constexpr double K_ENCODER_TICKS_PER_MOTOR_RADIAN =
+double constexpr K_ENCODER_TICKS_PER_MOTOR_RADIAN =
     K_ENCODER_TICKS_PER_ROTATION / (2 * wpi::numbers::pi); // Number of ticks per radian
 
-constexpr double K_ENCODER_TICKS_PER_WHEEL_RADIAN =
+double constexpr K_ENCODER_TICKS_PER_WHEEL_RADIAN =
     GEAR_RATIO * K_ENCODER_TICKS_PER_MOTOR_RADIAN; // Total amount of ticks per wheel radian
 
-constexpr double HUNDREDMILLISECONDS_TO_1SECOND = 10;  // Ticks / 100 milliseconds * 10 = Ticks / 1 second
-constexpr double ONESECOND_TO_100MILLISECONDS = .1; // Ticks / second * .1 = Ticks / 100 milliseconds
+double constexpr HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
+double constexpr ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
 
 static constexpr auto K_MODULE_MAX_ANGULAR_VELOCITY = wpi::numbers::pi * 1_rad_per_s;           // radians per second
 static constexpr auto K_MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s / 1_s; // radians per second^2
@@ -82,15 +82,15 @@ units::degree_t SwerveModule::getAngle()
     return units::degree_t{direction_encoder.GetAbsolutePosition()};
 }
 
-void SwerveModule::setDesiredState(const frc::SwerveModuleState &desired_state)
+void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 {
     frc::Rotation2d const current_rotation = getAngle();
 
     // Optimize the reference state to avoid spinning further than 90 degrees
-    const auto optimized_desired_state = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
+    auto const optimized_desired_state = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
 
     // Convert speed to ticks per 100 milliseconds
-    const double desired_driver_velocity_ticks = (optimized_desired_state.speed / K_WHEEL_RADIUS * K_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
+    double const desired_driver_velocity_ticks = (optimized_desired_state.speed / K_WHEEL_RADIUS * K_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
 
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_desired_state.angle - current_rotation;
