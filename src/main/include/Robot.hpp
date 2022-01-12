@@ -1,4 +1,5 @@
 #pragma once
+
 #include <frc/TimedRobot.h>
 
 class Robot : public frc::TimedRobot
@@ -9,7 +10,7 @@ public:
 /******************************************************************/
 
     Robot();
-    // void AutonomousInit() override;
+    void AutonomousInit() override;
     void AutonomousPeriodic() override;
 
     // void TeleopInit() override;
@@ -26,6 +27,8 @@ private:
 /*                 Private Function Declarations                  */
 /******************************************************************/
 
-    void driveWithJoystick(bool field_relative);
+    void testTrajectory();
+    void testPathPlanner();
+    void driveWithJoystick(bool const& field_relative);
 
 };

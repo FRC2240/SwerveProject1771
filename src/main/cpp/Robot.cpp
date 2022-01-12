@@ -4,6 +4,9 @@
 #include "RobotState.hpp"
 
 #include <frc/MathUtil.h>
+#include <frc/trajectory/TrajectoryConfig.h>
+#include <frc/trajectory/TrajectoryGenerator.h>
+
 
 /******************************************************************/
 /*                        Private Variables                       */
@@ -34,15 +37,47 @@ Robot::Robot()
   Drivetrain::init();
 }
 
+void Robot::AutonomousInit()
+{
+  Drivetrain::updateOdometry();
+  testTrajectory();
+  //testPathPlanner();
+}
+
 void Robot::AutonomousPeriodic()
 {
   // driveWithJoystick(false);
   Drivetrain::updateOdometry();
 }
 
+void Robot::testTrajectory()
+{
+    Drivetrain::printOdometryPose();
+    printf("Creating trajectory");
+    auto config = frc::TrajectoryConfig(0.35_mps, 0.5_mps_sq);
+    config.SetKinematics<4>(const_cast<frc::SwerveDriveKinematics<4>&>(Drivetrain::getKinematics()));
+    // auto startPos = frc::Pose2d(0_m, 0_m, frc::Rotation2d(0));
+    frc::Pose2d const               startPos;
+    frc::Pose2d const               endPos { 1_m, 1_m, 0_deg };
+    std::vector<frc::Translation2d> interiorPos {
+        //     frc::Translation2d{.5_m, .25_m},
+        //     frc::Translation2d{.7_m, .5_m}
+    };
+
+    auto traj = frc::TrajectoryGenerator::GenerateTrajectory(startPos, interiorPos, endPos, config);
+    printf("Passing trajectory to auton drive");
+    Drivetrain::trajectoryAutonDrive(traj, frc::Rotation2d { 0_deg });
+}
+
+void Robot::testPathPlanner()
+{
+  using namespace pathplanner;
+  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath("New Path", 0.35_mps, 0.5_mps_sq));
+}
+
 void Robot::TeleopPeriodic() { driveWithJoystick(true); }
 
-void Robot::driveWithJoystick(bool field_relative)
+void Robot::driveWithJoystick(bool const& field_relative)
 {
   // Get the x speed.
   printf("Printing PS5 Inputs: X: %f, Y: %f, Z: %f\n", BUTTON::ps5.GetX(), BUTTON::ps5.GetY(), BUTTON::ps5.GetZ());

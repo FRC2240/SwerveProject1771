@@ -1,13 +1,17 @@
 #pragma once
 
 #include "SwerveModule.hpp"
-#include <wpi/numbers>
-#include <units/angular_velocity.h>
-#include <frc/geometry/Pose2d.h>
 
-/**
- * Represents a swerve drive style drivetrain.
- */
+#include <wpi/numbers>
+#include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/trajectory/Trajectory.h>
+#include <frc/kinematics/ChassisSpeeds.h>
+#include <wpi/array.h>
+
+#include <pathplanner/lib/PathPlanner.h>
+
+using namespace pathplanner; //PathPlanner keeps everything hidden behind 2 sets of namespaces so it is safe to remove the first layer
+
 namespace Drivetrain
 {
     /******************************************************************/
@@ -23,15 +27,36 @@ namespace Drivetrain
 
     frc::Pose2d getOdometryPose();
 
-    void drive(units::meters_per_second_t xSpeed, units::meters_per_second_t ySpeed,
-               units::radians_per_second_t rot, bool fieldRelative);
+    void printOdometryPose();
+
+    frc::SwerveDriveKinematics<4> const &getKinematics();
 
     void updateOdometry();
+
+    void drive(units::meters_per_second_t const &xSpeed,
+               units::meters_per_second_t const &ySpeed,
+               units::radians_per_second_t const &rot,
+               bool const &fieldRelative);
+
+    void drive(frc::ChassisSpeeds const &speeds);
+
+    void drive(wpi::array<frc::SwerveModuleState, 4> states);
+
+    void faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta);
+
+    void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy);
+
+    void trajectoryDrive(frc::Trajectory::State const &state, frc::Rotation2d const &rotation);
+
+    void trajectoryDrive(PathPlannerTrajectory::PathPlannerState const &state);
+
+    void trajectoryAutonDrive(frc::Trajectory const &traj, frc::Rotation2d const &faceAngle);
+
+    void trajectoryAutonDrive(PathPlannerTrajectory traj);
 
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    inline static constexpr units::meters_per_second_t K_MAX_SPEED = 0.5_mps;
-    inline static constexpr units::radians_per_second_t K_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
-
+    static constexpr units::meters_per_second_t K_MAX_SPEED = 2_fps;                   // Implicit conversion
+    static constexpr units::radians_per_second_t K_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 }

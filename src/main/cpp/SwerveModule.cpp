@@ -1,6 +1,5 @@
 #include "SwerveModule.hpp"
 
-#include <frc/geometry/Rotation2d.h>
 #include <wpi/numbers>
 #include <units/angular_velocity.h>
 
@@ -77,7 +76,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
 
 frc::SwerveModuleState SwerveModule::getState()
 {
-    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / K_ENCODER_TICKS_PER_WHEEL_RADIAN * K_WHEEL_RADIUS) / units::second_t(1)},
+    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / K_ENCODER_TICKS_PER_WHEEL_RADIAN * K_WHEEL_RADIUS) / 1_s},
             frc::Rotation2d(getAngle())};
 }
 

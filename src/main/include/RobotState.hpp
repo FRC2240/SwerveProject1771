@@ -1,3 +1,5 @@
+#pragma once
+
 #include <functional>
 
 // allows functions outside of robot to know if the robot is enabled and more

@@ -1,16 +1,15 @@
 #include "Buttons.hpp"
-#include <iostream>
 
 /******************************************************************/
 /*                   Public Function Defintions                   */
 /******************************************************************/
 
-JoystickButton::JoystickButton(frc::GenericHID& stick, int const button)
+JoystickButton::JoystickButton(frc::GenericHID& stick, int const& button)
     : stick_ { stick }
     , button_ { button }
 {
     if(button > stick.GetButtonCount() || button < 1)
-        std::cerr << "Invalid Button Assignment: " << button << '\n';
+        printf("Invalid Button Assignment: %d", button);
 }
 
 bool JoystickButton::getRawButton() const
