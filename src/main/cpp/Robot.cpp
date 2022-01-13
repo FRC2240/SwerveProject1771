@@ -45,6 +45,7 @@ void Robot::TeleopPeriodic() { driveWithJoystick(true); }
 void Robot::driveWithJoystick(bool field_relative)
 {
   // Get the x speed.
+  printf("Printing PS5 Inputs: X: %f, Y: %f, Z: %f\n", BUTTON::ps5.GetX(), BUTTON::ps5.GetY(), BUTTON::ps5.GetZ());
   auto const x_speed = frc::ApplyDeadband(BUTTON::ps5.GetX(), 0.04) * Drivetrain::K_MAX_SPEED;
 
   auto const y_speed = -frc::ApplyDeadband(BUTTON::ps5.GetY(), 0.04) * Drivetrain::K_MAX_SPEED;
