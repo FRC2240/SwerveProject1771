@@ -31,7 +31,7 @@ namespace Drivetrain
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    static constexpr units::meters_per_second_t K_MAX_SPEED = 3.0_mps;                  // 3 meters per second
-    static constexpr units::radians_per_second_t K_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
+    inline static constexpr units::meters_per_second_t K_MAX_SPEED = 0.5_mps;
+    inline static constexpr units::radians_per_second_t K_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 
 }
