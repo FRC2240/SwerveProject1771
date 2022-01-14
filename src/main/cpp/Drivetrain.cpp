@@ -34,10 +34,10 @@ void Drivetrain::init()
 
   navx = std::make_unique<AHRS>(frc::SPI::Port::kMXP);
 
-  Module::front_left = std::make_unique<SwerveModule>(SwerveModuleInfo{40, 41, 12, {11_in, 11_in}});
-  Module::front_right = std::make_unique<SwerveModule>(SwerveModuleInfo{30, 31, 11, {11_in, -11_in}});
-  Module::back_left = std::make_unique<SwerveModule>(SwerveModuleInfo{50, 51, 13, {-11_in, 11_in}});
-  Module::back_right = std::make_unique<SwerveModule>(SwerveModuleInfo{60, 61, 14, {-11_in, -11_in}});
+  Module::front_left = std::make_unique<SwerveModule>(40, 41, 12, 11_in, 11_in);
+  Module::front_right = std::make_unique<SwerveModule>(30, 31, 11, 11_in, -11_in);
+  Module::back_left = std::make_unique<SwerveModule>(50, 51, 13, -11_in, 11_in);
+  Module::back_right = std::make_unique<SwerveModule>(60, 61, 14, -11_in, -11_in);
 
   kinematics = std::make_unique<frc::SwerveDriveKinematics<4>>(*Module::front_left,
                                                                *Module::front_right,
