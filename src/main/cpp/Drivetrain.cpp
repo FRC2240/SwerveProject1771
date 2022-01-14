@@ -5,17 +5,11 @@
 #include <AHRS.h>
 
 /******************************************************************/
-/*                       Private Constants                        */
+/*                        Private Variables                       */
 /******************************************************************/
 
-namespace MODULEINFO
-{
-  inline static SwerveModuleInfo const FRONT_LEFT{40, 41, 12, {11_in, 11_in}};
-  inline static SwerveModuleInfo const FRONT_RIGHT{30, 31, 11, {11_in, -11_in}};
-  inline static SwerveModuleInfo const BACK_LEFT{50, 51, 13, {-11_in, 11_in}};
-  inline static SwerveModuleInfo const BACK_RIGHT{60, 61, 14, {-11_in, -11_in}};
-}
-
+// All thsee variables interacting with hardware are initalized in init() to avoid issues
+// with initalizing before wpilib
 namespace Module
 {
   inline static std::unique_ptr<SwerveModule> front_left = nullptr;
@@ -23,10 +17,6 @@ namespace Module
   inline static std::unique_ptr<SwerveModule> back_left = nullptr;
   inline static std::unique_ptr<SwerveModule> back_right = nullptr;
 }
-
-/******************************************************************/
-/*                        Private Variables                       */
-/******************************************************************/
 
 inline static std::unique_ptr<frc::SwerveDriveKinematics<4>> kinematics = nullptr;
 
@@ -44,10 +34,10 @@ void Drivetrain::init()
 
   navx = std::make_unique<AHRS>(frc::SPI::Port::kMXP);
 
-  Module::front_left = std::make_unique<SwerveModule>(MODULEINFO::FRONT_LEFT);
-  Module::front_right = std::make_unique<SwerveModule>(MODULEINFO::FRONT_RIGHT);
-  Module::back_left = std::make_unique<SwerveModule>(MODULEINFO::BACK_LEFT);
-  Module::back_right = std::make_unique<SwerveModule>(MODULEINFO::BACK_RIGHT);
+  Module::front_left = std::make_unique<SwerveModule>(SwerveModuleInfo{40, 41, 12, {11_in, 11_in}});
+  Module::front_right = std::make_unique<SwerveModule>(SwerveModuleInfo{30, 31, 11, {11_in, -11_in}});
+  Module::back_left = std::make_unique<SwerveModule>(SwerveModuleInfo{50, 51, 13, {-11_in, 11_in}});
+  Module::back_right = std::make_unique<SwerveModule>(SwerveModuleInfo{60, 61, 14, {-11_in, -11_in}});
 
   kinematics = std::make_unique<frc::SwerveDriveKinematics<4>>(*Module::front_left,
                                                                *Module::front_right,
@@ -87,8 +77,8 @@ void Drivetrain::drive(units::meters_per_second_t xSpeed,
 void Drivetrain::updateOdometry()
 {
   odometry->Update(getHeading(),
-                  Module::front_left->getState(),
-                  Module::front_right->getState(),
-                  Module::back_left->getState(),
-                  Module::back_right->getState());
+                   Module::front_left->getState(),
+                   Module::front_right->getState(),
+                   Module::back_left->getState(),
+                   Module::back_right->getState());
 }
