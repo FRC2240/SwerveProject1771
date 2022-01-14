@@ -7,6 +7,15 @@
 
 using can_adr = int;
 
+
+
+
+struct SwerveModuleInfo
+{
+  can_adr const driver_adr, turner_adr, cancoder_adr;
+   frc::Translation2d wheel_pos;
+};
+
 class SwerveModule
 {
 public:
@@ -14,7 +23,9 @@ public:
     /*                  Public Function Declarations                  */
     /******************************************************************/
 
-    SwerveModule(can_adr drive_motor_adr, can_adr turning_motor_adr, can_adr cancoder_adr, frc::Translation2d wheel_position);
+    SwerveModule(can_adr driver_adr, can_adr turner_adr, can_adr cancoder_adr, frc::Translation2d wheel_position);
+    SwerveModule(SwerveModuleInfo const& info);
+    
     frc::SwerveModuleState getState();
     units::degree_t getAngle();
     void setDesiredState(const frc::SwerveModuleState &state);
@@ -25,6 +36,8 @@ public:
     // No copies/moves should be occuring
     SwerveModule(SwerveModule const &) = delete;
     SwerveModule(SwerveModule &&) = delete;
+
+    
 
 private:
     /******************************************************************/
