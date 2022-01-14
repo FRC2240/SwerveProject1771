@@ -33,12 +33,11 @@ inline static constexpr auto K_MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::p
 /******************************************************************/
 
 // Set Variables
-SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, units::meter_t pos_x, units::meter_t pos_y)
+SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc::Translation2d position)
     : driver{driver_adr},
       turner{turner_adr},
       cancoder{cancoder_adr},
-      pos_x{pos_x},
-      pos_y{pos_y}
+      position{position}
 {
     // Configure CANCoder
     CANCoderConfiguration cancoder_config{};

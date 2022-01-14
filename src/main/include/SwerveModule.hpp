@@ -5,14 +5,6 @@
 
 #include <ctre/Phoenix.h>
 
-using can_adr = int;
-
-struct SwerveModuleInfo
-{
-    can_adr const driver_adr, turner_adr, cancoder_adr;
-    frc::Translation2d wheel_pos;
-};
-
 class SwerveModule
 {
 public:
@@ -20,7 +12,7 @@ public:
     /*                  Public Function Declarations                  */
     /******************************************************************/
 
-    SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, units::meter_t pos_x, units::meter_t pos_y);
+    SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc::Translation2d position);
 
     frc::SwerveModuleState getState();
 
@@ -29,7 +21,7 @@ public:
     void setDesiredState(const frc::SwerveModuleState &state);
 
     // Allows SwerveModule to be placed into Kinematics
-    operator frc::Translation2d() const { return {pos_x, pos_y}; }
+    constexpr operator frc::Translation2d() const { return position; }
 
     // No copies/moves should be occuring
     SwerveModule(SwerveModule const &) = delete;
@@ -42,6 +34,5 @@ private:
 
     TalonFX driver, turner;
     CANCoder cancoder;
-    units::meter_t pos_x;
-    units::meter_t pos_y;
+    frc::Translation2d position;
 };
