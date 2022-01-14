@@ -81,10 +81,10 @@ frc::SwerveDriveKinematics<4> const &Drivetrain::getKinematics() { return kinema
 void Drivetrain::updateOdometry()
 {
   odometry.Update(getHeading(),
-                  MODULES::FRONT_LEFT.getState(),
-                  MODULES::FRONT_RIGHT.getState(),
-                  MODULES::BACK_LEFT.getState(),
-                  MODULES::BACK_RIGHT.getState());
+                  Module::front_left.getState(),
+                  Module::front_right.getState(),
+                  Module::back_left.getState(),
+                  Module::back_right.getState());
 }
 
 /******************************************************************/
