@@ -99,10 +99,10 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     frc::Rotation2d delta_rotation = optimized_desired_state.angle - current_rotation;
 
     // Convert change in angle to change in ticks
-    double const delta_ticks = delta_rotation.Degrees().value() * K_ENCODER_DEGREES_TO_TICKS;
+    double const delta_ticks = (delta_rotation.Degrees().to<int>() % 360) * K_ENCODER_DEGREES_TO_TICKS;
 
     // Convert the CANCoder from it's position reading back to ticks
-    double const current_ticks = current_rotation.Degrees().value() * CANCODER_DEGREES_TO_TICKS;
+    double const current_ticks = (current_rotation.Degrees().to<int>() % 360) * CANCODER_DEGREES_TO_TICKS;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
