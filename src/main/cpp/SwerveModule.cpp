@@ -43,7 +43,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
     cancoder_config.initializationStrategy = SensorInitializationStrategy::BootToAbsolutePosition;
     cancoder_config.unitString = "deg";
     cancoder_config.sensorDirection = false; // Counter-Clock Wise
-    cancoder_config.absoluteSensorRange = AbsoluteSensorRange::Unsigned_0_to_360;
+    cancoder_config.absoluteSensorRange = AbsoluteSensorRange::Signed_PlusMinus180;
     cancoder.ConfigAllSettings(cancoder_config);
     // cancoder.ConfigSensorDirection()
 
