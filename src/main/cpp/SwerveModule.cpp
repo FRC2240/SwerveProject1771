@@ -60,7 +60,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
 
     // Configure Turner
     TalonFXConfiguration turner_config{};
-    turner_config.slot0.kP = 2.5;
+    turner_config.slot0.kP = 2;
     turner_config.slot0.kI = 0;
     turner_config.slot0.kD = 0;
     turner_config.slot0.kF = 0;
