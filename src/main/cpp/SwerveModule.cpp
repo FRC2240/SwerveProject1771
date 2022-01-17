@@ -10,13 +10,15 @@
 inline static constexpr units::meter_t WHEEL_RADIUS = units::inch_t{2};
 inline static constexpr int TALON_ENCODER_TICKS_PER_ROTATION = 2048;
 inline static constexpr int CANCODER_TICKS_PER_ROTATION = 4096;
-inline static constexpr double GEAR_RATIO = 8.16;
+
+inline static constexpr double DRIVER_GEAR_RATIO = 8.16;
+inline static constexpr double TURNER_GEAR_RATIO = 12.8;
 
 double constexpr TALON_ENCODER_TICKS_PER_MOTOR_RADIAN =
     TALON_ENCODER_TICKS_PER_ROTATION / (2 * wpi::numbers::pi); // Number of ticks per radian
 
-double constexpr TALON_ENCODER_TICKS_PER_WHEEL_RADIAN =
-    GEAR_RATIO * TALON_ENCODER_TICKS_PER_MOTOR_RADIAN; // Total amount of ticks per wheel radian
+double constexpr DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN =
+    DRIVER_GEAR_RATIO * TALON_ENCODER_TICKS_PER_MOTOR_RADIAN; // Total amount of ticks per wheel radian
 
 double constexpr HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
 double constexpr ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
@@ -76,7 +78,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
 
 frc::SwerveModuleState SwerveModule::getState()
 {
-    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / TALON_ENCODER_TICKS_PER_WHEEL_RADIAN * WHEEL_RADIUS) / 1_s},
+    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN * WHEEL_RADIUS) / 1_s},
             frc::Rotation2d(getAngle())};
 }
 
@@ -94,13 +96,13 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Convert speed (m/s) to ticks per 100 milliseconds
     double const desired_driver_velocity_ticks =
-        (optimized_speed / WHEEL_RADIUS * TALON_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
+        (optimized_speed / WHEEL_RADIUS * DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
 
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
 
     // Convert change in angle to change in (turner) ticks and account for gear ratio
-    double const delta_ticks = delta_rotation.Degrees().value() * TALON_ENCODER_DEGREES_TO_TICKS * GEAR_RATIO;
+    double const delta_ticks = delta_rotation.Degrees().value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
 
     // Get the current turner position
     double const current_ticks = turner.GetSelectedSensorPosition();
