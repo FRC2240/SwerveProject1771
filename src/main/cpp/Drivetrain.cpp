@@ -137,19 +137,17 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::mete
 {
 
   int const error_theta = (theta - getAngle()).to<int>() % 360;          // Get difference between old and new angle; gets the equivalent value between -360 and 360
-  auto p_rotation = units::degrees_per_second_t{error_theta * ROTATE_P}; // Modifies error_theta in order to get a faster turning speed
-  if (p_rotation > MAX_FACE_DIRECTION_SPEED)                             // Max rotational speed
-    p_rotation = MAX_FACE_DIRECTION_SPEED * ((p_rotation.value() > 0) ? 1 : -1);
-  drive(frc::ChassisSpeeds{dx, dy, p_rotation});
+  double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
+  if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())                             // Max rotational speed
+    p_rotation = MAX_FACE_DIRECTION_SPEED.value() * ((p_rotation > 0) ? 1 : -1);
+  drive(frc::ChassisSpeeds{dx, dy, units::degrees_per_second_t{p_rotation}});
 }
 
 void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy)
 {
   int current_rotation = getAngle().to<int>() % 360; // Ensure angle is between -360 and 360
   if (current_rotation < 0)
-  {
     current_rotation += 360; // Ensure angle is between 0 and 360
-  }
   units::degree_t const new_rotation = (current_rotation <= 90 || current_rotation >= 270) ? FRONT : BACK;
   faceDirection(dx, dy, new_rotation);
 }
