@@ -90,19 +90,20 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     frc::Rotation2d const current_rotation = getAngle();
 
     // Optimize the reference state to avoid spinning further than 90 degrees
-    auto const optimized_desired_state = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
+    auto const [optimized_speed, optimized_angle] = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
 
-    // Convert speed to ticks per 100 milliseconds
-    double const desired_driver_velocity_ticks = (optimized_desired_state.speed / WHEEL_RADIUS * TALON_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
+    // Convert speed (m/s) to ticks per 100 milliseconds
+    double const desired_driver_velocity_ticks =
+        (optimized_speed / WHEEL_RADIUS * TALON_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
 
     // Difference between desired angle and current angle
-    frc::Rotation2d delta_rotation = optimized_desired_state.angle - current_rotation;
+    frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
 
-    // Convert change in angle to change in ticks
-    double const delta_ticks = (delta_rotation.Degrees().to<int>() % 360) * TALON_ENCODER_DEGREES_TO_TICKS;
+    // Convert change in angle to change in (turner) ticks and account for gear ratio
+    double const delta_ticks = delta_rotation.Degrees().value() * TALON_ENCODER_DEGREES_TO_TICKS * GEAR_RATIO;
 
-    // Convert the CANCoder from it's position reading back to ticks
-    double const current_ticks = (current_rotation.Degrees().to<int>() % 360) * CANCODER_DEGREES_TO_TICKS;
+    // Get the current turner position
+    double const current_ticks = turner.GetSelectedSensorPosition();
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
