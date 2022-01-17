@@ -42,7 +42,7 @@ inline static std::unique_ptr<AHRS> navx = nullptr;
 
 inline static frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 
-static frc::HolonomicDriveController controller{
+inline static frc::HolonomicDriveController controller{
     frc2::PIDController{1, 0, 0},
     frc2::PIDController{1, 0, 0},
     frc::ProfiledPIDController<units::radian>{
