@@ -57,6 +57,6 @@ namespace Drivetrain
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    static constexpr units::meters_per_second_t K_MAX_SPEED = 2_fps;                   // Implicit conversion
-    static constexpr units::radians_per_second_t K_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
+    static constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2_fps;                   // Implicit conversion
+    static constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 }

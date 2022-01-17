@@ -48,8 +48,8 @@ static frc::HolonomicDriveController controller{
     frc::ProfiledPIDController<units::radian>{
         1, 0, 0,
         frc::TrapezoidProfile<units::radian>::Constraints{
-            Drivetrain::K_MAX_ANGULAR_SPEED,
-            Drivetrain::K_MAX_ANGULAR_SPEED / 1_s}}};
+            Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
+            Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 1_s}}};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -112,7 +112,7 @@ void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 {
 
-  kinematics.DesaturateWheelSpeeds(&states, K_MAX_SPEED);
+  kinematics.DesaturateWheelSpeeds(&states, ROBOT_MAX_SPEED);
 
   auto const [fl, fr, bl, br] = states;
 

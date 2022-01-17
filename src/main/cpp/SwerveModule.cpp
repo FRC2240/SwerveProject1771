@@ -7,25 +7,25 @@
 /*                       Private Constants                        */
 /******************************************************************/
 
-inline static constexpr units::meter_t K_WHEEL_RADIUS = units::inch_t{2};
-inline static constexpr int K_ENCODER_TICKS_PER_ROTATION = 2048;
+inline static constexpr units::meter_t WHEEL_RADIUS = units::inch_t{2};
+inline static constexpr int TALON_ENCODER_TICKS_PER_ROTATION = 2048;
 inline static constexpr int CANCODER_TICKS_PER_ROTATION = 4096;
 inline static constexpr double GEAR_RATIO = 8.16;
 
-double constexpr K_ENCODER_TICKS_PER_MOTOR_RADIAN =
-    K_ENCODER_TICKS_PER_ROTATION / (2 * wpi::numbers::pi); // Number of ticks per radian
+double constexpr TALON_ENCODER_TICKS_PER_MOTOR_RADIAN =
+    TALON_ENCODER_TICKS_PER_ROTATION / (2 * wpi::numbers::pi); // Number of ticks per radian
 
-double constexpr K_ENCODER_TICKS_PER_WHEEL_RADIAN =
-    GEAR_RATIO * K_ENCODER_TICKS_PER_MOTOR_RADIAN; // Total amount of ticks per wheel radian
+double constexpr TALON_ENCODER_TICKS_PER_WHEEL_RADIAN =
+    GEAR_RATIO * TALON_ENCODER_TICKS_PER_MOTOR_RADIAN; // Total amount of ticks per wheel radian
 
 double constexpr HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
 double constexpr ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
 
-inline static constexpr double K_ENCODER_DEGREES_TO_TICKS = K_ENCODER_TICKS_PER_ROTATION / 360;
+inline static constexpr double TALON_ENCODER_DEGREES_TO_TICKS = TALON_ENCODER_TICKS_PER_ROTATION / 360;
 inline static constexpr double CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
 
-inline static constexpr auto K_MODULE_MAX_ANGULAR_VELOCITY = wpi::numbers::pi * 1_rad_per_s;           // radians per second
-inline static constexpr auto K_MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s / 1_s; // radians per second^2
+inline static constexpr auto MODULE_MAX_ANGULAR_VELOCITY = wpi::numbers::pi * 1_rad_per_s;           // radians per second
+inline static constexpr auto MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s / 1_s; // radians per second^2
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -76,7 +76,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
 
 frc::SwerveModuleState SwerveModule::getState()
 {
-    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / K_ENCODER_TICKS_PER_WHEEL_RADIAN * K_WHEEL_RADIUS) / 1_s},
+    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / TALON_ENCODER_TICKS_PER_WHEEL_RADIAN * WHEEL_RADIUS) / 1_s},
             frc::Rotation2d(getAngle())};
 }
 
@@ -93,13 +93,13 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     auto const optimized_desired_state = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
 
     // Convert speed to ticks per 100 milliseconds
-    double const desired_driver_velocity_ticks = (optimized_desired_state.speed / K_WHEEL_RADIUS * K_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
+    double const desired_driver_velocity_ticks = (optimized_desired_state.speed / WHEEL_RADIUS * TALON_ENCODER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
 
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_desired_state.angle - current_rotation;
 
     // Convert change in angle to change in ticks
-    double const delta_ticks = (delta_rotation.Degrees().to<int>() % 360) * K_ENCODER_DEGREES_TO_TICKS;
+    double const delta_ticks = (delta_rotation.Degrees().to<int>() % 360) * TALON_ENCODER_DEGREES_TO_TICKS;
 
     // Convert the CANCoder from it's position reading back to ticks
     double const current_ticks = (current_rotation.Degrees().to<int>() % 360) * CANCODER_DEGREES_TO_TICKS;
