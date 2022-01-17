@@ -133,23 +133,23 @@ void Drivetrain::setAngleForTesting(units::degree_t const &desired_angle)
   Module::back_left.setTurnerAngle(desired_angle);
   Module::back_right.setTurnerAngle(desired_angle);
 }
-void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta)
+void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative)
 {
 
-  int const error_theta = (theta - getAngle()).to<int>() % 360;          // Get difference between old and new angle; gets the equivalent value between -360 and 360
-  double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
-  if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())                             // Max rotational speed
+  int const error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360
+  double p_rotation = error_theta * ROTATE_P;                   // Modifies error_theta in order to get a faster turning speed
+  if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())       // Max rotational speed
     p_rotation = MAX_FACE_DIRECTION_SPEED.value() * ((p_rotation > 0) ? 1 : -1);
-  drive(frc::ChassisSpeeds{dx, dy, units::degrees_per_second_t{p_rotation}});
+  drive(dx, dy, units::degrees_per_second_t{p_rotation}, field_relative);
 }
 
-void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy)
+void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative)
 {
   int current_rotation = getAngle().to<int>() % 360; // Ensure angle is between -360 and 360
   if (current_rotation < 0)
     current_rotation += 360; // Ensure angle is between 0 and 360
   units::degree_t const new_rotation = (current_rotation <= 90 || current_rotation >= 270) ? FRONT : BACK;
-  faceDirection(dx, dy, new_rotation);
+  faceDirection(dx, dy, new_rotation, field_relative);
 }
 
 /******************************************************************/

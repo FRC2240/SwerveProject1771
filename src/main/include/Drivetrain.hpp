@@ -42,9 +42,9 @@ namespace Drivetrain
 
     void drive(wpi::array<frc::SwerveModuleState, 4> states);
 
-    void faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta);
+    void faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative);
 
-    void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy);
+    void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative);
 
     void trajectoryDrive(frc::Trajectory::State const &state, frc::Rotation2d const &rotation);
 
