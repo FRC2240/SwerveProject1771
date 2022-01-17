@@ -101,11 +101,12 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
 
-    // Convert change in angle to change in (turner) ticks and account for gear ratio
-    double const delta_ticks = delta_rotation.Degrees().value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
+    // Convert change in angle to change in (cancoder) ticks
+    double const delta_ticks = delta_rotation.Degrees().value() * CANCODER_DEGREES_TO_TICKS;
 
-    // Get the current turner position
+    // Get the current cancoder position
     double const current_ticks = turner.GetSelectedSensorPosition();
+    //Or current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
