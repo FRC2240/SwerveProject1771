@@ -62,7 +62,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
 
     // Configure Turner
     TalonFXConfiguration turner_config{};
-    turner_config.slot0.kP = 2;
+    turner_config.slot0.kP = .1;
     turner_config.slot0.kI = 0;
     turner_config.slot0.kD = 0;
     turner_config.slot0.kF = 0;
@@ -112,4 +112,10 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
+}
+
+void SwerveModule::setTurnerAngle(units::degree_t const& desired_angle)
+{
+    double const delta_ticks = desired_angle.value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
+    turner.Set(TalonFXControlMode::Position, delta_ticks);
 }

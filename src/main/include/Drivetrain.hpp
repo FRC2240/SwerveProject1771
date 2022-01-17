@@ -10,7 +10,7 @@
 
 #include <pathplanner/lib/PathPlanner.h>
 
-using namespace pathplanner; //PathPlanner keeps everything hidden behind 2 sets of namespaces so it is safe to remove the first layer
+using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 sets of namespaces so it is safe to remove the first layer
 
 namespace Drivetrain
 {
@@ -54,9 +54,11 @@ namespace Drivetrain
 
     void trajectoryAutonDrive(PathPlannerTrajectory traj);
 
+    void setAngleForTesting(units::degree_t const &desired_angle);
+
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    static constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2_fps;                   // Implicit conversion
-    static constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
+    inline static constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2_fps;                    // Implicit conversion
+    inline static constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 }

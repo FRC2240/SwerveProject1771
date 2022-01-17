@@ -46,6 +46,7 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic()
 {
+  fmt::print("Testing Modulo Operator: -500 % 360 should equal -140: {}", -500 % 360);
   // driveWithJoystick(false);
   Drivetrain::updateOdometry();
 }
@@ -76,6 +77,30 @@ void Robot::testPathPlanner()
 }
 
 void Robot::TeleopPeriodic() { driveWithJoystick(true); }
+
+void Robot::TestPeriodic() 
+{
+  if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
+  {
+    Drivetrain::setAngleForTesting(45_deg);
+  }
+  else if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
+  {
+    Drivetrain::setAngleForTesting(-45_deg);
+  }
+  else if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
+  {
+    Drivetrain::setAngleForTesting(90_deg);
+  }
+  else if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
+  {
+    Drivetrain::setAngleForTesting(-90_deg);
+  }
+  else
+  {
+    Drivetrain::setAngleForTesting(0_deg);
+  }
+}
 
 void Robot::driveWithJoystick(bool const& field_relative)
 {

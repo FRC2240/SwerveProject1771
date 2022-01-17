@@ -34,9 +34,9 @@ namespace Module
 }
 
 inline static const frc::SwerveDriveKinematics<4> kinematics{Module::front_left,
-                                                               Module::front_right,
-                                                               Module::back_left,
-                                                               Module::back_right};
+                                                             Module::front_right,
+                                                             Module::back_left,
+                                                             Module::back_right};
 
 inline static std::unique_ptr<AHRS> navx = nullptr;
 
@@ -126,6 +126,13 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 /*                        Facing Functions                        */
 /******************************************************************/
 
+void Drivetrain::setAngleForTesting(units::degree_t const &desired_angle)
+{
+  Module::front_left.setTurnerAngle(desired_angle);
+  Module::front_right.setTurnerAngle(desired_angle);
+  Module::back_left.setTurnerAngle(desired_angle);
+  Module::back_right.setTurnerAngle(desired_angle);
+}
 void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta)
 {
 

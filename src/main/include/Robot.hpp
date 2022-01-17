@@ -20,7 +20,7 @@ public:
     // void DisabledPeriodic() override;
 
     // void TestInit() override;
-    // void TestPeriodic() override;
+    void TestPeriodic() override;
 
 private:
 /******************************************************************/
