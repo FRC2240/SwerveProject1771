@@ -35,25 +35,27 @@ Robot::Robot()
   { return IsTest(); };
 
   Drivetrain::init();
+
+  BUTTON::PS5.SetTwistChannel(5);
 }
 
 void Robot::AutonomousInit()
 {
   Drivetrain::updateOdometry();
-  testTrajectory();
-  // testPathPlanner();
+  // testTrajectory();
+  testPathPlanner();
 }
 
 void Robot::AutonomousPeriodic()
 {
-  fmt::print("Testing Modulo Operator: -500 % 360 should equal -140: {}\n", -500 % 360);
+  // fmt::print("Testing Modulo Operator: -500 % 360 should equal -140: {}\n", -500 % 360);
   // driveWithJoystick(false);
   Drivetrain::updateOdometry();
 }
 
 void Robot::TeleopPeriodic()
 {
-  driveWithJoystick(true);
+  driveWithJoystick(false);
 
   if (BUTTON::DRIVETRAIN::ROTATION_MODE.getRawButtonPressed())
   {
@@ -66,26 +68,25 @@ void Robot::TeleopPeriodic()
 
 void Robot::TestPeriodic()
 {
-  bool constexpr allModules = false;
   if (BUTTON::DRIVETRAIN::TURN_45)
   {
-    Drivetrain::setAngleForTesting(45_deg, allModules);
+    Drivetrain::setAngleForTesting(45_deg);
   }
   else if (BUTTON::DRIVETRAIN::TURN_neg45)
   {
-    Drivetrain::setAngleForTesting(-45_deg, allModules);
+    Drivetrain::setAngleForTesting(-45_deg);
   }
   else if (BUTTON::DRIVETRAIN::TURN_90)
   {
-    Drivetrain::setAngleForTesting(90_deg, allModules);
+    Drivetrain::setAngleForTesting(90_deg);
   }
   else if (BUTTON::DRIVETRAIN::TURN_neg90)
   {
-    Drivetrain::setAngleForTesting(-90_deg, allModules);
+    Drivetrain::setAngleForTesting(-90_deg);
   }
   else
   {
-    Drivetrain::setAngleForTesting(0_deg, allModules);
+    Drivetrain::setAngleForTesting(0_deg);
   }
 }
 
@@ -111,25 +112,29 @@ void Robot::testTrajectory()
 void Robot::testPathPlanner()
 {
   using namespace pathplanner;
-  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath("New Path", 0.35_mps, 0.5_mps_sq));
+  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath("New New Path", 5_fps, 5_fps_sq));
 }
 
 void Robot::driveWithJoystick(bool const &field_relative)
 {
-  // fmt::print("Printing PS5 Inputs: X: {}, Y: {}, Z: {}\n", BUTTON::PS5.GetX(), BUTTON::PS5.GetY(), BUTTON::PS5.GetZ());
+  /*
+  fmt::print("Printing PS5 Inputs: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetX(), BUTTON::PS5.GetY(), BUTTON::PS5.GetZ(), BUTTON::PS5.GetTwist());
+  fmt::print("Printing PS5 Channels: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetXChannel(), BUTTON::PS5.GetYChannel(), BUTTON::PS5.GetZChannel(), BUTTON::PS5.GetTwistChannel());
+  fmt::print("Printing Direction (degrees): {}\n", BUTTON::PS5.GetDirectionDegrees());
+  */
 
-  auto const x_speed = frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.04) * Drivetrain::ROBOT_MAX_SPEED;
-  auto const y_speed = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.04) * Drivetrain::ROBOT_MAX_SPEED;
+  auto const left_right = frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.04) * Drivetrain::ROBOT_MAX_SPEED;
+  auto const front_back = frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.04) * Drivetrain::ROBOT_MAX_SPEED;
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
-    Drivetrain::faceDirection(x_speed, y_speed, 0_deg, field_relative);
+    Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
-    Drivetrain::faceDirection(x_speed, y_speed, 180_deg, field_relative);
+    Drivetrain::faceDirection(front_back, left_right, 180_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_TO_CLOSEST)
-    Drivetrain::faceClosest(x_speed, y_speed, field_relative);
+    Drivetrain::faceClosest(front_back, left_right, field_relative);
   else if (rotation_joystick)
   {
     double const rotate_joy_x = frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04);
-    double const rotate_joy_y = frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.04);
+    double const rotate_joy_y = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.04);
 
     // If we aren't actually pressing the joystick, leave rotation at previous
     if (abs(rotate_joy_x) > 0.2 || abs(rotate_joy_y) > 0.2)
@@ -137,16 +142,16 @@ void Robot::driveWithJoystick(bool const &field_relative)
       // Get degree using arctan, then convert from unit circle to normal CW values
       units::degree_t const direction = -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg;
 
-      Drivetrain::faceDirection(x_speed, y_speed, direction, field_relative);
+      Drivetrain::faceDirection(front_back, left_right, direction, field_relative);
     }
     else
-      Drivetrain::drive(x_speed, y_speed, units::radians_per_second_t{0}, field_relative);
+      Drivetrain::drive(front_back, left_right, units::radians_per_second_t{0}, field_relative);
   }
   else
   {
     auto const rot = frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::ROBOT_MAX_ANGULAR_SPEED; // Might need to be inverted in the future
 
-    Drivetrain::drive(x_speed, y_speed, rot, field_relative);
+    Drivetrain::drive(front_back, left_right, rot, field_relative);
   }
 }
 

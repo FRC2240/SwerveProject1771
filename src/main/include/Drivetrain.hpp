@@ -53,13 +53,13 @@ namespace Drivetrain
 
     void trajectoryAutonDrive(frc::Trajectory const &traj, frc::Rotation2d const &faceAngle);
 
-    void trajectoryAutonDrive(PathPlannerTrajectory traj);
+    void trajectoryAutonDrive(PathPlannerTrajectory const &traj);
 
-    void setAngleForTesting(units::degree_t const &desired_angle, bool const &allModules);
+    void setAngleForTesting(units::degree_t const &desired_angle);
 
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    local_ce units::meters_per_second_t ROBOT_MAX_SPEED = 2_fps;                    // Implicit conversion
+    local_ce units::meters_per_second_t ROBOT_MAX_SPEED = 5_fps;                    // Implicit conversion
     local_ce units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 }

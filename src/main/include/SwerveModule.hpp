@@ -12,7 +12,9 @@ public:
     /*                  Public Function Declarations                  */
     /******************************************************************/
 
-    SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc::Translation2d position);
+    SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, frc::Translation2d const &position, double const &magnet_offset);
+
+    void init();
 
     frc::SwerveModuleState getState();
 
@@ -36,5 +38,6 @@ private:
 
     TalonFX driver, turner;
     CANCoder cancoder;
-    frc::Translation2d position;
+    frc::Translation2d const position;
+    double const magnet_offset;
 };

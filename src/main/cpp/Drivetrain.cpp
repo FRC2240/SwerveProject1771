@@ -15,7 +15,7 @@
 
 double constexpr ROTATE_P = 1.25; // Modifier for rotational speed -> (degree * ROTATE_P) per second
 
-units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 35_deg / 1_s; // only used for faceDirection
+units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 60_deg / 1_s; // only used for faceDirection
 
 units::degree_t constexpr FRONT{0}, BACK{180};
 
@@ -27,10 +27,10 @@ units::degree_t constexpr FRONT{0}, BACK{180};
 // to avoid issues with initalizing before wpilib
 namespace Module
 {
-  local SwerveModule front_left{40, 41, 12, {11_in, 11_in}};
-  local SwerveModule front_right{30, 31, 11, {11_in, -11_in}};
-  local SwerveModule back_left{50, 51, 13, {-11_in, 11_in}};
-  local SwerveModule back_right{60, 61, 14, {-11_in, -11_in}};
+  local SwerveModule front_left{40, 41, 12, {11_in, 11_in}, -344.53125};
+  local SwerveModule front_right{30, 31, 11, {11_in, -11_in}, -264.726563};
+  local SwerveModule back_left{50, 51, 13, {-11_in, 11_in}, -91.54203};
+  local SwerveModule back_right{60, 61, 14, {-11_in, -11_in}, -285.0293};
 }
 
 local_c frc::SwerveDriveKinematics<4> kinematics{Module::front_left,
@@ -46,7 +46,7 @@ local frc::HolonomicDriveController controller{
     frc2::PIDController{1, 0, 0},
     frc2::PIDController{1, 0, 0},
     frc::ProfiledPIDController<units::radian>{
-        1, 0, 0,
+        0.5, 0, 0,
         frc::TrapezoidProfile<units::radian>::Constraints{
             Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
             Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 1_s}}};
@@ -60,6 +60,11 @@ void Drivetrain::init()
   navx = std::make_unique<AHRS>(frc::SPI::Port::kMXP);
 
   resetGyro();
+
+  Module::front_left.init();
+  Module::front_right.init();
+  Module::back_left.init();
+  Module::back_right.init();
 }
 
 void Drivetrain::resetGyro() { navx->ZeroYaw(); }
@@ -127,26 +132,23 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 /*                        Facing Functions                        */
 /******************************************************************/
 
-void Drivetrain::setAngleForTesting(units::degree_t const &desired_angle, bool const &allModules)
+void Drivetrain::setAngleForTesting(units::degree_t const &desired_angle)
 {
-  if (allModules)
-  {
-    Module::front_left.setTurnerAngle(desired_angle);
-    Module::front_right.setTurnerAngle(desired_angle);
-    Module::back_left.setTurnerAngle(desired_angle);
-    Module::back_right.setTurnerAngle(desired_angle);
-  }
-  else
-    Module::front_left.setTurnerAngle(desired_angle);
+  Module::front_left.setTurnerAngle(desired_angle);
 }
 void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative)
 {
 
-  int const error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360
-  double p_rotation = error_theta * ROTATE_P;                   // Modifies error_theta in order to get a faster turning speed
-  if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())       // Max rotational speed
+  int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360
+  fmt::print("Original error_theta: {}\n", error_theta);
+  if ((360 - error_theta) % 360)
+    error_theta = (360 - error_theta) % 360;
+  fmt::print("Optimized error_theta: {}\n", error_theta);
+  double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
+  fmt::print("{}\n", p_rotation);
+  if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value()) // Max rotational speed
     p_rotation = MAX_FACE_DIRECTION_SPEED.value() * ((p_rotation > 0) ? 1 : -1);
-  drive(dx, dy, units::degrees_per_second_t{p_rotation}, field_relative);
+  drive(dx, dy, units::degrees_per_second_t{p_rotation}, false);
 }
 
 void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative)
@@ -202,8 +204,9 @@ void Drivetrain::trajectoryAutonDrive(frc::Trajectory const &traj, frc::Rotation
                                   }};
 }
 
-void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory traj)
+void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory const &traj)
 {
+  using namespace std::chrono_literals;
   fmt::print("Interpreting PathPlanner trajectory\n");
   trajectory_stop_flag = true; // stop previous thread (this is only here as a safety feature in case method gets called twice)
   if (trajectory_thread.joinable())
@@ -211,19 +214,25 @@ void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory traj)
   trajectory_stop_flag = false;
   trajectory_thread = std::thread{[&traj]()
                                   {
+                                    auto trajectory = traj;
                                     fmt::print("Beginning trajectory sampling\n");
-                                    auto const inital_state = traj.getInitialState();
+                                    auto inital_state = trajectory.getInitialState();
+                                    fmt::print("Got initial state: {}, {}\n", inital_state->position.value(), inital_state->holonomicRotation.Degrees().value());
                                     odometry.ResetPosition(inital_state->pose, inital_state->holonomicRotation);
                                     frc::Timer trajTimer;
                                     trajTimer.Start();
                                     int trajectory_samples = 0;
-                                    while (!trajectory_stop_flag && RobotState::IsAutonomousEnabled() && trajTimer.Get() <= traj.getTotalTime())
+                                    fmt::print("successfully init everything\n");
+                                    while (!trajectory_stop_flag && RobotState::IsAutonomousEnabled() && trajTimer.Get() <= trajectory.getTotalTime())
                                     {
-                                      using namespace std::literals::chrono_literals;
-                                      fmt::print("Current trajectory sample value: {}\n", ++trajectory_samples);
-                                      trajectoryDrive(traj.sample(trajTimer.Get()));
+                                      auto current_time = trajTimer.Get();
+                                      auto sample = trajectory.sample(current_time);
+                                      fmt::print("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}\nHolonomic Rotation: {}, Timer: {}\n", ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.holonomicRotation.Degrees().value(), current_time.value());
+                                      trajectoryDrive(sample);
                                       std::this_thread::sleep_for(10ms); // Don't kill CPU
                                     }
-                                    faceDirection(0_mps, 0_mps, traj.getEndState()->holonomicRotation.Degrees(), true);
+                                    drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
+                                    // faceDirection(0_mps, 0_mps, trajectory.getEndState()->holonomicRotation.Degrees(), true);
                                   }};
+  std::this_thread::sleep_for(10ms);
 }

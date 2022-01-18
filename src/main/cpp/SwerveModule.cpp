@@ -35,11 +35,16 @@ local_ce auto MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s /
 /******************************************************************/
 
 // Set Variables
-SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc::Translation2d position)
+SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, frc::Translation2d const &position, double const &magnet_offset)
     : driver{driver_adr},
       turner{turner_adr},
       cancoder{cancoder_adr},
-      position{position}
+      position{position},
+      magnet_offset{magnet_offset}
+{
+}
+
+void SwerveModule::init()
 {
     // Configure CANCoder
     CANCoderConfiguration cancoder_config{};
@@ -47,12 +52,13 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
     cancoder_config.unitString = "deg";
     cancoder_config.sensorDirection = false; // Counter-Clock Wise
     cancoder_config.absoluteSensorRange = AbsoluteSensorRange::Signed_PlusMinus180;
+    cancoder_config.magnetOffsetDegrees = magnet_offset;
     cancoder.ConfigAllSettings(cancoder_config);
     // cancoder.ConfigSensorDirection()
 
     // Configure Driver
     TalonFXConfiguration driver_config{};
-    driver_config.slot0.kP = .1;
+    driver_config.slot0.kP = 0.1;
     driver_config.slot0.kI = 0;
     driver_config.slot0.kD = 0;
     driver_config.slot0.kF = 0;
@@ -63,7 +69,7 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
 
     // Configure Turner
     TalonFXConfiguration turner_config{};
-    turner_config.slot0.kP = .1;
+    turner_config.slot0.kP = 0.5;
     turner_config.slot0.kI = 0;
     turner_config.slot0.kD = 0;
     turner_config.slot0.kF = 0;
@@ -76,7 +82,6 @@ SwerveModule::SwerveModule(int driver_adr, int turner_adr, int cancoder_adr, frc
     turner_config.closedloopRamp = .000;
     turner.ConfigAllSettings(turner_config);
 }
-
 frc::SwerveModuleState SwerveModule::getState()
 {
     return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN * WHEEL_RADIUS) / 1_s},
@@ -111,6 +116,15 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
+    /*
+        if (delta_rotation.Degrees().value() > 20)
+
+            fmt::print("desired_speed: {}, desired_rotation {}\n, current_rotation: {}, optimized_speed: {}, optimized_angle: {},\ndelta_rotation: {}, delta_ticks: {}, current_ticks: {},\ndesired_driver: {}, desired_turner: {}\n",
+                       desired_state.speed.value(), desired_state.angle.Degrees().value(),
+                       optimized_speed.value(), optimized_angle.Degrees().value(),
+                       delta_rotation.Degrees().value(), delta_ticks, current_ticks,
+                       desired_driver_velocity_ticks, desired_turner_pos_ticks);
+    */
 
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
@@ -118,11 +132,10 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
 void SwerveModule::setTurnerAngle(units::degree_t const &desired_angle)
 {
-    
-    double const delta_ticks = desired_angle.value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
-    turner.Set(TalonFXControlMode::Position, delta_ticks);
-    /*
-        
+
+    // double const delta_ticks = desired_angle.value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
+    // turner.Set(TalonFXControlMode::Position, delta_ticks);
+
     frc::Rotation2d const current_rotation = getAngle();
 
     // Optimize the reference state to avoid spinning further than 90 degrees
@@ -143,5 +156,4 @@ void SwerveModule::setTurnerAngle(units::degree_t const &desired_angle)
 
     driver.Set(TalonFXControlMode::Velocity, 0);
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
-    */
 }
