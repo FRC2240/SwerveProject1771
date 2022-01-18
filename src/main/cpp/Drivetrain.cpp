@@ -64,8 +64,8 @@ void Drivetrain::init()
 
 void Drivetrain::resetGyro() { navx->ZeroYaw(); }
 
-// Returns values in CW direction with 0 being equal to front (navx is normally CCW with front being -90)
-units::degree_t Drivetrain::getAngle() { return units::degree_t{navx->GetAngle() + 90}; }
+// Returns values in CW direction with 0 being equal to front (navx is normally CCW)
+units::degree_t Drivetrain::getAngle() { return -units::degree_t{navx->GetAngle()}; }
 
 frc::Pose2d Drivetrain::getOdometryPose() { return odometry.GetPose(); }
 
