@@ -1,5 +1,7 @@
 #include "Buttons.hpp"
 
+#include <fmt/format.h>
+
 /******************************************************************/
 /*                   Public Function Defintions                   */
 /******************************************************************/
@@ -9,7 +11,7 @@ JoystickButton::JoystickButton(frc::GenericHID& stick, int const& button)
     , button_ { button }
 {
     if(button > stick.GetButtonCount() || button < 1)
-        printf("Invalid Button Assignment: %d", button);
+        fmt::print("Invalid Button Assignment: {}\n", button);
 }
 
 bool JoystickButton::getRawButton() const

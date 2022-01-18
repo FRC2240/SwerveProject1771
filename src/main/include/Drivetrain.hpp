@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SwerveModule.hpp"
+#include "ngr.hpp"
 
 #include <wpi/numbers>
 #include <frc/kinematics/SwerveDriveKinematics.h>
@@ -54,11 +55,11 @@ namespace Drivetrain
 
     void trajectoryAutonDrive(PathPlannerTrajectory traj);
 
-    void setAngleForTesting(units::degree_t const &desired_angle);
+    void setAngleForTesting(units::degree_t const &desired_angle, bool const &allModules);
 
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    inline static constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2_fps;                    // Implicit conversion
-    inline static constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
+    local_ce units::meters_per_second_t ROBOT_MAX_SPEED = 2_fps;                    // Implicit conversion
+    local_ce units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 }

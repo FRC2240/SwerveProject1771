@@ -1,4 +1,5 @@
 #include "SwerveModule.hpp"
+#include "ngr.hpp"
 
 #include <wpi/numbers>
 #include <units/angular_velocity.h>
@@ -7,27 +8,27 @@
 /*                       Private Constants                        */
 /******************************************************************/
 
-inline static constexpr units::meter_t WHEEL_RADIUS = units::inch_t{2};
-inline static constexpr int TALON_ENCODER_TICKS_PER_ROTATION = 2048;
-inline static constexpr int CANCODER_TICKS_PER_ROTATION = 4096;
+local_ce units::meter_t WHEEL_RADIUS = units::inch_t{2};
+local_ce int TALON_ENCODER_TICKS_PER_ROTATION = 2048;
+local_ce int CANCODER_TICKS_PER_ROTATION = 4096;
 
-inline static constexpr double DRIVER_GEAR_RATIO = 8.16;
-inline static constexpr double TURNER_GEAR_RATIO = 12.8;
+local_ce double DRIVER_GEAR_RATIO = 8.16;
+local_ce double TURNER_GEAR_RATIO = 12.8;
 
-double constexpr TALON_ENCODER_TICKS_PER_MOTOR_RADIAN =
+local_ce double TALON_ENCODER_TICKS_PER_MOTOR_RADIAN =
     TALON_ENCODER_TICKS_PER_ROTATION / (2 * wpi::numbers::pi); // Number of ticks per radian
 
-double constexpr DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN =
+local_ce double DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN =
     DRIVER_GEAR_RATIO * TALON_ENCODER_TICKS_PER_MOTOR_RADIAN; // Total amount of ticks per wheel radian
 
-double constexpr HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
-double constexpr ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
+local_ce double HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
+local_ce double ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
 
-inline static constexpr double TALON_ENCODER_DEGREES_TO_TICKS = TALON_ENCODER_TICKS_PER_ROTATION / 360;
-inline static constexpr double CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
+local_ce double TALON_ENCODER_DEGREES_TO_TICKS = TALON_ENCODER_TICKS_PER_ROTATION / 360;
+local_ce double CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
 
-inline static constexpr auto MODULE_MAX_ANGULAR_VELOCITY = wpi::numbers::pi * 1_rad_per_s;           // radians per second
-inline static constexpr auto MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s / 1_s; // radians per second^2
+local_ce auto MODULE_MAX_ANGULAR_VELOCITY = wpi::numbers::pi * 1_rad_per_s;           // radians per second
+local_ce auto MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_per_s / 1_s; // radians per second^2
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -106,7 +107,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Get the current cancoder position
     double const current_ticks = turner.GetSelectedSensorPosition();
-    //Or current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
+    // Or current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
@@ -115,7 +116,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
 }
 
-void SwerveModule::setTurnerAngle(units::degree_t const& desired_angle)
+void SwerveModule::setTurnerAngle(units::degree_t const &desired_angle)
 {
     double const delta_ticks = desired_angle.value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
     turner.Set(TalonFXControlMode::Position, delta_ticks);

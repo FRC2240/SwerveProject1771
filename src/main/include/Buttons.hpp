@@ -25,16 +25,16 @@ public:
 
 namespace BUTTON
 {
-    inline frc::Joystick ps5{0};
+    inline frc::Joystick PS5{0};
     namespace DRIVETRAIN
     {
-        inline JoystickButton ROTATE_FRONT{BUTTON::ps5, 7};
-        inline JoystickButton ROTATE_BACK{BUTTON::ps5, 8};
-        inline JoystickButton ROTATE_TO_CLOSEST{BUTTON::ps5, 9};
-        inline JoystickButton TURN_45{BUTTON::ps5, 9};
-        inline JoystickButton TURN_neg45{BUTTON::ps5, 9};
-        inline JoystickButton TURN_90{BUTTON::ps5, 9};
-        inline JoystickButton TURN_neg90{BUTTON::ps5, 9};
-        inline JoystickButton ROTATION_MODE{BUTTON::ps5, 9};
+        inline JoystickButton ROTATE_FRONT{BUTTON::PS5, 7};
+        inline JoystickButton ROTATE_BACK{BUTTON::PS5, 8};
+        inline JoystickButton ROTATE_TO_CLOSEST{BUTTON::PS5, 9};
+        inline JoystickButton TURN_45{BUTTON::PS5, 9};
+        inline JoystickButton TURN_neg45{BUTTON::PS5, 9};
+        inline JoystickButton TURN_90{BUTTON::PS5, 9};
+        inline JoystickButton TURN_neg90{BUTTON::PS5, 9};
+        inline JoystickButton ROTATION_MODE{BUTTON::PS5, 9};
     }
 }

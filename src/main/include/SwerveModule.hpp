@@ -20,7 +20,7 @@ public:
 
     void setDesiredState(const frc::SwerveModuleState &state);
 
-    void setTurnerAngle(units::degree_t const& desired_angle);
+    void setTurnerAngle(units::degree_t const &desired_angle);
 
     // Allows SwerveModule to be placed into Kinematics
     constexpr operator frc::Translation2d() const { return position; }
