@@ -27,7 +27,7 @@ private:
 /*                 Private Function Declarations                  */
 /******************************************************************/
 
-    void testTrajectory();
+    void tunePID();
     void testPathPlanner();
     void driveWithJoystick(bool const& field_relative);
 

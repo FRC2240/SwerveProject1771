@@ -47,15 +47,13 @@ namespace Drivetrain
 
     void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative);
 
-    void trajectoryDrive(frc::Trajectory::State const &state, frc::Rotation2d const &rotation);
-
     void trajectoryDrive(PathPlannerTrajectory::PathPlannerState const &state);
-
-    void trajectoryAutonDrive(frc::Trajectory const &traj, frc::Rotation2d const &faceAngle);
 
     void trajectoryAutonDrive(PathPlannerTrajectory const &traj);
 
-    void setAngleForTesting(units::degree_t const &desired_angle);
+    void setAngleForTuning(units::degree_t const &desired_angle);
+
+    void testHolonomicTraj(units::degree_t const &desired_angle);
 
     /******************************************************************/
     /*                        Public Constants                        */
