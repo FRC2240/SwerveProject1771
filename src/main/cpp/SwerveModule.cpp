@@ -42,7 +42,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
       position{position},
       magnet_offset{magnet_offset}
 {
-    //Config done in init() to avoid issues with configuring before connection with Talons/CANCoder is established
+    // Config done in init() to avoid issues with configuring before connection with Talons/CANCoder is established
 }
 
 void SwerveModule::init()

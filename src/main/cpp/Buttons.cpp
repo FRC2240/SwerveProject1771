@@ -6,11 +6,10 @@
 /*                   Public Function Defintions                   */
 /******************************************************************/
 
-JoystickButton::JoystickButton(frc::GenericHID& stick, int const& button)
-    : stick_ { stick }
-    , button_ { button }
+JoystickButton::JoystickButton(frc::GenericHID &stick, int const &button)
+    : stick_{stick}, button_{button}
 {
-    if(button > stick.GetButtonCount() || button < 1)
+    if (button > stick.GetButtonCount() || button < 1)
         fmt::print("Invalid Button Assignment: {}\n", button);
 }
 

@@ -220,7 +220,6 @@ void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory const &
                                     }
                                     drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
                                   }};
-  std::this_thread::sleep_for(10ms);
 }
 
 void Drivetrain::testHolonomicRotation(units::degree_t const &desired_angle)

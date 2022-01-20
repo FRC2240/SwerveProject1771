@@ -16,5 +16,5 @@ namespace RobotState
     inline std::function<bool()> IsTeleop;
     inline std::function<bool()> IsTeleopEnabled;
     inline std::function<bool()> IsTest;
-    
+
 }

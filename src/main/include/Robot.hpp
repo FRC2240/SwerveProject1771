@@ -5,9 +5,9 @@
 class Robot : public frc::TimedRobot
 {
 public:
-/******************************************************************/
-/*                  Public Function Declarations                  */
-/******************************************************************/
+    /******************************************************************/
+    /*                  Public Function Declarations                  */
+    /******************************************************************/
 
     Robot();
     void AutonomousInit() override;
@@ -23,12 +23,11 @@ public:
     void TestPeriodic() override;
 
 private:
-/******************************************************************/
-/*                 Private Function Declarations                  */
-/******************************************************************/
+    /******************************************************************/
+    /*                 Private Function Declarations                  */
+    /******************************************************************/
 
     void tunePID();
     void testPathPlanner();
-    void driveWithJoystick(bool const& field_relative);
-
+    void driveWithJoystick(bool const &field_relative);
 };
