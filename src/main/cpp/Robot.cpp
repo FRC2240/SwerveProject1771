@@ -6,6 +6,7 @@
 #include <frc/MathUtil.h>
 #include <frc/trajectory/TrajectoryConfig.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 /******************************************************************/
 /*                        Private Variables                       */
@@ -42,6 +43,8 @@ Robot::Robot()
 
   Drivetrain::init();
 
+  frc::SmartDashboard::PutString("Auton Trajectory", "Straight Line");
+
   BUTTON::PS5.SetTwistChannel(5);
 }
 
@@ -55,6 +58,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   Drivetrain::updateOdometry();
+  Drivetrain::printOdometryPose();
 }
 
 void Robot::TeleopPeriodic()
@@ -70,6 +74,7 @@ void Robot::TeleopPeriodic()
   driveWithJoystick(false);
 
   Drivetrain::updateOdometry();
+  Drivetrain::printOdometryPose();
 }
 
 void Robot::TestPeriodic()
@@ -78,7 +83,10 @@ void Robot::TestPeriodic()
   if (BUTTON::DRIVETRAIN::TURN_90)
     Drivetrain::testHolonomicRotation(90_deg);
   else
-    driveWithJoystick(true);
+  {
+    // Drivetrain::stopHolonomicTesting();
+    driveWithJoystick(false);
+  }
 
   Drivetrain::updateOdometry();
   Drivetrain::printOdometryPose();
@@ -111,7 +119,7 @@ void Robot::tunePID()
 void Robot::testPathPlanner()
 {
   using namespace pathplanner;
-  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath("30 degree turn", 5_fps, 5_fps_sq));
+  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath(frc::SmartDashboard::GetString("Auton Trajectory", "Straight Line"), 5_fps, 15_fps_sq));
 }
 
 void Robot::driveWithJoystick(bool const &field_relative)
@@ -127,20 +135,21 @@ void Robot::driveWithJoystick(bool const &field_relative)
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
     Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
-    Drivetrain::faceDirection(front_back, left_right, 180_deg, field_relative);
+    Drivetrain::faceDirection(front_back, left_right, 45_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_TO_CLOSEST)
     Drivetrain::faceClosest(front_back, left_right, field_relative);
   else if (rotation_joystick)
   {
-    double const rotate_joy_x = frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04);
-    double const rotate_joy_y = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.04);
+    double const rotate_joy_x = BUTTON::PS5.GetZ() * 10;
+    double const rotate_joy_y = -BUTTON::PS5.GetTwist() * 10;
 
     // If we aren't actually pressing the joystick, leave rotation at previous
-    if (abs(rotate_joy_x) > 0.2 || abs(rotate_joy_y) > 0.2)
+    if (abs(rotate_joy_x) > 0.1 || abs(rotate_joy_y) > 0.1)
     {
+      frc::SmartDashboard::PutNumber("atan", atan2(rotate_joy_y, rotate_joy_x));
       // Get degree using arctan, then convert from unit circle to normal CW values
       units::degree_t const direction = -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg;
-
+      frc::SmartDashboard::PutNumber("Direction", direction.value());
       Drivetrain::faceDirection(front_back, left_right, direction, field_relative);
     }
     else

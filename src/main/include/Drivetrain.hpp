@@ -55,6 +55,8 @@ namespace Drivetrain
 
     void testHolonomicRotation(units::degree_t const &desired_angle);
 
+    void stopHolonomicTesting();
+
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/

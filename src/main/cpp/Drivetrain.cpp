@@ -15,9 +15,9 @@
 /******************************************************************/
 
 // faceDirection && faceClosest constants
-double constexpr ROTATE_P = 1.25; // Modifier for rotational speed -> (degree * ROTATE_P)
+double constexpr ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P)
 
-units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 90_deg / 1_s; // only used for faceDirection
+units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
 
 units::degree_t constexpr FRONT{0}, BACK{180};
 
@@ -46,13 +46,13 @@ local std::unique_ptr<AHRS> navx = nullptr;
 local frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 
 local frc::HolonomicDriveController controller{
-    frc2::PIDController{1, 0, 0},
-    frc2::PIDController{1, 0, 0},
+    frc2::PIDController{.405, 0, 2},
+    frc2::PIDController{.405, 0, 2},
     frc::ProfiledPIDController<units::radian>{
-        0.5, 0, 0,
+        8, 0, 2,
         frc::TrapezoidProfile<units::radian>::Constraints{
             Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
-            Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 1_s}}};
+            Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 0.5_s}}};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -75,7 +75,7 @@ void Drivetrain::init()
 void Drivetrain::resetGyro() { navx->ZeroYaw(); }
 
 // Returns values in CW direction with 0 being equal to front (navx is normally CCW)
-units::degree_t Drivetrain::getAngle() { return -units::degree_t{navx->GetAngle()}; }
+units::degree_t Drivetrain::getAngle() { return units::degree_t{navx->GetAngle()}; }
 
 frc::Pose2d Drivetrain::getOdometryPose() { return odometry.GetPose(); }
 
@@ -143,22 +143,22 @@ void Drivetrain::setAngleForTuning(units::degree_t const &desired_angle)
 }
 void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative)
 {
+  frc::SmartDashboard::PutNumber("Current angle", getAngle().value());
   int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360
-  if (error_theta < 0)
+  frc::SmartDashboard::PutNumber("Original error_theta", error_theta);
+  if (error_theta < -180)
     error_theta += 360; // Ensure angle is between 0 and 360
   if (error_theta > 180)
     error_theta -= 360; // Optimizes angle if over 180
-  /* Or
-  if (error_theta > 180)
-    error_theta -= 360;
-  else if (error_theta < 180)
-    error_theta += 360;
-    */
-
+  frc::SmartDashboard::PutNumber("Optimized error_theta", error_theta);
+  if (abs(error_theta) < 10)
+    error_theta = 0;
+  frc::SmartDashboard::PutNumber("Dead-zoned error_theta", error_theta);
   double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
   if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())
     p_rotation = MAX_FACE_DIRECTION_SPEED.value() * ((p_rotation > 0) ? 1 : -1); // Constrains turn speed
-  drive(dx, dy, units::degrees_per_second_t{p_rotation}, false);
+  frc::SmartDashboard::PutNumber("Constrained p_rotation", p_rotation);
+  drive(dx, dy, units::degrees_per_second_t{p_rotation}, field_relative);
 }
 
 void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative)
@@ -166,8 +166,10 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
   int current_rotation = getAngle().to<int>() % 360; // Ensure angle is between -360 and 360
   if (current_rotation < 0)
     current_rotation += 360; // Ensure angle is between 0 and 360
-  units::degree_t const new_rotation = (current_rotation <= 90 || current_rotation >= 270) ? FRONT : BACK;
-  faceDirection(dx, dy, new_rotation, field_relative);
+  if (current_rotation <= 90 || current_rotation >= 270)
+    faceDirection(dx, dy, 0_deg, field_relative);
+  else
+    faceDirection(dx, dy, 180_deg, field_relative);
 }
 
 /******************************************************************/
@@ -176,12 +178,17 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
 
 void Drivetrain::trajectoryDrive(PathPlannerTrajectory::PathPlannerState const &state)
 {
-  drive(controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation));
-
+  auto correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
+  drive(correction);
   // Put out the error numbers so we can tune?
-  frc::SmartDashboard::PutNumber("Holonomic x error", (odometry.GetPose() - state.pose).X().value());
-  frc::SmartDashboard::PutNumber("Holonomic y error", (odometry.GetPose() - state.pose).Y().value());
-  frc::SmartDashboard::PutNumber("Holonomic z error", (getHeading() - state.holonomicRotation).Degrees().value());
+  auto holonomic_error = odometry.GetPose() - state.pose;
+  frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
+  frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());
+  frc::SmartDashboard::PutNumber("Holonomic z error", (odometry.GetPose().Rotation().Degrees() - state.holonomicRotation.Degrees()).value());
+
+  frc::SmartDashboard::PutNumber("Chassis Speeds: VX", correction.vx.value());
+  frc::SmartDashboard::PutNumber("Chassis Speeds: VY", correction.vy.value());
+  frc::SmartDashboard::PutNumber("Chassis Speeds: Omega", units::degrees_per_second_t{correction.omega}.value());
 }
 
 static std::thread trajectory_thread;
@@ -200,9 +207,11 @@ void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory const &
                                   {
                                     PathPlannerTrajectory copied_traj(traj);
                                     fmt::print("Beginning trajectory sampling\n");
-                                    auto inital_state = copied_traj.getInitialState();
-                                    fmt::print("Got initial state: {}, {}\n", inital_state->position.value(), inital_state->holonomicRotation.Degrees().value());
-                                    odometry.ResetPosition(inital_state->pose, inital_state->holonomicRotation);
+                                    auto const inital_state = *copied_traj.getInitialState();
+                                    auto const inital_pose = inital_state.pose;
+                                    fmt::print("Got initial state: X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value());
+                                    frc::SmartDashboard::PutString("Inital State: ", fmt::format("X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value()));
+                                    odometry.ResetPosition({inital_pose.X(), inital_pose.Y(), inital_state.holonomicRotation}, getHeading());
                                     frc::Timer trajTimer;
                                     trajTimer.Start();
                                     int trajectory_samples = 0;
@@ -212,18 +221,46 @@ void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory const &
                                       auto current_time = trajTimer.Get();
                                       auto sample = copied_traj.sample(current_time);
                                       frc::SmartDashboard::PutString("Sample:",
-                                                                     fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}\nHolonomic Rotation: {}, Timer: {}\n",
-                                                                                 ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(),
+                                                                     fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
+                                                                                 ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
                                                                                  sample.holonomicRotation.Degrees().value(), current_time.value()));
                                       trajectoryDrive(sample);
-                                      std::this_thread::sleep_for(10ms); // Don't kill CPU
+                                      std::this_thread::sleep_for(20ms); // This is the refresh rate of the PID controllers
                                     }
                                     drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
                                   }};
+  trajectory_thread.join();
 }
 
+std::thread test_holonomic_thread;
+bool stop_testing = true;
 void Drivetrain::testHolonomicRotation(units::degree_t const &desired_angle)
 {
-  fmt::print("Driving to an angle of %d\n", desired_angle.value());
-  drive(controller.Calculate(odometry.GetPose(), {}, 0_mps, {desired_angle}));
+  // if (stop_testing)
+  // {
+  //   stop_testing = false;
+  //   fmt::print("Driving to an angle of %d\n", desired_angle.value());
+  //   test_holonomic_thread = std::thread{[&desired_angle]()
+  //                                       {
+  //                                         auto new_angle(desired_angle);
+  //                                         auto i = 0;
+  //                                         using namespace std::chrono_literals;
+  //                                         while (!stop_testing)
+  //                                         {
+  //                                           drive(controller.Calculate(odometry.GetPose(), odometry.GetPose(), 0_mps, {new_angle}));
+  //                                           // if (i++ % 10 == 0)
+  //                                           //   new_angle += 3_deg;
+  //                                           std::this_thread::sleep_for(20ms);
+  //                                         }
+  //                                       }};
+  // }
+  auto pose = odometry.GetPose();
+  drive(controller.Calculate(pose, frc::Pose2d{{pose.X() + .1_m, pose.Y() + .1_m}, pose.Rotation()}, 1_mps, {desired_angle}));
+}
+
+void Drivetrain::stopHolonomicTesting()
+{
+  stop_testing = true;
+  if (test_holonomic_thread.joinable())
+    test_holonomic_thread.join();
 }
