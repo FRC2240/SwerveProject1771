@@ -147,7 +147,13 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::mete
   if (error_theta < 0)
     error_theta += 360; // Ensure angle is between 0 and 360
   if (error_theta > 180)
-    error_theta = (error_theta - 360); // Optimizes angle if over 180
+    error_theta -= 360; // Optimizes angle if over 180
+  /* Or
+  if (error_theta > 180)
+    error_theta -= 360;
+  else if (error_theta < 180)
+    error_theta += 360;
+    */
 
   double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
   if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())
