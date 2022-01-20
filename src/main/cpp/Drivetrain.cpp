@@ -3,6 +3,7 @@
 
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <frc/controller/HolonomicDriveController.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include <AHRS.h>
 
@@ -13,9 +14,10 @@
 /*                       Private Constants                        */
 /******************************************************************/
 
-double constexpr ROTATE_P = 1.25; // Modifier for rotational speed -> (degree * ROTATE_P) per second
+// faceDirection && faceClosest constants
+double constexpr ROTATE_P = 1.25; // Modifier for rotational speed -> (degree * ROTATE_P)
 
-units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 60_deg / 1_s; // only used for faceDirection
+units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 90_deg / 1_s; // only used for faceDirection
 
 units::degree_t constexpr FRONT{0}, BACK{180};
 
@@ -25,6 +27,7 @@ units::degree_t constexpr FRONT{0}, BACK{180};
 
 // All variables interacting with hardware need initalized in init()
 // to avoid issues with initalizing before wpilib
+
 namespace Module
 {
   local SwerveModule front_left{40, 41, 12, {11_in, 11_in}, -344.53125};
@@ -65,6 +68,8 @@ void Drivetrain::init()
   Module::front_right.init();
   Module::back_left.init();
   Module::back_right.init();
+
+  controller.SetTolerance(frc::Pose2d{{0.2_m, 0.2_m}, {3_deg}});
 }
 
 void Drivetrain::resetGyro() { navx->ZeroYaw(); }
@@ -77,7 +82,7 @@ frc::Pose2d Drivetrain::getOdometryPose() { return odometry.GetPose(); }
 void Drivetrain::printOdometryPose()
 {
   auto const pose = odometry.GetPose();
-  fmt::print("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value());
+  frc::SmartDashboard::PutString("Odometry: ", fmt::format("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value()));
 }
 
 frc::Rotation2d Drivetrain::getHeading() { return {getAngle()}; }
@@ -165,8 +170,12 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
 
 void Drivetrain::trajectoryDrive(PathPlannerTrajectory::PathPlannerState const &state)
 {
-  fmt::print("Driving based on inputted PathPlanner state\n");
   drive(controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation));
+
+  // Put out the error numbers so we can tune?
+  frc::SmartDashboard::PutNumber("Holonomic x error", (odometry.GetPose() - state.pose).X().value());
+  frc::SmartDashboard::PutNumber("Holonomic y error", (odometry.GetPose() - state.pose).Y().value());
+  frc::SmartDashboard::PutNumber("Holonomic z error", (getHeading() - state.holonomicRotation).Degrees().value());
 }
 
 static std::thread trajectory_thread;
@@ -196,8 +205,10 @@ void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory const &
                                     {
                                       auto current_time = trajTimer.Get();
                                       auto sample = copied_traj.sample(current_time);
-                                      if (trajectory_samples % 10 == 0)
-                                        fmt::print("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}\nHolonomic Rotation: {}, Timer: {}\n", ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.holonomicRotation.Degrees().value(), current_time.value());
+                                      frc::SmartDashboard::PutString("Sample:",
+                                                                     fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}\nHolonomic Rotation: {}, Timer: {}\n",
+                                                                                 ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(),
+                                                                                 sample.holonomicRotation.Degrees().value(), current_time.value()));
                                       trajectoryDrive(sample);
                                       std::this_thread::sleep_for(10ms); // Don't kill CPU
                                     }
@@ -206,8 +217,8 @@ void Drivetrain::trajectoryAutonDrive(pathplanner::PathPlannerTrajectory const &
   std::this_thread::sleep_for(10ms);
 }
 
-void Drivetrain::testHolonomicTraj(units::degree_t const &desired_angle);
+void Drivetrain::testHolonomicRotation(units::degree_t const &desired_angle)
 {
-  fmt::print("Driving to an angle of %d\n", desired_angle.value())
+  fmt::print("Driving to an angle of %d\n", desired_angle.value());
   drive(controller.Calculate(odometry.GetPose(), {}, 0_mps, {desired_angle}));
 }

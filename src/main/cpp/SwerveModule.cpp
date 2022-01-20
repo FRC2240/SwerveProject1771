@@ -42,6 +42,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
       position{position},
       magnet_offset{magnet_offset}
 {
+    //Config done in init() to avoid issues with configuring before connection with Talons/CANCoder is established
 }
 
 void SwerveModule::init()
@@ -112,18 +113,17 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Get the current cancoder position
     double const current_ticks = turner.GetSelectedSensorPosition();
-    // Or current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
+    // Can (theoretically) be replaced with current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
-    /*
-        if (delta_rotation.Degrees().value() > 20)
 
-            fmt::print("desired_speed: {}, desired_rotation {}\n, current_rotation: {}, optimized_speed: {}, optimized_angle: {},\ndelta_rotation: {}, delta_ticks: {}, current_ticks: {},\ndesired_driver: {}, desired_turner: {}\n",
-                       desired_state.speed.value(), desired_state.angle.Degrees().value(),
-                       optimized_speed.value(), optimized_angle.Degrees().value(),
-                       delta_rotation.Degrees().value(), delta_ticks, current_ticks,
-                       desired_driver_velocity_ticks, desired_turner_pos_ticks);
+    /*
+    fmt::print("desired_speed: {}, desired_rotation {}\n, current_rotation: {}, optimized_speed: {}, optimized_angle: {},\ndelta_rotation: {}, delta_ticks: {}, current_ticks: {},\ndesired_driver: {}, desired_turner: {}\n",
+                desired_state.speed.value(), desired_state.angle.Degrees().value(),
+                optimized_speed.value(), optimized_angle.Degrees().value(),
+                delta_rotation.Degrees().value(), delta_ticks, current_ticks,
+                desired_driver_velocity_ticks, desired_turner_pos_ticks);
     */
 
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);

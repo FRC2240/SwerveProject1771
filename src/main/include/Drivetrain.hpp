@@ -53,7 +53,7 @@ namespace Drivetrain
 
     void setAngleForTuning(units::degree_t const &desired_angle);
 
-    void testHolonomicTraj(units::degree_t const &desired_angle);
+    void testHolonomicRotation(units::degree_t const &desired_angle);
 
     /******************************************************************/
     /*                        Public Constants                        */

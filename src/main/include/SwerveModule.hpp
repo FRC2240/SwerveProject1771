@@ -27,7 +27,7 @@ public:
     // Allows SwerveModule to be placed into Kinematics
     constexpr operator frc::Translation2d() const { return position; }
 
-    // No copies/moves should be occuring
+    // No copies/moves should be occuring (Talons don't support this)
     SwerveModule(SwerveModule const &) = delete;
     SwerveModule(SwerveModule &&) = delete;
 

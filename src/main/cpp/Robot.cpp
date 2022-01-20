@@ -21,16 +21,22 @@ Robot::Robot()
   // setup RobotStates
   RobotState::IsEnabled = [this]()
   { return IsEnabled(); };
+
   RobotState::IsDisabled = [this]()
   { return IsDisabled(); };
+
   RobotState::IsAutonomous = [this]()
   { return IsAutonomous(); };
+
   RobotState::IsAutonomousEnabled = [this]()
   { return IsAutonomousEnabled(); };
+
   RobotState::IsTeleop = [this]()
   { return IsTeleop(); };
+
   RobotState::IsTeleopEnabled = [this]()
   { return IsTeleopEnabled(); };
+
   RobotState::IsTest = [this]()
   { return IsTest(); };
 
@@ -41,8 +47,9 @@ Robot::Robot()
 
 void Robot::AutonomousInit()
 {
-  Drivetrain::updateOdometry();
   testPathPlanner();
+
+  Drivetrain::updateOdometry();
 }
 
 void Robot::AutonomousPeriodic()
@@ -52,8 +59,6 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopPeriodic()
 {
-  driveWithJoystick(false);
-
   if (BUTTON::DRIVETRAIN::ROTATION_MODE.getRawButtonPressed())
   {
     if (rotation_joystick)
@@ -61,14 +66,22 @@ void Robot::TeleopPeriodic()
     else
       rotation_joystick = true;
   }
+
+  driveWithJoystick(false);
+
+  Drivetrain::updateOdometry();
 }
 
 void Robot::TestPeriodic()
 {
-  if (BUTTON::DRIVETRAIN::ROTATION_MODE)
-    Drivetrain::testHolonomicTraj(30_deg);
+
+  if (BUTTON::DRIVETRAIN::TURN_90)
+    Drivetrain::testHolonomicRotation(90_deg);
   else
     driveWithJoystick(true);
+
+  Drivetrain::updateOdometry();
+  Drivetrain::printOdometryPose();
 }
 
 void Robot::tunePID()
@@ -98,7 +111,7 @@ void Robot::tunePID()
 void Robot::testPathPlanner()
 {
   using namespace pathplanner;
-  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath("New New Path", 5_fps, 5_fps_sq));
+  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath("30 degree turn", 5_fps, 5_fps_sq));
 }
 
 void Robot::driveWithJoystick(bool const &field_relative)
