@@ -15,11 +15,9 @@
 /******************************************************************/
 
 // faceDirection && faceClosest constants
-double constexpr ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P)
+local constexpr double ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P)
 
-units::degrees_per_second_t constexpr MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
-
-units::degree_t constexpr FRONT{0}, BACK{180};
+local constexpr units::degrees_per_second_t MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
 
 /******************************************************************/
 /*                        Private Variables                       */
@@ -36,10 +34,10 @@ namespace Module
   local SwerveModule back_right{60, 61, 14, {-11_in, -11_in}, -285.0293};
 }
 
-local_c frc::SwerveDriveKinematics<4> kinematics{Module::front_left,
-                                                 Module::front_right,
-                                                 Module::back_left,
-                                                 Module::back_right};
+local frc::SwerveDriveKinematics<4> const kinematics{Module::front_left,
+                                                     Module::front_right,
+                                                     Module::back_left,
+                                                     Module::back_right};
 
 local std::unique_ptr<AHRS> navx = nullptr;
 

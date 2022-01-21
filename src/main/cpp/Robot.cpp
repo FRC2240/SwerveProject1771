@@ -8,6 +8,7 @@
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/Filesystem.h>
 
 /******************************************************************/
 /*                        Private Variables                       */
@@ -47,7 +48,10 @@ Robot::Robot()
 
   Drivetrain::init();
 
-  traj_chooser.SetDefaultOption("Square", "Square");
+  for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
+  {
+    traj_chooser.AddOption(dir_entry.path().filename().string());
+  }
   traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
   traj_chooser.AddOption("Straight Line", "Straight Line");
   traj_chooser.AddOption("T-Shape", "T shape");
