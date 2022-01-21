@@ -7,12 +7,16 @@
 #include <frc/trajectory/TrajectoryConfig.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/smartdashboard/SendableChooser.h>
 
 /******************************************************************/
 /*                        Private Variables                       */
 /******************************************************************/
 
 local bool rotation_joystick = false;
+
+local frc::SendableChooser<std::string> traj_chooser;
+
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
@@ -43,7 +47,12 @@ Robot::Robot()
 
   Drivetrain::init();
 
-  frc::SmartDashboard::PutString("Auton Trajectory", "Straight Line");
+  traj_chooser.SetDefaultOption("Square", "Square");
+  traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
+  traj_chooser.AddOption("Straight Line", "Straight Line");
+  traj_chooser.AddOption("T-Shape", "T shape");
+
+  frc::SmartDashboard::PutData("Traj Selector", &traj_chooser);
 
   BUTTON::PS5.SetTwistChannel(5);
 }
@@ -119,7 +128,7 @@ void Robot::tunePID()
 void Robot::testPathPlanner()
 {
   using namespace pathplanner;
-  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath(frc::SmartDashboard::GetString("Auton Trajectory", "Straight Line"), 5_fps, 15_fps_sq));
+  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath(traj_chooser.GetSelected(), 5_fps, 15_fps_sq));
 }
 
 void Robot::driveWithJoystick(bool const &field_relative)

@@ -139,10 +139,10 @@ void SwerveModule::setTurnerAngle(units::degree_t const &desired_angle)
     frc::Rotation2d const current_rotation = getAngle();
 
     // Optimize the reference state to avoid spinning further than 90 degrees
-    auto const [optimized_speed, optimized_angle] = frc::SwerveModuleState::Optimize(frc::SwerveModuleState{0_mps, frc::Rotation2d{desired_angle}}, frc::Rotation2d{getAngle()});
+    auto const optimized = frc::SwerveModuleState::Optimize(frc::SwerveModuleState{0_mps, frc::Rotation2d{desired_angle}}, frc::Rotation2d{getAngle()});
 
     // Difference between desired angle and current angle
-    frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
+    frc::Rotation2d delta_rotation = optimized.angle - current_rotation;
 
     // Convert change in angle to change in (cancoder) ticks
     double const delta_ticks = delta_rotation.Degrees().value() * CANCODER_DEGREES_TO_TICKS;
