@@ -2,13 +2,11 @@
 #include "Drivetrain.hpp"
 #include "Buttons.hpp"
 #include "RobotState.hpp"
+#include <Trajectory.hpp>
 
 #include <frc/MathUtil.h>
-#include <frc/trajectory/TrajectoryConfig.h>
-#include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
-#include <frc/Filesystem.h>
 
 /******************************************************************/
 /*                        Private Variables                       */
@@ -48,10 +46,10 @@ Robot::Robot()
 
   Drivetrain::init();
 
-  for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
-  {
-    traj_chooser.AddOption(dir_entry.path().filename().string());
-  }
+  // for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
+  // {
+  //   traj_chooser.AddOption(dir_entry.path().filename().string());
+  // }
   traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
   traj_chooser.AddOption("Straight Line", "Straight Line");
   traj_chooser.AddOption("T-Shape", "T shape");
@@ -63,15 +61,14 @@ Robot::Robot()
 
 void Robot::AutonomousInit()
 {
-  testPathPlanner();
-
-  Drivetrain::updateOdometry();
+  using namespace pathplanner;
+  Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), 5_fps, 15_fps_sq));
 }
 
 void Robot::AutonomousPeriodic()
 {
-  Drivetrain::updateOdometry();
-  Drivetrain::printOdometryPose();
+  Trajectory::updateOdometry();
+  Trajectory::printOdometryPose();
 }
 
 void Robot::TeleopPeriodic()
@@ -86,24 +83,27 @@ void Robot::TeleopPeriodic()
 
   driveWithJoystick(false);
 
-  Drivetrain::updateOdometry();
-  Drivetrain::printOdometryPose();
+  Trajectory::updateOdometry();
+  Trajectory::printOdometryPose();
 }
 
 void Robot::TestPeriodic()
 {
 
   if (BUTTON::DRIVETRAIN::TURN_90)
-    Drivetrain::testHolonomicRotation(90_deg);
+    Trajectory::testHolonomic(90_deg);
   else
   {
-    // Drivetrain::stopHolonomicTesting();
     driveWithJoystick(false);
   }
 
-  Drivetrain::updateOdometry();
-  Drivetrain::printOdometryPose();
+  Trajectory::updateOdometry();
+  Trajectory::printOdometryPose();
 }
+
+/******************************************************************/
+/*                  Private Function Definitions                  */
+/******************************************************************/
 
 void Robot::tunePID()
 {
@@ -129,12 +129,6 @@ void Robot::tunePID()
   }
 }
 
-void Robot::testPathPlanner()
-{
-  using namespace pathplanner;
-  Drivetrain::trajectoryAutonDrive(PathPlanner::loadPath(traj_chooser.GetSelected(), 5_fps, 15_fps_sq));
-}
-
 void Robot::driveWithJoystick(bool const &field_relative)
 {
   /*
@@ -148,22 +142,20 @@ void Robot::driveWithJoystick(bool const &field_relative)
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
     Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
-    Drivetrain::faceDirection(front_back, left_right, 45_deg, field_relative);
+    Drivetrain::faceDirection(front_back, left_right, 90_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_TO_CLOSEST)
     Drivetrain::faceClosest(front_back, left_right, field_relative);
   else if (rotation_joystick)
   {
+    //Multiplied by 10 to avoid rounding to 0 by the atan2() method
     double const rotate_joy_x = BUTTON::PS5.GetZ() * 10;
     double const rotate_joy_y = -BUTTON::PS5.GetTwist() * 10;
 
     // If we aren't actually pressing the joystick, leave rotation at previous
     if (abs(rotate_joy_x) > 0.1 || abs(rotate_joy_y) > 0.1)
     {
-      frc::SmartDashboard::PutNumber("atan", atan2(rotate_joy_y, rotate_joy_x));
       // Get degree using arctan, then convert from unit circle to normal CW values
-      units::degree_t const direction = -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg;
-      frc::SmartDashboard::PutNumber("Direction", direction.value());
-      Drivetrain::faceDirection(front_back, left_right, direction, field_relative);
+      Drivetrain::faceDirection(front_back, left_right, -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg, field_relative);
     }
     else
       Drivetrain::drive(front_back, left_right, units::radians_per_second_t{0}, field_relative);

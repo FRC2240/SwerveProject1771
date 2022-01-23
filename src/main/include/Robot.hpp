@@ -28,6 +28,5 @@ private:
     /******************************************************************/
 
     void tunePID();
-    void testPathPlanner();
     void driveWithJoystick(bool const &field_relative);
 };

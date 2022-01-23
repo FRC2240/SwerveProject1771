@@ -83,10 +83,11 @@ void SwerveModule::init()
     turner_config.closedloopRamp = .000;
     turner.ConfigAllSettings(turner_config);
 }
+
 frc::SwerveModuleState SwerveModule::getState()
 {
     return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / DRIVER_ENCODER_TICKS_PER_WHEEL_RADIAN * WHEEL_RADIUS) / 1_s},
-            frc::Rotation2d(getAngle())};
+            frc::Rotation2d(-getAngle())};
 }
 
 units::degree_t SwerveModule::getAngle()

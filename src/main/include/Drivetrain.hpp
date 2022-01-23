@@ -1,17 +1,11 @@
 #pragma once
 
-#include "SwerveModule.hpp"
 #include "ngr.hpp"
 
 #include <wpi/numbers>
 #include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/trajectory/Trajectory.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <wpi/array.h>
-
-#include <pathplanner/lib/PathPlanner.h>
-
-using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 sets of namespaces so it is safe to remove the first layer
 
 namespace Drivetrain
 {
@@ -26,14 +20,6 @@ namespace Drivetrain
 
     frc::Rotation2d getHeading();
 
-    frc::Pose2d getOdometryPose();
-
-    void printOdometryPose();
-
-    frc::SwerveDriveKinematics<4> const &getKinematics();
-
-    void updateOdometry();
-
     void drive(units::meters_per_second_t const &xSpeed,
                units::meters_per_second_t const &ySpeed,
                units::radians_per_second_t const &rot,
@@ -47,15 +33,7 @@ namespace Drivetrain
 
     void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative);
 
-    void trajectoryDrive(PathPlannerTrajectory::PathPlannerState const &state);
-
-    void trajectoryAutonDrive(PathPlannerTrajectory const &traj);
-
     void setAngleForTuning(units::degree_t const &desired_angle);
-
-    void testHolonomicRotation(units::degree_t const &desired_angle);
-
-    void stopHolonomicTesting();
 
     /******************************************************************/
     /*                        Public Constants                        */
