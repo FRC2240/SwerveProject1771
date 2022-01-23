@@ -61,9 +61,9 @@ void Trajectory::printOdometryPose()
 frc::ChassisSpeeds const Trajectory::getSpeeds()
 {
     // Init for first time
-    local frc::Timer speedTimer;
+    static frc::Timer speedTimer;
     speedTimer.Start();
-    local frc::Pose2d previousPose{};
+    static frc::Pose2d previousPose{};
 
     frc::Pose2d const currentPose = odometry.GetPose();
 
