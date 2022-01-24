@@ -61,26 +61,42 @@ void Trajectory::printOdometryPose()
 frc::ChassisSpeeds const Trajectory::getSpeeds()
 {
     // Init for first time
-    static frc::Timer speedTimer;
-    speedTimer.Start();
-    static frc::Pose2d previousPose{};
+    static frc::Timer speed_timer;
+    speed_timer.Start();
+    static frc::Pose2d previous_pose{};
 
-    frc::Pose2d const currentPose = odometry.GetPose();
+    frc::Pose2d const current_pose = odometry.GetPose();
 
-    frc::Transform2d const deltaPose{previousPose, currentPose};
+    frc::Transform2d const delta_pose{previous_pose, current_pose};
 
-    auto const timeElapsed = speedTimer.Get();
-    units::meters_per_second_t const X = deltaPose.X() / timeElapsed;
+    auto const time_elapsed = speed_timer.Get();
+    units::meters_per_second_t const X = delta_pose.X() / time_elapsed;
 
-    units::meters_per_second_t const Y = deltaPose.Y() / timeElapsed;
+    units::meters_per_second_t const Y = delta_pose.Y() / time_elapsed;
 
-    units::degrees_per_second_t const rot = deltaPose.Rotation().Degrees() / timeElapsed;
+    units::degrees_per_second_t const rot = delta_pose.Rotation().Degrees() / time_elapsed;
 
-    previousPose = odometry.GetPose();
+    previous_pose = odometry.GetPose();
 
-    speedTimer.Reset();
+    speed_timer.Reset();
 
     return frc::ChassisSpeeds{X, Y, rot};
+
+    /*
+    Alternative,
+    "auto FL_speed = FL.state.speed
+    auto FL_dir = FL.state.direction
+    auto FL_DX = FL_speed*cos(FL_dir)
+    auto FL_DY = FL_speed*sin(FL_dir)"
+
+    probably an easier way to write that but you get the idea
+
+    rinse and repeat
+
+    average out vertex components (dx and dy) (edited)
+
+    and then you get the final robot vector?
+    */
 }
 
 /******************************************************************/
@@ -91,13 +107,13 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
 {
     // It is necessary to take the frc::Pose2d object from the state, extract its X & Y components, and then take the holonomicRotation
     //  to construct a new Pose2d as the original Pose2d's Z (rotation) value uses non-holonomic math
-    frc::Pose2d const targetPose = {state.pose.X(), state.pose.Y(), state.holonomicRotation};
+    frc::Pose2d const target_pose = {state.pose.X(), state.pose.Y(), state.holonomicRotation};
 
-    frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), targetPose, state.velocity, state.holonomicRotation);
+    frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), target_pose, state.velocity, state.holonomicRotation);
     Drivetrain::drive(correction);
 
     // Put out the error numbers so we can tune?
-    frc::Transform2d const holonomic_error = {odometry.GetPose(), targetPose};
+    frc::Transform2d const holonomic_error = {odometry.GetPose(), target_pose};
     frc::ChassisSpeeds const current_speeds = Trajectory::getSpeeds();
 
     frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
@@ -121,7 +137,7 @@ using namespace std::chrono_literals;
 
 void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
 {
-    //How much "error" is tolerated
+    // How much "error" is tolerated
     controller.SetTolerance(frc::Pose2d{{0.05_m, 0.05_m}, {3_deg}});
 
     fmt::print("Interpreting PathPlanner trajectory\n");
@@ -129,7 +145,7 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
     auto const inital_state = *traj.getInitialState();
     auto const inital_pose = inital_state.pose;
 
-    //Just for debugging
+    // Just for debugging
     fmt::print("Got initial state: X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value());
     frc::SmartDashboard::PutString("Inital State: ", fmt::format("X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value()));
 
@@ -149,7 +165,7 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
         auto current_time = trajTimer.Get();
         auto sample = traj.sample(current_time);
 
-        //Just for debugging/tuning
+        // Just for debugging/tuning
         frc::SmartDashboard::PutString("Sample:",
                                        fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
                                                    ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
