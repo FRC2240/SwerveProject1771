@@ -23,16 +23,16 @@ local constexpr units::degrees_per_second_t MAX_FACE_DIRECTION_SPEED = 150_deg /
 
 namespace Module
 {
-  SwerveModule front_left{40, 41, 12, {11_in, 11_in}, -344.53125};
-  SwerveModule front_right{30, 31, 11, {11_in, -11_in}, -264.726563};
-  SwerveModule back_left{50, 51, 13, {-11_in, 11_in}, -91.54203};
-  SwerveModule back_right{60, 61, 14, {-11_in, -11_in}, -285.0293};
+  SwerveModule front_left{40, 41, 12, -344.53125};
+  SwerveModule front_right{30, 31, 11, -264.726563};
+  SwerveModule back_left{50, 51, 13, -91.54203};
+  SwerveModule back_right{60, 61, 14, -285.0293};
 }
 
-frc::SwerveDriveKinematics<4> kinematics{Module::front_left,
-                                         Module::front_right,
-                                         Module::back_left,
-                                         Module::back_right} ;
+frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
+                                         frc::Translation2d{11_in, -11_in},
+                                         frc::Translation2d{-11_in, 11_in},
+                                         frc::Translation2d{-11_in, -11_in}};
 
 std::unique_ptr<AHRS> navx = nullptr;
 
@@ -55,7 +55,15 @@ void Drivetrain::init()
 void Drivetrain::resetGyro() { navx->ZeroYaw(); }
 
 // Returns values with 0 being front and positive angles going CCW
-units::degree_t Drivetrain::getAngle() { return units::degree_t{navx->GetAngle()}; }
+units::degree_t Drivetrain::getAngle()
+{
+  double navx_angle = navx->GetAngle();
+  if (navx_angle < -180)
+    navx_angle += 360; // Ensure angle is between 0 and 360
+  if (navx_angle > 180)
+    navx_angle -= 360; // Optimizes angle if over 180
+  return units::degree_t{navx_angle};
+}
 
 frc::Rotation2d Drivetrain::getHeading() { return {getAngle()}; }
 
@@ -106,7 +114,7 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::mete
 {
   int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360
   if (error_theta < -180)
-    error_theta += 360; // Ensure angle is between 0 and 360
+    error_theta += 360; // Ensure angle is between -180 and 360
   if (error_theta > 180)
     error_theta -= 360; // Optimizes angle if over 180
   if (abs(error_theta) < 10)

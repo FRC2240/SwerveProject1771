@@ -32,11 +32,16 @@ local frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 local frc::HolonomicDriveController controller{
     frc2::PIDController{.405, 0, 2},
     frc2::PIDController{.405, 0, 2},
-    frc::ProfiledPIDController<units::radian>{
-        8, 0, 2,
-        frc::TrapezoidProfile<units::radian>::Constraints{
-            Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
-            Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 0.5_s}}};
+    []()
+    {
+        frc::ProfiledPIDController<units::radian> theta_controller{
+            8, 0, 2,
+            frc::TrapezoidProfile<units::radian>::Constraints{
+                Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
+                Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 0.5_s}};
+        theta_controller.EnableContinuousInput(units::radian_t{-wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
+        return theta_controller;
+    }()};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -105,15 +110,12 @@ frc::ChassisSpeeds const Trajectory::getSpeeds()
 
 void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &state)
 {
-    // It is necessary to take the frc::Pose2d object from the state, extract its X & Y components, and then take the holonomicRotation
-    //  to construct a new Pose2d as the original Pose2d's Z (rotation) value uses non-holonomic math
-    frc::Pose2d const target_pose = {state.pose.X(), state.pose.Y(), state.holonomicRotation};
 
-    frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), target_pose, state.velocity, state.holonomicRotation);
+    frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
     Drivetrain::drive(correction);
 
     // Put out the error numbers so we can tune?
-    frc::Transform2d const holonomic_error = {odometry.GetPose(), target_pose};
+    frc::Transform2d const holonomic_error = {odometry.GetPose(), state.pose};
     frc::ChassisSpeeds const current_speeds = Trajectory::getSpeeds();
 
     frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());

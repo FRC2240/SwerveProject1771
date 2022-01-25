@@ -12,7 +12,7 @@ public:
     /*                  Public Function Declarations                  */
     /******************************************************************/
 
-    SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, frc::Translation2d const &position, double const &magnet_offset);
+    SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, double const &magnet_offset);
 
     void init();
 
@@ -23,9 +23,6 @@ public:
     void setDesiredState(const frc::SwerveModuleState &state);
 
     void setTurnerAngle(units::degree_t const &desired_angle);
-
-    // Allows SwerveModule to be placed into Kinematics
-    constexpr operator frc::Translation2d() const { return position; }
 
     // No copies/moves should be occuring (Talons don't support this)
     SwerveModule(SwerveModule const &) = delete;
@@ -38,6 +35,5 @@ private:
 
     TalonFX driver, turner;
     CANCoder cancoder;
-    frc::Translation2d const position;
     double const magnet_offset;
 };

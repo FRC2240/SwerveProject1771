@@ -35,11 +35,10 @@ local constexpr auto MODULE_MAX_ANGULAR_ACCELERATION = wpi::numbers::pi * 2_rad_
 /******************************************************************/
 
 // Set Variables
-SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, frc::Translation2d const &position, double const &magnet_offset)
+SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, double const &magnet_offset)
     : driver{driver_adr},
       turner{turner_adr},
       cancoder{cancoder_adr},
-      position{position},
       magnet_offset{magnet_offset}
 {
     // Config done in init() to avoid issues with configuring before connection with Talons/CANCoder is established
