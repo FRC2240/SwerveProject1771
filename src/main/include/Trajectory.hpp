@@ -6,13 +6,15 @@ using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 set
 
 namespace Trajectory
 {
+    void init();
+
     frc::Pose2d getOdometryPose();
 
     void updateOdometry();
 
-    void printOdometryPose();
+    frc::ChassisSpeeds const getEstimatedSpeeds();
 
-    frc::ChassisSpeeds const getSpeeds();
+    void printEstimatedSpeeds();
 
     void driveToState(PathPlannerTrajectory::PathPlannerState const &state);
 

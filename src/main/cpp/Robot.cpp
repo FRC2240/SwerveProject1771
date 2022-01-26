@@ -44,7 +44,9 @@ Robot::Robot()
   RobotState::IsTest = [this]()
   { return IsTest(); };
 
+//Call the inits for all subsystems here
   Drivetrain::init();
+  Trajectory::init();
 
   // for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
   // {
@@ -67,8 +69,8 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic()
 {
+  Trajectory::printEstimatedSpeeds();
   Trajectory::updateOdometry();
-  Trajectory::printOdometryPose();
 }
 
 void Robot::TeleopPeriodic()
@@ -83,8 +85,8 @@ void Robot::TeleopPeriodic()
 
   driveWithJoystick(false);
 
+  Trajectory::printEstimatedSpeeds();
   Trajectory::updateOdometry();
-  Trajectory::printOdometryPose();
 }
 
 void Robot::TestPeriodic()
@@ -97,8 +99,8 @@ void Robot::TestPeriodic()
     driveWithJoystick(false);
   }
 
+  Trajectory::printEstimatedSpeeds();
   Trajectory::updateOdometry();
-  Trajectory::printOdometryPose();
 }
 
 /******************************************************************/
@@ -154,8 +156,8 @@ void Robot::driveWithJoystick(bool const &field_relative)
     // If we aren't actually pressing the joystick, leave rotation at previous
     if (abs(rotate_joy_x) > 0.1 || abs(rotate_joy_y) > 0.1)
     {
-      // Get degree using arctan, then convert from unit circle to normal CW values
-      Drivetrain::faceDirection(front_back, left_right, -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg, field_relative);
+      // Get degree using arctan, then convert from unit circle to front-centered values (still CCW)
+      Drivetrain::faceDirection(front_back, left_right, units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg, field_relative);
     }
     else
       Drivetrain::drive(front_back, left_right, units::radians_per_second_t{0}, field_relative);

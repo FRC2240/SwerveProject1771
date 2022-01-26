@@ -65,6 +65,7 @@ units::degree_t Drivetrain::getAngle()
   return units::degree_t{navx_angle};
 }
 
+// Returns values with 0 being front and positive angles going CCW
 frc::Rotation2d Drivetrain::getHeading() { return {getAngle()}; }
 
 /******************************************************************/
@@ -85,6 +86,9 @@ void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
 // Takes the speed & direction the robot should be going and figures out the states for each indivdual module
 void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 {
+  frc::SmartDashboard::PutNumber("Target VX Speed", speeds.vx.value());
+  frc::SmartDashboard::PutNumber("Target VY Speed", speeds.vy.value());
+  frc::SmartDashboard::PutNumber("Target Omega Speed (CCW is +)", units::degrees_per_second_t{speeds.omega}.value());
   drive(kinematics.ToSwerveModuleStates(speeds));
 }
 
@@ -110,6 +114,8 @@ void Drivetrain::setAngleForTuning(units::degree_t const &desired_angle)
 {
   Module::front_left.setTurnerAngle(desired_angle);
 }
+
+// For theta, positive is CCW
 void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative)
 {
   int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360

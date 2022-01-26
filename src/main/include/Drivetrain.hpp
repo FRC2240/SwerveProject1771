@@ -16,8 +16,10 @@ namespace Drivetrain
 
     void resetGyro();
 
+    // Returns values with 0 being front and positive angles going CCW
     units::degree_t getAngle();
 
+    // Returns values with 0 being front and positive angles going CCW
     frc::Rotation2d getHeading();
 
     void drive(units::meters_per_second_t const &xSpeed,
@@ -29,6 +31,7 @@ namespace Drivetrain
 
     void drive(wpi::array<frc::SwerveModuleState, 4> states);
 
+    // For theta, positive is CCW
     void faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative);
 
     void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative);

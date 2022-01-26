@@ -44,9 +44,16 @@ local frc::HolonomicDriveController controller{
         return theta_controller;
     }()};
 
+local frc::Field2d field2d;
+
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
+void Trajectory::init()
+{
+    frc::SmartDashboard::PutData("Odometry Field", &field2d);
+}
+
 void Trajectory::updateOdometry()
 {
     odometry.Update(Drivetrain::getHeading(),
@@ -54,17 +61,14 @@ void Trajectory::updateOdometry()
                     Module::front_right.getState(),
                     Module::back_left.getState(),
                     Module::back_right.getState());
+    field2d.SetRobotPose(odometry.GetPose());
 }
 
 frc::Pose2d Trajectory::getOdometryPose() { return odometry.GetPose(); }
 
-void Trajectory::printOdometryPose()
-{
-    auto const pose = odometry.GetPose();
-    frc::SmartDashboard::PutString("Odometry: ", fmt::format("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value()));
-}
+// frc::SmartDashboard::PutString("Odometry: ", fmt::format("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value()));
 
-frc::ChassisSpeeds const Trajectory::getSpeeds()
+frc::ChassisSpeeds const Trajectory::getEstimatedSpeeds()
 {
     // Init for first time
     static frc::Timer speed_timer;
@@ -105,32 +109,38 @@ frc::ChassisSpeeds const Trajectory::getSpeeds()
     */
 }
 
+void Trajectory::printEstimatedSpeeds()
+{
+    frc::ChassisSpeeds const estimated_speeds = getEstimatedSpeeds();
+    frc::SmartDashboard::PutNumber("Estimated VX Speed", estimated_speeds.vx.value());
+    frc::SmartDashboard::PutNumber("Estimated VY Speed", estimated_speeds.vy.value());
+    frc::SmartDashboard::PutNumber("Estimated Omega Speed", estimated_speeds.omega.value());
+}
+
 /******************************************************************/
 /*                     Trajectory Functions                       */
 /******************************************************************/
 
 void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &state)
 {
-    //Correction to help the robot follow trajectory (combination of original trajectory speeds & error correction)
+    // Correction to help the robot follow trajectory (combination of original trajectory speeds & error correction)
     frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
     Drivetrain::drive(correction);
 
     // Put out the error numbers so we can tune?
     frc::Transform2d const holonomic_error = {odometry.GetPose(), state.pose};
-    frc::ChassisSpeeds const current_speeds = Trajectory::getSpeeds();
+    frc::ChassisSpeeds const current_speeds = getEstimatedSpeeds();
 
     frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
     frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());
     frc::SmartDashboard::PutNumber("Holonomic z error", holonomic_error.Rotation().Degrees().value());
 
-    frc::SmartDashboard::PutNumber("Correction
-     VX Speed", correction.vx.value());
+    /*
+    I implemented a similar thing in Drivetrain.cpp so probably unnecessary
+    frc::SmartDashboard::PutNumber("Correction VX Speed", correction.vx.value());
     frc::SmartDashboard::PutNumber("Correction VY Speed", correction.vy.value());
     frc::SmartDashboard::PutNumber("Correction Omega Speed", units::degrees_per_second_t{correction.omega}.value());
-
-    frc::SmartDashboard::PutNumber("Current VX Speed", current_speeds.vx.value());
-    frc::SmartDashboard::PutNumber("Current VY Speed", current_speeds.vy.value());
-    frc::SmartDashboard::PutNumber("Current Omega Speed", current_speeds.omega.value());
+    */
 
     frc::SmartDashboard::PutNumber("Speed VX Change", (correction.vx - current_speeds.vx).value());
     frc::SmartDashboard::PutNumber("Speed VY Change", (correction.vy - current_speeds.vy).value());
@@ -155,18 +165,15 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
 
     // It is necessary to take the frc::Pose2d object from the state, extract its X & Y components, and then take the holonomicRotation
     // to construct a new Pose2d as the original Pose2d's Z (rotation) value uses non-holonomic math
-    odometry.ResetPosition({inital_pose.X(), inital_pose.Y(), inital_state.holonomicRotation}, Drivetrain::getHeading());
+    odometry.ResetPosition({inital_pose.Translation(), inital_state.holonomicRotation}, Drivetrain::getHeading());
 
     frc::Timer trajTimer;
     trajTimer.Start();
 
     int trajectory_samples = 0;
 
-    // For debugging, we can disable the "error correction"
+    // For debugging, we can disable the "error correction" for x & y
     controller.SetEnabled(false);
-
-    frc::Field2d traj_field;
-    frc::SmartDashboard::PutData("Trajectory Field", &traj_field);
 
     fmt::print("Successfully set odometry\n");
 
@@ -181,9 +188,7 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
                                                    ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
                                                    sample.holonomicRotation.Degrees().value(), current_time.value()));
 
-        traj_field.SetRobotPose(odometry.GetPose());
-
-        traj_field.GetObject("Traj")->SetPose({sample.pose.X(), sample.pose.Y(), sample.holonomicRotation});
+        field2d.GetObject("Traj")->SetPose({sample.pose.X(), sample.pose.Y(), sample.holonomicRotation});
 
         driveToState(sample);
         std::this_thread::sleep_for(20ms); // This is the refresh rate of the HolonomicDriveController's PID controllers (can be tweaked if needed)
@@ -194,5 +199,5 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
 void Trajectory::testHolonomic(units::degree_t const &desired_angle)
 {
     auto pose = odometry.GetPose();
-    Drivetrain::drive(controller.Calculate(pose, frc::Pose2d{{pose.X() + .1_m, pose.Y() + .1_m}, pose.Rotation()}, 1_mps, {desired_angle}));
+    Drivetrain::drive(controller.Calculate(pose, frc::Pose2d{{pose.X() + .1_m, pose.Y() + .1_m}, 45_deg}, 1_mps, {desired_angle}));
 }
