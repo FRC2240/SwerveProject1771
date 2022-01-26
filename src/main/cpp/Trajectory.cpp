@@ -6,6 +6,7 @@
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <frc/controller/HolonomicDriveController.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/smartdashboard/Field2d.h>
 
 #include <AHRS.h>
 
@@ -110,7 +111,7 @@ frc::ChassisSpeeds const Trajectory::getSpeeds()
 
 void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &state)
 {
-
+    //Correction to help the robot follow trajectory (combination of original trajectory speeds & error correction)
     frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
     Drivetrain::drive(correction);
 
@@ -122,7 +123,8 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
     frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());
     frc::SmartDashboard::PutNumber("Holonomic z error", holonomic_error.Rotation().Degrees().value());
 
-    frc::SmartDashboard::PutNumber("Correction VX Speed", correction.vx.value());
+    frc::SmartDashboard::PutNumber("Correction
+     VX Speed", correction.vx.value());
     frc::SmartDashboard::PutNumber("Correction VY Speed", correction.vy.value());
     frc::SmartDashboard::PutNumber("Correction Omega Speed", units::degrees_per_second_t{correction.omega}.value());
 
@@ -160,6 +162,12 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
 
     int trajectory_samples = 0;
 
+    // For debugging, we can disable the "error correction"
+    controller.SetEnabled(false);
+
+    frc::Field2d traj_field;
+    frc::SmartDashboard::PutData("Trajectory Field", &traj_field);
+
     fmt::print("Successfully set odometry\n");
 
     while (RobotState::IsAutonomousEnabled() && trajTimer.Get() <= traj.getTotalTime())
@@ -172,6 +180,10 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
                                        fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
                                                    ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
                                                    sample.holonomicRotation.Degrees().value(), current_time.value()));
+
+        traj_field.SetRobotPose(odometry.GetPose());
+
+        traj_field.GetObject("Traj")->SetPose({sample.pose.X(), sample.pose.Y(), sample.holonomicRotation});
 
         driveToState(sample);
         std::this_thread::sleep_for(20ms); // This is the refresh rate of the HolonomicDriveController's PID controllers (can be tweaked if needed)
