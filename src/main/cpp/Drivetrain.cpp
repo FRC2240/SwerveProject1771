@@ -57,12 +57,15 @@ void Drivetrain::resetGyro() { navx->ZeroYaw(); }
 // Returns values with 0 being front and positive angles going CCW
 units::degree_t Drivetrain::getAngle()
 {
-  double navx_angle = navx->GetAngle();
-  if (navx_angle < -180)
-    navx_angle += 360; // Ensure angle is between 0 and 360
-  if (navx_angle > 180)
-    navx_angle -= 360; // Optimizes angle if over 180
-  return units::degree_t{navx_angle};
+  return -units::degree_t{navx->GetAngle()};
+  /*
+double navx_angle = navx->GetAngle();
+if (navx_angle < -180)
+  navx_angle += 360; // Ensure angle is between 0 and 360
+if (navx_angle > 180)
+  navx_angle -= 360; // Optimizes angle if over 180
+return units::degree_t{navx_angle};
+*/
 }
 
 // Returns values with 0 being front and positive angles going CCW
