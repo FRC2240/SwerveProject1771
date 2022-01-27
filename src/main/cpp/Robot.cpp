@@ -66,7 +66,7 @@ void Robot::AutonomousInit()
 {
   Trajectory::init();
   using namespace pathplanner;
-  Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), 5_fps, 15_fps_sq));
+  Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), Drivetrain::ROBOT_MAX_SPEED / 2, Drivetrain::ROBOT_MAX_SPEED / 2 / 1_s));
 }
 
 void Robot::AutonomousPeriodic()
@@ -91,7 +91,7 @@ void Robot::TeleopPeriodic()
       rotation_joystick = true;
   }
 
-  driveWithJoystick(false);
+  driveWithJoystick(true);
 
   Trajectory::printEstimatedSpeeds();
   Trajectory::printRealSpeeds();
@@ -149,8 +149,8 @@ void Robot::driveWithJoystick(bool const &field_relative)
   fmt::print("Printing Direction (degrees): {}\n", BUTTON::PS5.GetDirectionDegrees());
   */
 
-  auto const left_right = frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.04) * Drivetrain::ROBOT_MAX_SPEED;
-  auto const front_back = frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.04) * Drivetrain::ROBOT_MAX_SPEED;
+  auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.08) * Drivetrain::ROBOT_MAX_SPEED;
+  auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08) * Drivetrain::ROBOT_MAX_SPEED;
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
     Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
@@ -174,7 +174,7 @@ void Robot::driveWithJoystick(bool const &field_relative)
   }
   else
   {
-    auto const rot = frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::ROBOT_MAX_ANGULAR_SPEED; // Might need to be inverted in the future
+    auto const rot = -frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::ROBOT_MAX_ANGULAR_SPEED;
 
     Drivetrain::drive(front_back, left_right, rot, field_relative);
   }

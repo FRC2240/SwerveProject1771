@@ -19,8 +19,9 @@ namespace Drivetrain
     // Returns values with 0 being front and positive angles going CCW
     units::degree_t getAngle();
 
-    // Returns values with 0 being front and positive angles going CCW
-    frc::Rotation2d getHeading();
+    frc::Rotation2d getCCWHeading();
+
+    frc::Rotation2d getCWHeading();
 
     void drive(units::meters_per_second_t const &xSpeed,
                units::meters_per_second_t const &ySpeed,
@@ -41,7 +42,7 @@ namespace Drivetrain
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 1_fps;                    // Implicit conversion
-    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 1_fps;                    // Implicit conversion
-    local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
+    local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2.5_fps;                    // Implicit conversion
+    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 5_fps;                    // Implicit conversion
+    local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi/2}; // 1/4 rotation per second
 }

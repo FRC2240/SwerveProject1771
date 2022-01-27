@@ -31,15 +31,15 @@ extern std::unique_ptr<AHRS> navx;
 local frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 
 local frc::HolonomicDriveController controller{
-    frc2::PIDController{.405, 0, 2},
-    frc2::PIDController{.405, 0, 2},
+    frc2::PIDController{1, 0, 0},
+    frc2::PIDController{1, 0, 0},
     []()
     {
         frc::ProfiledPIDController<units::radian> theta_controller{
-            8, 0, 2,
+            1, 0, 0,
             frc::TrapezoidProfile<units::radian>::Constraints{
                 Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
-                Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 0.5_s}};
+                Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 1_s}};
         theta_controller.EnableContinuousInput(units::radian_t{-wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
         return theta_controller;
     }()};
@@ -56,7 +56,7 @@ void Trajectory::init()
 
 void Trajectory::updateOdometry()
 {
-    odometry.Update(Drivetrain::getHeading(),
+    odometry.Update(Drivetrain::getCCWHeading(),
                     Module::front_left.getState(),
                     Module::front_right.getState(),
                     Module::back_left.getState(),
@@ -106,7 +106,7 @@ void Trajectory::printEstimatedSpeeds()
 
     frc::SmartDashboard::PutNumber("Estimated VX Speed", estimated_speeds.vx.value());
     frc::SmartDashboard::PutNumber("Estimated VY Speed", estimated_speeds.vy.value());
-    frc::SmartDashboard::PutNumber("Estimated Omega Speed", estimated_speeds.omega.value());
+    frc::SmartDashboard::PutNumber("Estimated Omega Speed", units::degrees_per_second_t{estimated_speeds.omega}.value() / 720);
 }
 
 void Trajectory::printRealSpeeds()
@@ -115,7 +115,7 @@ void Trajectory::printRealSpeeds()
 
     frc::SmartDashboard::PutNumber("Real VX Speed", real_speeds.vx.value());
     frc::SmartDashboard::PutNumber("Real VY Speed", real_speeds.vy.value());
-    frc::SmartDashboard::PutNumber("Real Omega Speed", real_speeds.omega.value());
+    frc::SmartDashboard::PutNumber("Real Omega Speed", units::degrees_per_second_t{real_speeds.omega}.value() / 720);
 }
 
 /******************************************************************/
@@ -145,7 +145,7 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
 
     frc::SmartDashboard::PutNumber("Speed VX Change", (correction.vx - current_speeds.vx).value());
     frc::SmartDashboard::PutNumber("Speed VY Change", (correction.vy - current_speeds.vy).value());
-    frc::SmartDashboard::PutNumber("Speed Omega Change", (correction.omega - current_speeds.omega).value());
+    frc::SmartDashboard::PutNumber("Speed Omega Change", units::degrees_per_second_t{correction.omega - current_speeds.omega}.value() / 720);
 }
 
 using namespace std::chrono_literals;
@@ -166,7 +166,7 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
 
     // It is necessary to take the frc::Pose2d object from the state, extract its X & Y components, and then take the holonomicRotation
     // to construct a new Pose2d as the original Pose2d's Z (rotation) value uses non-holonomic math
-    odometry.ResetPosition({inital_pose.Translation(), inital_state.holonomicRotation}, Drivetrain::getHeading());
+    odometry.ResetPosition({inital_pose.Translation(), inital_state.holonomicRotation}, Drivetrain::getCCWHeading());
 
     frc::Timer trajTimer;
     trajTimer.Start();
@@ -174,7 +174,7 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
     int trajectory_samples = 0;
 
     // For debugging, we can disable the "error correction" for x & y
-    controller.SetEnabled(false);
+    controller.SetEnabled(true);
 
     fmt::print("Successfully set odometry\n");
 

@@ -93,8 +93,8 @@
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Estimated VX Speed",
-              "_source1": "network_table:///SmartDashboard/Estimated Omega Speed",
-              "_source2": "network_table:///SmartDashboard/Estimated VY Speed",
+              "_source1": "network_table:///SmartDashboard/Estimated VY Speed",
+              "_source2": "network_table:///SmartDashboard/Estimated Omega Speed",
               "_title": "SmartDashboard/Estimated VX Speed",
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
@@ -115,10 +115,10 @@
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Speed VX Change",
-              "_source1": "network_table:///SmartDashboard/Estimated VY Speed",
-              "_source2": "network_table:///SmartDashboard/Estimated Omega Speed",
-              "_source3": "network_table:///SmartDashboard/Speed VY Change",
-              "_source4": "network_table:///SmartDashboard/Speed Omega Change",
+              "_source1": "network_table:///SmartDashboard/Speed VY Change",
+              "_source2": "network_table:///SmartDashboard/Speed Omega Change",
+              "_source3": "network_table:///SmartDashboard/Estimated VY Speed",
+              "_source4": "network_table:///SmartDashboard/Estimated Omega Speed",
               "_title": "SmartDashboard/Speed VX Change",
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
@@ -126,8 +126,8 @@
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
               "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/Estimated Omega Speed": false,
-              "Visible data/SmartDashboard/Estimated VY Speed": false,
+              "Visible data/SmartDashboard/Estimated Omega Speed": true,
+              "Visible data/SmartDashboard/Estimated VY Speed": true,
               "Visible data/SmartDashboard/Speed Omega Change": true,
               "Visible data/SmartDashboard/Speed VX Change": true,
               "Visible data/SmartDashboard/Speed VY Change": true
@@ -141,8 +141,8 @@
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Real VX Speed",
-              "_source1": "network_table:///SmartDashboard/Real Omega Speed",
-              "_source2": "network_table:///SmartDashboard/Real VY Speed",
+              "_source1": "network_table:///SmartDashboard/Real VY Speed",
+              "_source2": "network_table:///SmartDashboard/Real Omega Speed",
               "_title": "SmartDashboard/Real VX Speed",
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
@@ -184,19 +184,99 @@
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Target Omega Speed (CCW is +)",
-              "_source1": "network_table:///SmartDashboard/Target VX Speed",
-              "_source2": "network_table:///SmartDashboard/Target VY Speed",
+              "_source0": "network_table:///SmartDashboard/Target VX Speed",
+              "_source1": "network_table:///SmartDashboard/Target VY Speed",
+              "_source2": "network_table:///SmartDashboard/Target Omega Speed (CCW is +)",
               "_title": "SmartDashboard/Target VX Speed",
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": false,
+              "Y-axis/Automatic bounds": true,
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
               "Y-axis/Unit": "ul",
               "Visible data/SmartDashboard/Target Omega Speed (CCW is +)": true,
               "Visible data/SmartDashboard/Target VX Speed": true,
               "Visible data/SmartDashboard/Target VY Speed": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tab 3",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "3,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Subsystem Layout",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Front Left Module",
+                  "_title": "/SmartDashboard/Actual Front Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Front Right Module",
+                  "_title": "/SmartDashboard/Actual Front Right Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Back Left Module",
+                  "_title": "/SmartDashboard/Actual Back Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Back Right Module",
+                  "_title": "/SmartDashboard/Actual Back Right Module"
+                }
+              ]
+            }
+          },
+          "6,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Subsystem Layout",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Front Left Module",
+                  "_title": "/SmartDashboard/Target Front Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Front Right Module",
+                  "_title": "/SmartDashboard/Target Front Right Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Back Left Module",
+                  "_title": "/SmartDashboard/Target Back Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Back Right Module",
+                  "_title": "/SmartDashboard/Target Back Right Module"
+                }
+              ]
             }
           }
         }

@@ -88,8 +88,8 @@ void SwerveModule::init()
 
 frc::SwerveModuleState SwerveModule::getState()
 {
-    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() * HUNDREDMILLISECONDS_TO_1SECOND / WHEEL_RADIAN_TO_DRIVER_ENCODER_TICKS * WHEEL_RADIUS) / 1_s},
-            frc::Rotation2d(-getAngle())};
+    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() / DRIVER_WHEEL_ROTATIONS_TO_TICKS * WHEEL_RADIUS) / 0.1_s},
+            frc::Rotation2d(getAngle())};
 }
 
 units::degree_t SwerveModule::getAngle()
