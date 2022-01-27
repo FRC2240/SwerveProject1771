@@ -96,7 +96,7 @@ void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 {
 
-  kinematics.DesaturateWheelSpeeds(&states, ROBOT_MAX_SPEED);
+  kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
 
   auto const [fl, fr, bl, br] = states;
 

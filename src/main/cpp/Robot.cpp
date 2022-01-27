@@ -44,7 +44,7 @@ Robot::Robot()
   RobotState::IsTest = [this]()
   { return IsTest(); };
 
-//Call the inits for all subsystems here
+  // Call the inits for all subsystems here
   Drivetrain::init();
   Trajectory::init();
 
@@ -70,6 +70,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   Trajectory::printEstimatedSpeeds();
+  Trajectory::printRealSpeeds();
   Trajectory::updateOdometry();
 }
 
@@ -86,6 +87,7 @@ void Robot::TeleopPeriodic()
   driveWithJoystick(false);
 
   Trajectory::printEstimatedSpeeds();
+  Trajectory::printRealSpeeds();
   Trajectory::updateOdometry();
 }
 
@@ -100,6 +102,7 @@ void Robot::TestPeriodic()
   }
 
   Trajectory::printEstimatedSpeeds();
+  Trajectory::printRealSpeeds();
   Trajectory::updateOdometry();
 }
 
@@ -149,7 +152,7 @@ void Robot::driveWithJoystick(bool const &field_relative)
     Drivetrain::faceClosest(front_back, left_right, field_relative);
   else if (rotation_joystick)
   {
-    //Multiplied by 10 to avoid rounding to 0 by the atan2() method
+    // Multiplied by 10 to avoid rounding to 0 by the atan2() method
     double const rotate_joy_x = BUTTON::PS5.GetZ() * 10;
     double const rotate_joy_y = -BUTTON::PS5.GetTwist() * 10;
 

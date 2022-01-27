@@ -70,6 +70,13 @@ frc::Pose2d Trajectory::getOdometryPose() { return odometry.GetPose(); }
 
 frc::ChassisSpeeds const Trajectory::getEstimatedSpeeds()
 {
+    kinematics.ToChassisSpeeds(Module::front_left,
+                               Module::front_right,
+                               Module::back_left,
+                               Module::back_right);
+}
+frc::ChassisSpeeds const Trajectory::getRealSpeeds()
+{
     // Init for first time
     static frc::Timer speed_timer;
     speed_timer.Start();
@@ -91,30 +98,24 @@ frc::ChassisSpeeds const Trajectory::getEstimatedSpeeds()
     speed_timer.Reset();
 
     return frc::ChassisSpeeds{X, Y, rot};
-
-    /*
-    Alternative,
-    "auto FL_speed = FL.state.speed
-    auto FL_dir = FL.state.direction
-    auto FL_DX = FL_speed*cos(FL_dir)
-    auto FL_DY = FL_speed*sin(FL_dir)"
-
-    probably an easier way to write that but you get the idea
-
-    rinse and repeat
-
-    average out vertex components (dx and dy) (edited)
-
-    and then you get the final robot vector?
-    */
 }
 
-void Trajectory::printEstimatedSpeeds()
+void Trajectory::printRealSpeeds()
 {
     frc::ChassisSpeeds const estimated_speeds = getEstimatedSpeeds();
+
     frc::SmartDashboard::PutNumber("Estimated VX Speed", estimated_speeds.vx.value());
     frc::SmartDashboard::PutNumber("Estimated VY Speed", estimated_speeds.vy.value());
     frc::SmartDashboard::PutNumber("Estimated Omega Speed", estimated_speeds.omega.value());
+}
+
+void Trajectory::printRealSpeeds()
+{
+    frc::ChassisSpeeds const real_speeds = getRealSpeeds();
+
+    frc::SmartDashboard::PutNumber("Real VX Speed", real_speeds.vx.value());
+    frc::SmartDashboard::PutNumber("Real VY Speed", real_speeds.vy.value());
+    frc::SmartDashboard::PutNumber("Real Omega Speed", real_speeds.omega.value());
 }
 
 /******************************************************************/
@@ -129,7 +130,7 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
 
     // Put out the error numbers so we can tune?
     frc::Transform2d const holonomic_error = {odometry.GetPose(), state.pose};
-    frc::ChassisSpeeds const current_speeds = getEstimatedSpeeds();
+    frc::ChassisSpeeds const current_speeds = getRealSpeeds();
 
     frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
     frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());

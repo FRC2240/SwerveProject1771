@@ -42,5 +42,6 @@ namespace Drivetrain
     /*                        Public Constants                        */
     /******************************************************************/
     local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 5_fps;                    // Implicit conversion
+    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 7_fps;                    // Implicit conversion
     local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi}; // 1/2 rotation per second
 }

@@ -14,7 +14,11 @@ namespace Trajectory
 
     frc::ChassisSpeeds const getEstimatedSpeeds();
 
-    void printEstimatedSpeeds();
+    frc::ChassisSpeeds const getRealSpeeds();
+
+    void printEsimatedSpeeds();
+
+    void printRealSpeeds();
 
     void driveToState(PathPlannerTrajectory::PathPlannerState const &state);
 
