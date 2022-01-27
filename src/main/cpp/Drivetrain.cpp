@@ -57,7 +57,7 @@ void Drivetrain::resetGyro() { navx->ZeroYaw(); }
 // Returns values with 0 being front and positive angles going CCW
 units::degree_t Drivetrain::getAngle()
 {
-  return -units::degree_t{navx->GetAngle()};
+  return units::degree_t{-navx->GetAngle()};
   /*
 double navx_angle = navx->GetAngle();
 if (navx_angle < -180)

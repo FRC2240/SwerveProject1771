@@ -16,7 +16,7 @@ namespace Trajectory
 
     frc::ChassisSpeeds const getRealSpeeds();
 
-    void printEsimatedSpeeds();
+    void printEstimatedSpeeds();
 
     void printRealSpeeds();
 

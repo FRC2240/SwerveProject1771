@@ -55,6 +55,7 @@ Robot::Robot()
   traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
   traj_chooser.AddOption("Straight Line", "Straight Line");
   traj_chooser.AddOption("T-Shape", "T shape");
+  traj_chooser.AddOption("L with Rotate", "L with Rotate");
 
   frc::SmartDashboard::PutData("Traj Selector", &traj_chooser);
 
@@ -63,6 +64,7 @@ Robot::Robot()
 
 void Robot::AutonomousInit()
 {
+  Trajectory::init();
   using namespace pathplanner;
   Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), 5_fps, 15_fps_sq));
 }
@@ -72,6 +74,11 @@ void Robot::AutonomousPeriodic()
   Trajectory::printEstimatedSpeeds();
   Trajectory::printRealSpeeds();
   Trajectory::updateOdometry();
+}
+
+void Robot::TeleopInit()
+{
+  Trajectory::init();
 }
 
 void Robot::TeleopPeriodic()

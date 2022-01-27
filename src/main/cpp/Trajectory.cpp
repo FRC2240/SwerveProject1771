@@ -70,10 +70,10 @@ frc::Pose2d Trajectory::getOdometryPose() { return odometry.GetPose(); }
 
 frc::ChassisSpeeds const Trajectory::getEstimatedSpeeds()
 {
-    kinematics.ToChassisSpeeds(Module::front_left,
-                               Module::front_right,
-                               Module::back_left,
-                               Module::back_right);
+    return kinematics.ToChassisSpeeds(Module::front_left.getState(),
+                               Module::front_right.getState(),
+                               Module::back_left.getState(),
+                               Module::back_right.getState());
 }
 frc::ChassisSpeeds const Trajectory::getRealSpeeds()
 {
@@ -100,7 +100,7 @@ frc::ChassisSpeeds const Trajectory::getRealSpeeds()
     return frc::ChassisSpeeds{X, Y, rot};
 }
 
-void Trajectory::printRealSpeeds()
+void Trajectory::printEstimatedSpeeds()
 {
     frc::ChassisSpeeds const estimated_speeds = getEstimatedSpeeds();
 
