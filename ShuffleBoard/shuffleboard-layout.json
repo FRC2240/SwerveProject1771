@@ -1,0 +1,253 @@
+{
+  "tabPane": [
+    {
+      "title": "LiveWindow",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Ungrouped",
+              "_title": "Ungrouped",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/navX-Sensor[4]",
+                  "_title": "navX-Sensor[4]",
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Trajectory",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "9,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Traj Selector",
+              "_title": "SmartDashboard/Traj Selector"
+            }
+          },
+          "5,3": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Odometry Field",
+              "_title": "SmartDashboard/Odometry Field",
+              "Game/Game": "A2021_Infinite_Recharge",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false,
+              "Colors/Traj": "#FFFFFFFF"
+            }
+          },
+          "9,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Inital State: ",
+              "_title": "/SmartDashboard/Inital State: "
+            }
+          },
+          "0,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Target Omega Speed (CCW is +)",
+                  "_source1": "network_table:///SmartDashboard/Target VX Speed",
+                  "_source2": "network_table:///SmartDashboard/Target VY Speed",
+                  "_title": "SmartDashboard/Target VX Speed",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": false,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul",
+                  "Visible data/SmartDashboard/Target Omega Speed (CCW is +)": true,
+                  "Visible data/SmartDashboard/Target VX Speed": true,
+                  "Visible data/SmartDashboard/Target VY Speed": true
+                }
+              }
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Holonomic x error",
+                  "_source1": "network_table:///SmartDashboard/Holonomic y error",
+                  "_source2": "network_table:///SmartDashboard/Holonomic z error",
+                  "_title": "SmartDashboard/Holonomic x error",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": true,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul",
+                  "Visible data/SmartDashboard/Holonomic x error": true,
+                  "Visible data/SmartDashboard/Holonomic y error": true,
+                  "Visible data/SmartDashboard/Holonomic z error": true
+                }
+              }
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Real Omega Speed",
+                  "_source1": "network_table:///SmartDashboard/Real VX Speed",
+                  "_source2": "network_table:///SmartDashboard/Real VY Speed",
+                  "_title": "SmartDashboard/Real VX Speed",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": true,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul",
+                  "Visible data/SmartDashboard/Real Omega Speed": true,
+                  "Visible data/SmartDashboard/Real VX Speed": true,
+                  "Visible data/SmartDashboard/Real VY Speed": true
+                }
+              }
+            }
+          },
+          "8,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Grid Layout",
+                  "_title": "Grid Layout",
+                  "Layout/Number of columns": 3,
+                  "Layout/Number of rows": 3,
+                  "Layout/Label position": "BOTTOM",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Graph",
+                      "_source0": "network_table:///SmartDashboard/Speed Omega Change",
+                      "_source1": "network_table:///SmartDashboard/Speed VX Change",
+                      "_source2": "network_table:///SmartDashboard/Speed VY Change",
+                      "_title": "SmartDashboard/Speed VX Change",
+                      "Graph/Visible time": 30.0,
+                      "Graph/X-axis auto scrolling": true,
+                      "Y-axis/Automatic bounds": true,
+                      "Y-axis/Upper bound": 1.0,
+                      "Y-axis/Lower bound": -1.0,
+                      "Y-axis/Unit": "ul",
+                      "Visible data/SmartDashboard/Speed Omega Change": true,
+                      "Visible data/SmartDashboard/Speed VX Change": true,
+                      "Visible data/SmartDashboard/Speed VY Change": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "3,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Estimated Omega Speed",
+              "_source1": "network_table:///SmartDashboard/Estimated VX Speed",
+              "_source2": "network_table:///SmartDashboard/Estimated VY Speed",
+              "_title": "SmartDashboard/Estimated VX Speed",
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Estimated Omega Speed": true,
+              "Visible data/SmartDashboard/Estimated VX Speed": true,
+              "Visible data/SmartDashboard/Estimated VY Speed": true
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": 0.0,
+    "y": 0.0,
+    "width": 1600.0,
+    "height": 867.0
+  }
+}
