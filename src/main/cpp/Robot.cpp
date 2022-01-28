@@ -16,6 +16,8 @@ local bool rotation_joystick = false;
 
 local frc::SendableChooser<std::string> traj_chooser;
 
+local bool field_centric = true;
+
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
@@ -67,13 +69,13 @@ void Robot::AutonomousInit()
   Trajectory::init();
   using namespace pathplanner;
   Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), Drivetrain::ROBOT_MAX_SPEED / 2, Drivetrain::ROBOT_MAX_SPEED / 2 / 1_s));
+  // Will only finish afterwards
 }
 
 void Robot::AutonomousPeriodic()
 {
-  Trajectory::printEstimatedSpeeds();
-  Trajectory::printRealSpeeds();
-  Trajectory::updateOdometry();
+  // This is what gets called after Init()
+  Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
 }
 
 void Robot::TeleopInit()
@@ -91,21 +93,31 @@ void Robot::TeleopPeriodic()
       rotation_joystick = true;
   }
 
-  driveWithJoystick(true);
+  if (BUTTON::DRIVETRAIN::FIELD_CENTRIC.getRawButtonPressed())
+  {
+    if (field_centric)
+      field_centric = false;
+    else
+      field_centric = true;
+  }
 
+  driveWithJoystick(field_centric);
+
+  // Debugging
   Trajectory::printEstimatedSpeeds();
   Trajectory::printRealSpeeds();
   Trajectory::updateOdometry();
+  // End debugging
 }
 
 void Robot::TestPeriodic()
 {
 
   if (BUTTON::DRIVETRAIN::TURN_90)
-    Trajectory::testHolonomic(90_deg);
+    Trajectory::testHolonomic({1_m, 1_m, 30_deg}, 1_fps, {30_deg});
   else
   {
-    driveWithJoystick(false);
+    driveWithJoystick(field_centric);
   }
 
   Trajectory::printEstimatedSpeeds();

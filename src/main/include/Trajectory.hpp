@@ -24,5 +24,8 @@ namespace Trajectory
 
     void follow(PathPlannerTrajectory traj);
 
-    void testHolonomic(units::degree_t const &desired_angle);
+    void testHolonomic(frc::Pose2d const &target_pose,
+                       units::velocity::meters_per_second_t const &velocity,
+                       frc::Rotation2d const &target_rot);
+
 }

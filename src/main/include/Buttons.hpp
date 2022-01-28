@@ -36,5 +36,6 @@ namespace BUTTON
         inline JoystickButton TURN_90{BUTTON::PS5, 3};
         inline JoystickButton TURN_neg90{BUTTON::PS5, 1};
         inline JoystickButton ROTATION_MODE{BUTTON::PS5, 9};
+        inline JoystickButton FIELD_CENTRIC{BUTTON::PS5, 10};
     }
 }

@@ -91,9 +91,12 @@ void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
 // Takes the speed & direction the robot should be going and figures out the states for each indivdual module
 void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 {
+  //Begin debugging section
   frc::SmartDashboard::PutNumber("Target VX Speed", speeds.vx.value());
   frc::SmartDashboard::PutNumber("Target VY Speed", speeds.vy.value());
   frc::SmartDashboard::PutNumber("Target Omega Speed (CCW is +)", units::degrees_per_second_t{speeds.omega}.value() / 720);
+  //End debugging section
+  
   drive(kinematics.ToSwerveModuleStates(speeds));
 }
 
