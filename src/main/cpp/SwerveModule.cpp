@@ -132,31 +132,3 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
 }
-
-void SwerveModule::setTurnerAngle(units::degree_t const &desired_angle)
-{
-
-    // double const delta_ticks = desired_angle.value() * TALON_ENCODER_DEGREES_TO_TICKS * TURNER_GEAR_RATIO;
-    // turner.Set(TalonFXControlMode::Position, delta_ticks);
-
-    frc::Rotation2d const current_rotation = getAngle();
-
-    // Optimize the reference state to avoid spinning further than 90 degrees
-    auto const optimized = frc::SwerveModuleState::Optimize(frc::SwerveModuleState{0_mps, frc::Rotation2d{desired_angle}}, frc::Rotation2d{getAngle()});
-
-    // Difference between desired angle and current angle
-    frc::Rotation2d delta_rotation = optimized.angle - current_rotation;
-
-    // Convert change in angle to change in (cancoder) ticks
-    double const delta_ticks = delta_rotation.Degrees().value() * CANCODER_DEGREES_TO_TICKS;
-
-    // Get the current cancoder position
-    double const current_ticks = turner.GetSelectedSensorPosition();
-    // Or current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
-
-    // Finally, calculate what the new tick value should be
-    double const desired_turner_pos_ticks = current_ticks + delta_ticks;
-
-    driver.Set(TalonFXControlMode::Velocity, 0);
-    turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
-}

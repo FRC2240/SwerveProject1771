@@ -8,13 +8,13 @@ namespace Trajectory
 {
     void init();
 
-    frc::Pose2d getOdometryPose();
+    [[nodiscard]] frc::Pose2d getOdometryPose();
 
     void updateOdometry();
 
-    frc::ChassisSpeeds const getEstimatedSpeeds();
+    [[nodiscard]] frc::ChassisSpeeds const getEstimatedSpeeds();
 
-    frc::ChassisSpeeds const getRealSpeeds();
+    [[nodiscard]] frc::ChassisSpeeds const getRealSpeeds();
 
     void printEstimatedSpeeds();
 

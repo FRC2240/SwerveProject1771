@@ -50,10 +50,13 @@ Robot::Robot()
   Drivetrain::init();
   Trajectory::init();
 
-  // for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
-  // {
-  //   traj_chooser.AddOption(dir_entry.path().filename().string());
-  // }
+  /*
+     for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
+     {
+       traj_chooser.AddOption(dir_entry.path().filename().string());
+     }
+  */
+
   traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
   traj_chooser.AddOption("Straight Line", "Straight Line");
   traj_chooser.AddOption("T-Shape", "T shape");
@@ -61,6 +64,7 @@ Robot::Robot()
 
   frc::SmartDashboard::PutData("Traj Selector", &traj_chooser);
 
+  // This is the second joystick's Y axis
   BUTTON::PS5.SetTwistChannel(5);
 }
 
@@ -103,11 +107,13 @@ void Robot::TeleopPeriodic()
 
   driveWithJoystick(field_centric);
 
-  // Debugging
-  Trajectory::printEstimatedSpeeds();
-  Trajectory::printRealSpeeds();
   Trajectory::updateOdometry();
-  // End debugging
+
+  if constexpr (debugging)
+  {
+    Trajectory::printEstimatedSpeeds();
+    Trajectory::printRealSpeeds();
+  }
 }
 
 void Robot::TestPeriodic()
@@ -155,11 +161,12 @@ void Robot::tunePID()
 
 void Robot::driveWithJoystick(bool const &field_relative)
 {
-  /*
-  fmt::print("Printing PS5 Inputs: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetX(), BUTTON::PS5.GetY(), BUTTON::PS5.GetZ(), BUTTON::PS5.GetTwist());
-  fmt::print("Printing PS5 Channels: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetXChannel(), BUTTON::PS5.GetYChannel(), BUTTON::PS5.GetZChannel(), BUTTON::PS5.GetTwistChannel());
-  fmt::print("Printing Direction (degrees): {}\n", BUTTON::PS5.GetDirectionDegrees());
-  */
+  if (debugging)
+  {
+    fmt::print("Printing PS5 Inputs: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetX(), BUTTON::PS5.GetY(), BUTTON::PS5.GetZ(), BUTTON::PS5.GetTwist());
+    fmt::print("Printing PS5 Channels: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetXChannel(), BUTTON::PS5.GetYChannel(), BUTTON::PS5.GetZChannel(), BUTTON::PS5.GetTwistChannel());
+    fmt::print("Printing Direction (degrees): {}\n", BUTTON::PS5.GetDirectionDegrees());
+  }
 
   auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.08) * Drivetrain::ROBOT_MAX_SPEED;
   auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08) * Drivetrain::ROBOT_MAX_SPEED;
@@ -178,8 +185,8 @@ void Robot::driveWithJoystick(bool const &field_relative)
     // If we aren't actually pressing the joystick, leave rotation at previous
     if (abs(rotate_joy_x) > 0.1 || abs(rotate_joy_y) > 0.1)
     {
-      // Get degree using arctan, then convert from unit circle to front-centered values (still CCW)
-      Drivetrain::faceDirection(front_back, left_right, units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg, field_relative);
+      // Get degree using arctan, then convert from unit circle to front-centered values with positive being CW
+      Drivetrain::faceDirection(front_back, left_right, -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg, field_relative);
     }
     else
       Drivetrain::drive(front_back, left_right, units::radians_per_second_t{0}, field_relative);

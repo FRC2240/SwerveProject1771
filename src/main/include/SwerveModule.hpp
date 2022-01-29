@@ -16,13 +16,11 @@ public:
 
     void init();
 
-    frc::SwerveModuleState getState();
+    [[nodiscard]] frc::SwerveModuleState getState();
 
-    units::degree_t getAngle();
+    [[nodiscard]] units::degree_t getAngle();
 
     void setDesiredState(const frc::SwerveModuleState &state);
-
-    void setTurnerAngle(units::degree_t const &desired_angle);
 
     // No copies/moves should be occuring (Talons don't support this)
     SwerveModule(SwerveModule const &) = delete;
@@ -33,7 +31,7 @@ private:
     /*                        Private Variables                       */
     /******************************************************************/
 
-    TalonFX driver, turner;
-    CANCoder cancoder;
+    WPI_TalonFX driver, turner;
+    WPI_CANCoder cancoder;
     double const magnet_offset;
 };

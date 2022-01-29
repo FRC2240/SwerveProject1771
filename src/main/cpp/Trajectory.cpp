@@ -10,7 +10,7 @@
 
 #include <AHRS.h>
 
-#include <thread>
+// #include <thread>
 #include <chrono>
 
 /******************************************************************/
@@ -30,8 +30,7 @@ extern std::unique_ptr<AHRS> navx;
 
 local frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 
-
-//This is using lambdas in order to use setters at beginning of runtime & save performance later
+// This is using lambdas in order to use setters at beginning of runtime & save performance later
 local frc::HolonomicDriveController controller = []()
 {
     frc::HolonomicDriveController controller{
@@ -46,10 +45,10 @@ local frc::HolonomicDriveController controller = []()
                     Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 1_s}};
             theta_controller.EnableContinuousInput(units::radian_t{-wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
             return theta_controller;
-        }()}; //This lambdas makes a ProfilePIDController, enables continuous input, then returns it
+        }()}; // This lambdas makes a ProfilePIDController, enables continuous input, then returns it
     controller.SetTolerance(frc::Pose2d{{0.05_m, 0.05_m}, {3_deg}});
     return controller;
-}(); //This lambda creates a HolonomicDriveController, sets the tolerance, then returns it
+}(); // This lambda creates a HolonomicDriveController, sets the tolerance, then returns it
 
 local frc::Field2d field2d;
 
@@ -63,17 +62,18 @@ void Trajectory::init()
 
 void Trajectory::updateOdometry()
 {
-    odometry.Update(Drivetrain::getCCWHeading(),
-                    Module::front_left.getState(),
-                    Module::front_right.getState(),
-                    Module::back_left.getState(),
-                    Module::back_right.getState());
-    field2d.SetRobotPose(odometry.GetPose());
+    frc::Pose2d const pose = odometry.Update(Drivetrain::getCCWHeading(),
+                                             Module::front_left.getState(),
+                                             Module::front_right.getState(),
+                                             Module::back_left.getState(),
+                                             Module::back_right.getState());
+    field2d.SetRobotPose(pose);
+
+    if constexpr (debugging)
+        frc::SmartDashboard::PutString("Odometry: ", fmt::format("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value()));
 }
 
 frc::Pose2d Trajectory::getOdometryPose() { return odometry.GetPose(); }
-
-// frc::SmartDashboard::PutString("Odometry: ", fmt::format("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value()));
 
 frc::ChassisSpeeds const Trajectory::getEstimatedSpeeds()
 {
@@ -100,9 +100,9 @@ frc::ChassisSpeeds const Trajectory::getRealSpeeds()
 
     units::degrees_per_second_t const rot = delta_pose.Rotation().Degrees() / time_elapsed;
 
-    previous_pose = odometry.GetPose();
+    previous_pose = odometry.GetPose(); // Set the previous_pose for the next time this loop is run
 
-    speed_timer.Reset();
+    speed_timer.Reset(); // Time how long until next call
 
     return frc::ChassisSpeeds{X, Y, rot};
 }
@@ -135,28 +135,20 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
     frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
     Drivetrain::drive(correction);
 
-    //Begin debugging/tuning section
-    frc::Transform2d const holonomic_error = {odometry.GetPose(), state.pose};
-    frc::ChassisSpeeds const current_speeds = getRealSpeeds();
+    if constexpr (debugging)
+    {
+        frc::Transform2d const holonomic_error = {odometry.GetPose(), state.pose};
+        frc::ChassisSpeeds const current_speeds = getRealSpeeds();
 
-    frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
-    frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());
-    frc::SmartDashboard::PutNumber("Holonomic z error", holonomic_error.Rotation().Degrees().value());
+        frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
+        frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());
+        frc::SmartDashboard::PutNumber("Holonomic z error", holonomic_error.Rotation().Degrees().value());
 
-    /*
-    I implemented a similar thing in Drivetrain.cpp so probably unnecessary
-    frc::SmartDashboard::PutNumber("Correction VX Speed", correction.vx.value());
-    frc::SmartDashboard::PutNumber("Correction VY Speed", correction.vy.value());
-    frc::SmartDashboard::PutNumber("Correction Omega Speed", units::degrees_per_second_t{correction.omega}.value());
-    */
-
-    frc::SmartDashboard::PutNumber("Speed VX Change", (correction.vx - current_speeds.vx).value());
-    frc::SmartDashboard::PutNumber("Speed VY Change", (correction.vy - current_speeds.vy).value());
-    frc::SmartDashboard::PutNumber("Speed Omega Change", units::degrees_per_second_t{correction.omega - current_speeds.omega}.value() / 720);
-    //End debugging/tuning section
+        frc::SmartDashboard::PutNumber("Speed VX Change", (correction.vx - current_speeds.vx).value());
+        frc::SmartDashboard::PutNumber("Speed VY Change", (correction.vy - current_speeds.vy).value());
+        frc::SmartDashboard::PutNumber("Speed Omega Change", units::degrees_per_second_t{correction.omega - current_speeds.omega}.value() / 720);
+    }
 }
-
-using namespace std::chrono_literals;
 
 void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
 {
@@ -170,15 +162,13 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
     frc::Timer trajTimer;
     trajTimer.Start();
 
-    // Begin debugging/tuning section
-    int trajectory_samples = 0;
+    if constexpr (debugging)
+    {
+        // If needed, we can disable the "error correction" for x & y
+        controller.SetEnabled(true);
 
-    // For debugging, we can disable the "error correction" for x & y
-    controller.SetEnabled(true);
-
-    fmt::print("Got initial state: X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value());
-    frc::SmartDashboard::PutString("Inital State: ", fmt::format("X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value()));
-    //End debugging/tuning section
+        frc::SmartDashboard::PutString("Inital State: ", fmt::format("X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value()));
+    }
 
     while (RobotState::IsAutonomousEnabled() && (trajTimer.Get() <= traj.getTotalTime()))
     {
@@ -189,16 +179,19 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
         driveToState(sample);
         updateOdometry();
 
-        // Just for debugging/tuning
-        frc::SmartDashboard::PutString("Sample:",
-                                       fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
-                                                   ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
-                                                   sample.holonomicRotation.Degrees().value(), trajTimer.Get().value()));
-        printEstimatedSpeeds();
-        printRealSpeeds();
-        // End debugging/tuning section
+        if constexpr (debugging)
+        {
+            static int trajectory_samples{};
+            frc::SmartDashboard::PutString("Sample:",
+                                           fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
+                                                       ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
+                                                       sample.holonomicRotation.Degrees().value(), trajTimer.Get().value()));
+            printEstimatedSpeeds();
+            printRealSpeeds();
+        }
 
         // This is the refresh rate of the HolonomicDriveController's PID controllers (can be tweaked if needed)
+        using namespace std::chrono_literals;
         std::this_thread::sleep_for(20ms);
     }
     Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);

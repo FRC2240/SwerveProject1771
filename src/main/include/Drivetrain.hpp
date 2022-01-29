@@ -6,6 +6,7 @@
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <wpi/array.h>
+#include <units/acceleration.h>
 
 namespace Drivetrain
 {
@@ -14,14 +15,12 @@ namespace Drivetrain
     /******************************************************************/
     void init();
 
-    void resetGyro();
+    // Returns values with 0 being front and positive angles going CW
+    [[nodiscard]] units::degree_t getAngle();
 
-    // Returns values with 0 being front and positive angles going CCW
-    units::degree_t getAngle();
+    [[nodiscard]] frc::Rotation2d getCCWHeading();
 
-    frc::Rotation2d getCCWHeading();
-
-    frc::Rotation2d getCWHeading();
+    [[nodiscard]] frc::Rotation2d getCWHeading();
 
     void drive(units::meters_per_second_t const &xSpeed,
                units::meters_per_second_t const &ySpeed,
@@ -42,7 +41,10 @@ namespace Drivetrain
     /******************************************************************/
     /*                        Public Constants                        */
     /******************************************************************/
-    local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2.5_fps;                    // Implicit conversion
-    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 5_fps;                    // Implicit conversion
-    local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi/2}; // 1/4 rotation per second
+
+    local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 2.5_fps;
+    local constexpr units::meters_per_second_t TRAJ_MAX_SPEED = 1_fps;
+    local constexpr units::acceleration::meters_per_second_squared_t TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 1_s;
+    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 5_fps;
+    local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi / 2}; // 1/4 rotation per second
 }
