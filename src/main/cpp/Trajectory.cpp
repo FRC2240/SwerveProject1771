@@ -55,7 +55,7 @@ local frc::Field2d field2d;
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
-void Trajectory::init()
+void Trajectory::putField2d()
 {
     frc::SmartDashboard::PutData("Odometry Field", &field2d);
 }
@@ -182,16 +182,16 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
         if constexpr (debugging)
         {
             static int trajectory_samples{};
-            frc::SmartDashboard::PutString("Sample:",
-                                           fmt::format("Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
-                                                       ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
-                                                       sample.holonomicRotation.Degrees().value(), trajTimer.Get().value()));
+            frc::SmartDashboard::PutString("Sample:", fmt::format(
+                                                          "Current trajectory sample value: {}, Pose X: {}, Pose Y: {}, Pose Z: {}\nHolonomic Rotation: {}, Timer: {}\n",
+                                                          ++trajectory_samples, sample.pose.X().value(), sample.pose.Y().value(), sample.pose.Rotation().Degrees().value(),
+                                                          sample.holonomicRotation.Degrees().value(), trajTimer.Get().value()));
             printEstimatedSpeeds();
             printRealSpeeds();
         }
 
-        // This is the refresh rate of the HolonomicDriveController's PID controllers (can be tweaked if needed)
         using namespace std::chrono_literals;
+        // This is the refresh rate of the HolonomicDriveController's PID controllers (can be tweaked if needed)
         std::this_thread::sleep_for(20ms);
     }
     Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);

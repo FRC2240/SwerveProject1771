@@ -10,6 +10,9 @@ public:
     /******************************************************************/
 
     Robot();
+
+    void RobotInit() override;
+    
     void AutonomousInit() override;
     void AutonomousPeriodic() override;
 

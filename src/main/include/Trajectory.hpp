@@ -6,7 +6,7 @@ using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 set
 
 namespace Trajectory
 {
-    void init();
+    void putField2d();
 
     [[nodiscard]] frc::Pose2d getOdometryPose();
 

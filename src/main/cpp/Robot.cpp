@@ -48,7 +48,7 @@ Robot::Robot()
 
   // Call the inits for all subsystems here
   Drivetrain::init();
-  Trajectory::init();
+  Trajectory::putField2d();
 
   /*
      for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
@@ -57,10 +57,11 @@ Robot::Robot()
      }
   */
 
+  //Add all paths here
   traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
   traj_chooser.AddOption("Straight Line", "Straight Line");
   traj_chooser.AddOption("T-Shape", "T shape");
-  traj_chooser.AddOption("L with Rotate", "L with Rotate");
+  traj_chooser.SetDefaultOption("L with Rotate", "L with Rotate");
 
   frc::SmartDashboard::PutData("Traj Selector", &traj_chooser);
 
@@ -68,12 +69,18 @@ Robot::Robot()
   BUTTON::PS5.SetTwistChannel(5);
 }
 
+void Robot::RobotInit()
+{
+  Trajectory::putField2d();
+}
+
 void Robot::AutonomousInit()
 {
-  Trajectory::init();
+  //Start aiming
+  //Deploy intake
   using namespace pathplanner;
-  Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), Drivetrain::ROBOT_MAX_SPEED / 2, Drivetrain::ROBOT_MAX_SPEED / 2 / 1_s));
-  // Will only finish afterwards
+  Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
+  // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
 }
 
 void Robot::AutonomousPeriodic()
@@ -84,26 +91,16 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit()
 {
-  Trajectory::init();
 }
 
 void Robot::TeleopPeriodic()
 {
   if (BUTTON::DRIVETRAIN::ROTATION_MODE.getRawButtonPressed())
-  {
-    if (rotation_joystick)
-      rotation_joystick = false;
-    else
-      rotation_joystick = true;
-  }
+    rotation_joystick = !rotation_joystick;
+
 
   if (BUTTON::DRIVETRAIN::FIELD_CENTRIC.getRawButtonPressed())
-  {
-    if (field_centric)
-      field_centric = false;
-    else
-      field_centric = true;
-  }
+    field_centric = !field_centric;
 
   driveWithJoystick(field_centric);
 
