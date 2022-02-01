@@ -14,7 +14,7 @@
 
 auto rotation_joystick = false;
 
-local frc::SendableChooser<std::function<void()>&> traj_chooser;
+local frc::SendableChooser<std::function<void()>> traj_chooser;
 
 auto field_centric = true;
 
