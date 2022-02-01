@@ -12,7 +12,8 @@
 // faceDirection && faceClosest constants
 constexpr auto ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P)
 
-constexpr auto MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
+constexpr units::degrees_per_second_t
+    MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
 
 /******************************************************************/
 /*                        Private Variables                        */

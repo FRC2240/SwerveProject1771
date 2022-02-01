@@ -42,24 +42,24 @@ namespace Drivetrain
     /*                        Public Constants                        */
     /******************************************************************/
 
-/*
-Thereotical max speed considering pi radians/second max angular speed
-ROBOT SAT: 9.535f/s
-*/
+    /*
+    Thereotical max speed considering pi radians/second max angular speed
+    ROBOT SAT: 9.535f/s
+    */
 
-    //Formula for determing ROBOT_MAX_SPEED is Wheel Max Speed = Robot Max Speed + Omega max speed * distance of module from center
-    //Or Robot Max Speed = Max wheel speed - Omega max speed * distance from center
-    //Distance of module from center is 1.294ft
+    // Formula for determing ROBOT_MAX_SPEED is Wheel Max Speed = Robot Max Speed + Omega max speed * distance of module from center
+    // Or Robot Max Speed = Max wheel speed - Omega max speed * distance from center
+    // Distance of module from center is 1.294ft
 
-    //These are all very high and shouldn't normally be used
-    local constexpr auto ROBOT_MAX_SPEED = 5.47_fps;
-    local constexpr auto ROBOT_MAX_ANGULAR_SPEED = 2 * wpi::numbers::pi / 1_s;
-    local constexpr auto MODULE_MAX_SPEED = 13.9_fps;
+    // These are all very high and shouldn't normally be used
+    local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 5.47_fps;
+    local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{2 * wpi::numbers::pi};
+    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 13.9_fps;
 
-    local constexpr auto TELEOP_MAX_SPEED = 5_fps;
-    local constexpr auto TELEOP_MAX_ANGULAR_SPEED = wpi::numbers::pi / 1_s;
+    local constexpr units::meters_per_second_t TELEOP_MAX_SPEED = 5_fps;
+    local constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{wpi::numbers::pi};
 
-    local constexpr auto TRAJ_MAX_SPEED = 1_fps;
-    local constexpr auto TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 1_s;
-
+    local constexpr units::meters_per_second_t TRAJ_MAX_SPEED = 1_fps;
+    local constexpr units::acceleration::meters_per_second_squared_t
+        TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 1_s;
 }
