@@ -8,7 +8,7 @@
 
 using namespace pathplanner;
 local std::map<std::string, std::function<void()>> autons{
-    {"LShape", []()
+    {"Default - LShape", []()
      {
          Trajectory::follow(PathPlanner::loadPath("L with Rotate", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
      }},

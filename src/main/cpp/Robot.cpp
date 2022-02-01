@@ -14,7 +14,7 @@
 
 auto rotation_joystick = false;
 
-local frc::SendableChooser<std::function<void()>> traj_chooser;
+local frc::SendableChooser<std::function<void()>> traj_selector;
 
 auto field_centric = true;
 
@@ -24,6 +24,7 @@ auto field_centric = true;
 
 Robot::Robot()
 {
+  /*
   // setup RobotStates
   RobotState::IsEnabled = [this]()
   { return IsEnabled(); };
@@ -50,22 +51,21 @@ Robot::Robot()
   Drivetrain::init();
   Trajectory::putField2d();
 
-  /*
-     for(auto const& dir_entry : std::filesystem::directory_iterator{std::filesystem::path{frc::filesystem::GetDeployDirectory() + "/pathplanner/"}})
-     {
-       traj_chooser.AddOption(dir_entry.path().filename().string());
-     }
-  */
+  // Add all paths here
 
-  //Add all paths here
-  
-  for(auto &[auton_name, auton] : autons)
-    traj_chooser.AddOption(auton_name, auton);
-  
-  frc::SmartDashboard::PutData("Traj Selector", &traj_chooser);
+  for (auto &[name, auton] : autons)
+  {
+    if (name.find("Default") != std::string::npos)
+      traj_selector.SetDefaultOption(name, auton);
+    else
+      traj_selector.AddOption(name, auton);
+  }
+
+  frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
 
   // This is the second joystick's Y axis
   BUTTON::PS5.SetTwistChannel(5);
+  */
 }
 
 void Robot::RobotInit()
@@ -75,17 +75,16 @@ void Robot::RobotInit()
 
 void Robot::AutonomousInit()
 {
-  //Start aiming
-  //Deploy intake
+  // Start aiming
+  // Deploy intake
 
-  traj_chooser.GetSelected()();
+  traj_selector.GetSelected()();
 
   Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
-  //If driving after "stop" is called is a problem, I will add a "stop" method
-  // which runs a few times to ensure all modules are stopped
+  // If driving after "stop" is called is a problem, I will add a "stop" method
+  //  which runs a few times to ensure all modules are stopped
 
   // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
-
 }
 
 void Robot::AutonomousPeriodic()
@@ -102,7 +101,6 @@ void Robot::TeleopPeriodic()
 {
   if (BUTTON::DRIVETRAIN::ROTATION_MODE.getRawButtonPressed())
     rotation_joystick = !rotation_joystick;
-
 
   if (BUTTON::DRIVETRAIN::FIELD_CENTRIC.getRawButtonPressed())
     field_centric = !field_centric;
