@@ -1,3 +1,5 @@
+#pragma once
+
 #include <pathplanner/lib/PathPlanner.h>
 
 #include <frc/kinematics/ChassisSpeeds.h>

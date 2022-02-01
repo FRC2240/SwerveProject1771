@@ -2,7 +2,7 @@
 #include "Drivetrain.hpp"
 #include "Buttons.hpp"
 #include "RobotState.hpp"
-#include <Trajectory.hpp>
+#include "Autons.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -12,11 +12,11 @@
 /*                        Private Variables                       */
 /******************************************************************/
 
-local bool rotation_joystick = false;
+auto rotation_joystick = false;
 
-local frc::SendableChooser<std::string> traj_chooser;
+local frc::SendableChooser<std::function<void()>&> traj_chooser;
 
-local bool field_centric = true;
+auto field_centric = true;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -58,11 +58,10 @@ Robot::Robot()
   */
 
   //Add all paths here
-  traj_chooser.AddOption("30 Degree Turn", "30 degree turn");
-  traj_chooser.AddOption("Straight Line", "Straight Line");
-  traj_chooser.AddOption("T-Shape", "T shape");
-  traj_chooser.SetDefaultOption("L with Rotate", "L with Rotate");
-
+  
+  for(auto &[auton_name, auton] : autons)
+    traj_chooser.AddOption(auton_name, auton);
+  
   frc::SmartDashboard::PutData("Traj Selector", &traj_chooser);
 
   // This is the second joystick's Y axis
@@ -78,9 +77,15 @@ void Robot::AutonomousInit()
 {
   //Start aiming
   //Deploy intake
-  using namespace pathplanner;
-  Trajectory::follow(PathPlanner::loadPath(traj_chooser.GetSelected(), Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
+
+  traj_chooser.GetSelected()();
+
+  Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
+  //If driving after "stop" is called is a problem, I will add a "stop" method
+  // which runs a few times to ensure all modules are stopped
+
   // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
+
 }
 
 void Robot::AutonomousPeriodic()
