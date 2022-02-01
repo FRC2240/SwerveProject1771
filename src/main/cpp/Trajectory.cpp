@@ -18,10 +18,10 @@
 /******************************************************************/
 namespace Module
 {
-    extern SwerveModule front_left;
-    extern SwerveModule front_right;
-    extern SwerveModule back_left;
-    extern SwerveModule back_right;
+    extern std::unique_ptr<SwerveModule> front_left;
+    extern std::unique_ptr<SwerveModule> front_right;
+    extern std::unique_ptr<SwerveModule> back_left;
+    extern std::unique_ptr<SwerveModule> back_right;
 }
 
 extern frc::SwerveDriveKinematics<4> const kinematics;
@@ -34,15 +34,15 @@ local frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 local frc::HolonomicDriveController controller = []()
 {
     frc::HolonomicDriveController controller{
-        frc2::PIDController{1, 0, 0},
-        frc2::PIDController{1, 0, 0},
+        frc2::PIDController{3, 0, 0},
+        frc2::PIDController{3, 0, 0},
         []()
         {
             frc::ProfiledPIDController<units::radian> theta_controller{
-                1, 0, 0,
+                10, 150, 1,
                 frc::TrapezoidProfile<units::radian>::Constraints{
-                    Drivetrain::ROBOT_MAX_ANGULAR_SPEED,
-                    Drivetrain::ROBOT_MAX_ANGULAR_SPEED / 1_s}};
+                    Drivetrain::TRAJ_MAX_ANGULAR_SPEED,
+                    Drivetrain::TRAJ_MAX_ANGULAR_ACCELERATION}};
             theta_controller.EnableContinuousInput(units::radian_t{-wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
             return theta_controller;
         }()}; // This lambdas makes a ProfilePIDController, enables continuous input, then returns it
@@ -63,10 +63,10 @@ void Trajectory::putField2d()
 void Trajectory::updateOdometry()
 {
     frc::Pose2d const pose = odometry.Update(Drivetrain::getCCWHeading(),
-                                             Module::front_left.getState(),
-                                             Module::front_right.getState(),
-                                             Module::back_left.getState(),
-                                             Module::back_right.getState());
+                                             Module::front_left->getState(),
+                                             Module::front_right->getState(),
+                                             Module::back_left->getState(),
+                                             Module::back_right->getState());
     field2d.SetRobotPose(pose);
 
     if constexpr (debugging)
@@ -77,10 +77,10 @@ frc::Pose2d Trajectory::getOdometryPose() { return odometry.GetPose(); }
 
 frc::ChassisSpeeds const Trajectory::getEstimatedSpeeds()
 {
-    return kinematics.ToChassisSpeeds(Module::front_left.getState(),
-                                      Module::front_right.getState(),
-                                      Module::back_left.getState(),
-                                      Module::back_right.getState());
+    return kinematics.ToChassisSpeeds(Module::front_left->getState(),
+                                      Module::front_right->getState(),
+                                      Module::back_left->getState(),
+                                      Module::back_right->getState());
 }
 frc::ChassisSpeeds const Trajectory::getRealSpeeds()
 {
@@ -150,7 +150,7 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
     }
 }
 
-void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
+void Trajectory::follow(pathplanner::PathPlannerTrajectory traj, std::function<void(units::second_t time)> extra_control)
 {
     auto const inital_state = *traj.getInitialState();
     auto const inital_pose = inital_state.pose;
@@ -170,14 +170,18 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj)
         frc::SmartDashboard::PutString("Inital State: ", fmt::format("X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value()));
     }
 
-    while (RobotState::IsAutonomousEnabled() && (trajTimer.Get() <= traj.getTotalTime()))
+    while (RobotState::IsAutonomousEnabled() && (trajTimer.Get() <= traj.getTotalTime() + .5_s))
     {
-        auto sample = traj.sample(trajTimer.Get());
+        auto current_time = trajTimer.Get();
+
+        auto sample = traj.sample(current_time);
 
         field2d.GetObject("Traj")->SetPose({sample.pose.X(), sample.pose.Y(), sample.holonomicRotation});
 
         driveToState(sample);
         updateOdometry();
+
+        extra_control(current_time);
 
         if constexpr (debugging)
         {

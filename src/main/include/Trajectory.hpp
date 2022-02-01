@@ -4,6 +4,8 @@
 
 #include <frc/kinematics/ChassisSpeeds.h>
 
+#include <functional>
+
 using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 sets of namespaces so it is safe to remove the first layer
 
 namespace Trajectory
@@ -24,10 +26,9 @@ namespace Trajectory
 
     void driveToState(PathPlannerTrajectory::PathPlannerState const &state);
 
-    void follow(PathPlannerTrajectory traj);
+    void follow(pathplanner::PathPlannerTrajectory traj, std::function<void(units::second_t time)> extra_control);
 
     void testHolonomic(frc::Pose2d const &target_pose,
                        units::velocity::meters_per_second_t const &velocity,
                        frc::Rotation2d const &target_rot);
-
 }

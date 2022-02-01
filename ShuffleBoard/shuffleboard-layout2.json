@@ -2,7 +2,7 @@
   "tabPane": [
     {
       "title": "LiveWindow",
-      "autoPopulate": true,
+      "autoPopulate": false,
       "autoPopulatePrefix": "LiveWindow/",
       "widgetPane": {
         "gridSize": 128.0,
@@ -30,6 +30,26 @@
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
                   "Visuals/Counter clockwise": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[11]/Position",
+                  "_title": "LiveWindow/Ungrouped/CANCoder[11]/Position"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[13]/Position",
+                  "_title": "LiveWindow/Ungrouped/CANCoder[13]/Position"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[12]/Position",
+                  "_title": "LiveWindow/Ungrouped/CANCoder[12]/Position"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[14]/Position",
+                  "_title": "LiveWindow/Ungrouped/CANCoder[14]/Position"
                 }
               ]
             }

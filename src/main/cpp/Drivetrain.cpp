@@ -30,10 +30,10 @@ auto first_time_getting_angle = true;
 
 namespace Module
 {
-  SwerveModule front_left{60, 61, 14, -285.0293};
-  SwerveModule front_right{50, 51, 13, -91.54203};
-  SwerveModule back_left{30, 31, 11, -264.726563};
-  SwerveModule back_right{40, 41, 12, -344.53125};
+  std::unique_ptr<SwerveModule> front_left;
+  std::unique_ptr<SwerveModule> front_right;
+  std::unique_ptr<SwerveModule> back_left;
+  std::unique_ptr<SwerveModule> back_right;
 }
 
 frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
@@ -41,7 +41,7 @@ frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
                                          frc::Translation2d{-11_in, 11_in},
                                          frc::Translation2d{-11_in, -11_in}};
 
-std::unique_ptr<AHRS> navx = nullptr;
+local std::unique_ptr<AHRS> navx;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -51,10 +51,11 @@ void Drivetrain::init()
 {
   navx = std::make_unique<AHRS>(frc::SPI::Port::kMXP);
 
-  Module::front_left.init();
-  Module::front_right.init();
-  Module::back_left.init();
-  Module::back_right.init();
+  using namespace Module;
+  front_left = std::make_unique<SwerveModule>(60, 61, 14, -285.0293);
+  front_right = std::make_unique<SwerveModule>(50, 51, 13, -91.54203);
+  back_left = std::make_unique<SwerveModule>(30, 31, 11, -264.726563);
+  back_right = std::make_unique<SwerveModule>(40, 41, 12, -344.53125);
 }
 
 // Returns values with 0 being front and positive angles going CW
@@ -108,10 +109,10 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 
   auto const [fl, fr, bl, br] = states;
 
-  Module::front_left.setDesiredState(fl);
-  Module::front_right.setDesiredState(fr);
-  Module::back_left.setDesiredState(bl);
-  Module::back_right.setDesiredState(br);
+  Module::front_left->setDesiredState(fl);
+  Module::front_right->setDesiredState(fr);
+  Module::back_left->setDesiredState(bl);
+  Module::back_right->setDesiredState(br);
 
   if constexpr (debugging)
   {
@@ -120,10 +121,10 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
     frc::SmartDashboard::PutString("Target Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl.speed.value(), bl.angle.Degrees().value()));
     frc::SmartDashboard::PutString("Target Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br.speed.value(), br.angle.Degrees().value()));
 
-    auto const fl_old = Module::front_left.getState();
-    auto const fr_old = Module::front_left.getState();
-    auto const bl_old = Module::back_left.getState();
-    auto const br_old = Module::back_right.getState();
+    auto const fl_old = Module::front_left->getState();
+    auto const fr_old = Module::front_left->getState();
+    auto const bl_old = Module::back_left->getState();
+    auto const br_old = Module::back_right->getState();
     frc::SmartDashboard::PutString("Actual Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl_old.speed, fl_old.angle.Degrees().value()));
     frc::SmartDashboard::PutString("Actual Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr_old.speed.value(), fr_old.angle.Degrees().value()));
     frc::SmartDashboard::PutString("Actual Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl_old.speed.value(), bl_old.angle.Degrees().value()));
@@ -170,5 +171,8 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
 
 void Drivetrain::setAngleForTuning(units::degree_t const &desired_angle)
 {
-  Module::front_left.setDesiredState({0_mps, desired_angle});
+  Module::front_left->setDesiredState({0_mps, desired_angle});
+  Module::front_right->setDesiredState({0_mps, desired_angle});
+  Module::back_left->setDesiredState({0_mps, desired_angle});
+  Module::back_right->setDesiredState({0_mps, desired_angle});
 }

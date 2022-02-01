@@ -22,7 +22,7 @@ public:
     // void DisabledInit() override;
     // void DisabledPeriodic() override;
 
-    // void TestInit() override;
+    void TestInit() override;
     void TestPeriodic() override;
 
 private:

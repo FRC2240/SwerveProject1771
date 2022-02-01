@@ -14,8 +14,6 @@ public:
 
     SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, double const &magnet_offset);
 
-    void init();
-
     [[nodiscard]] frc::SwerveModuleState getState();
 
     [[nodiscard]] units::degree_t getAngle();

@@ -3,6 +3,12 @@
 #include "Buttons.hpp"
 #include "RobotState.hpp"
 #include "Autons.hpp"
+#include "Intake.hpp"
+#include "ShooterWheel.hpp"
+#include "Hood.hpp"
+#include "Turret.hpp"
+#include "Hopper.hpp"
+#include "Limelight.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -18,13 +24,14 @@ local frc::SendableChooser<std::function<void()>> traj_selector;
 
 auto field_centric = true;
 
+LimeLight camera {};
+
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
 
 Robot::Robot()
 {
-  /*
   // setup RobotStates
   RobotState::IsEnabled = [this]()
   { return IsEnabled(); };
@@ -65,7 +72,6 @@ Robot::Robot()
 
   // This is the second joystick's Y axis
   BUTTON::PS5.SetTwistChannel(5);
-  */
 }
 
 void Robot::RobotInit()
@@ -76,11 +82,11 @@ void Robot::RobotInit()
 void Robot::AutonomousInit()
 {
   // Start aiming
-  // Deploy intake
 
   traj_selector.GetSelected()();
 
   Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
+
   // If driving after "stop" is called is a problem, I will add a "stop" method
   //  which runs a few times to ensure all modules are stopped
 
@@ -116,19 +122,25 @@ void Robot::TeleopPeriodic()
   }
 }
 
+void Robot::TestInit()
+{
+  Intake::deploy(true);
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(1s);
+  Hood::goToPosition(Hood::POSITION::MIDPOINT);
+  Turret::goToPosition(Turret::POSITION::FRONT);
+}
+
 void Robot::TestPeriodic()
 {
+  ShooterWheel::bangbang();
+  Hopper::index(false);
+    if(BUTTON::DRIVETRAIN::TURN_90.getRawButtonReleased())
+        Hopper::stop();
+    if(BUTTON::DRIVETRAIN::TURN_90)
+        Hopper::shoot();
 
-  if (BUTTON::DRIVETRAIN::TURN_90)
-    Trajectory::testHolonomic({1_m, 1_m, 30_deg}, 1_fps, {30_deg});
-  else
-  {
-    driveWithJoystick(field_centric);
-  }
-
-  Trajectory::printEstimatedSpeeds();
-  Trajectory::printRealSpeeds();
-  Trajectory::updateOdometry();
+    
 }
 
 /******************************************************************/
@@ -161,19 +173,12 @@ void Robot::tunePID()
 
 void Robot::driveWithJoystick(bool const &field_relative)
 {
-  if (debugging)
-  {
-    fmt::print("Printing PS5 Inputs: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetX(), BUTTON::PS5.GetY(), BUTTON::PS5.GetZ(), BUTTON::PS5.GetTwist());
-    fmt::print("Printing PS5 Channels: X: {}, Y: {}, Z: {}, Twist: {}\n", BUTTON::PS5.GetXChannel(), BUTTON::PS5.GetYChannel(), BUTTON::PS5.GetZChannel(), BUTTON::PS5.GetTwistChannel());
-    fmt::print("Printing Direction (degrees): {}\n", BUTTON::PS5.GetDirectionDegrees());
-  }
-
   auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
   auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
     Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
-    Drivetrain::faceDirection(front_back, left_right, 90_deg, field_relative);
+    Drivetrain::faceDirection(front_back, left_right, 180_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_TO_CLOSEST)
     Drivetrain::faceClosest(front_back, left_right, field_relative);
   else if (rotation_joystick)

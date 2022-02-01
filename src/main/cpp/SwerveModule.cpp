@@ -22,7 +22,7 @@ constexpr auto DRIVER_WHEEL_ROTATIONS_TO_TICKS =
     MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS * DRIVER_GEAR_RATIO;
 
 constexpr auto WHEEL_RADIAN_TO_DRIVER_ENCODER_TICKS =
-     MOTOR_RADIAN_TO_TALON_ENCODER_TICKS * DRIVER_GEAR_RATIO; // Total amount of ticks per wheel radian
+    MOTOR_RADIAN_TO_TALON_ENCODER_TICKS * DRIVER_GEAR_RATIO; // Total amount of ticks per wheel radian
 
 constexpr auto HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
 constexpr auto ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
@@ -40,11 +40,6 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
       turner{turner_adr},
       cancoder{cancoder_adr},
       magnet_offset{magnet_offset}
-{
-    // Config done in init() to avoid issues with configuring before connection with Talons/CANCoder is established
-}
-
-void SwerveModule::init()
 {
     // Configure CANCoder
     CANCoderConfiguration cancoder_config{};
