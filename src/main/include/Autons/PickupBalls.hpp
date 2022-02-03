@@ -6,7 +6,6 @@
 #include "Hopper.hpp"
 #include "Intake.hpp"
 
-;
 namespace Autons
 {
     inline static auto const pickup_balls_auton = []()

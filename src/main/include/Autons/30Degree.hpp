@@ -3,7 +3,6 @@
 #include "Trajectory.hpp"
 #include "Drivetrain.hpp"
 
-;
 namespace Autons
 {
     inline static auto const thirty_degree_auton = []()
