@@ -6,6 +6,9 @@
 #include "Drivetrain.hpp"
 #include "Intake.hpp"
 
+;
+namespace Autons
+{
 inline static auto const complex_auton = []()
 {
     using namespace pathplanner;
@@ -19,3 +22,4 @@ inline static auto const complex_auton = []()
                 Intake::deploy(true);
         });
 };
+}

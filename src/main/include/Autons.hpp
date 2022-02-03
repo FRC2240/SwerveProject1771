@@ -10,6 +10,7 @@
 #include <functional>
 
 // All autonomous programs are stored as lambdas to be called
+using namespace Autons;
 local std::map<std::string, std::function<void()>> autons{
     {"Default - LShape", l_shape_auton},
     {"30 Degree", thirty_degree_auton},
