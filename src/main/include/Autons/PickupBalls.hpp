@@ -11,8 +11,6 @@ namespace Autons
 {
     inline static auto const pickup_balls_auton = []()
     {
-        using namespace pathplanner;
-
         Intake::deploy(true);
         Intake::drive(Intake::DIRECTION::IN);
         Trajectory::follow(PathPlanner::loadPath("Pickup Balls", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION),

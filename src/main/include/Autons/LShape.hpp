@@ -8,8 +8,7 @@ namespace Autons
 {
     inline static auto const l_shape_auton = []()
     {
-        using namespace pathplanner;
-        Trajectory::follow(PathPlanner::loadPath("L with Rotate", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION),
+                Trajectory::follow(PathPlanner::loadPath("L with Rotate", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION),
                            [](units::second_t current_time) {});
     };
 }

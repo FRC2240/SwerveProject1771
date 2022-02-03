@@ -11,7 +11,6 @@ namespace Autons
 {
 inline static auto const complex_auton = []()
 {
-    using namespace pathplanner;
     Trajectory::follow(
         PathPlanner::loadPath("Complex", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION),
         [](units::second_t current_time)
