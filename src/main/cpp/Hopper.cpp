@@ -1,5 +1,6 @@
 #include "Hopper.hpp"
 #include "ShooterWheel.hpp"
+#include "ngr.hpp"
 
 #include <rev/CANSparkMax.h>
 #include <frc/DigitalInput.h>
@@ -8,7 +9,7 @@
 
 using can_adr = int;
 /******************************************************************/
-/*                             Constants                          */
+/*                       Private Constants                        */
 /******************************************************************/
 namespace INDEXER
 {
@@ -16,7 +17,7 @@ namespace INDEXER
     const double SPEED = 0.7;
 
     const auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
-} // namespace INDEXER
+}
 
 namespace TRANSPORT
 {
@@ -33,27 +34,27 @@ namespace TRANSPORT
     const double P = 0.3;
     const double I = 0;
     const double D = 0.0001;
-} // namespace TRANSPORT
+}
 
 using can_adr = int;
-/******************************************************************/
-/*                          Non-constant Vars                     */
-/******************************************************************/
 
 const can_adr LIMIT_SWITCH = 0;
+/******************************************************************/
+/*                        Public Variables                        */
+/******************************************************************/
 
-inline static rev::CANSparkMax indexer{INDEXER::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-inline static rev::CANSparkMax transport{TRANSPORT::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-inline static rev::SparkMaxPIDController pid_controller = transport.GetPIDController();
-inline static rev::SparkMaxRelativeEncoder encoder = transport.GetEncoder();
-inline static frc::DigitalInput limit_switch{LIMIT_SWITCH};
-inline static int number_of_balls = 3;
-inline static double target_distance = TRANSPORT::DISTANCE;
-inline static bool is_transporting = false;
-inline static std::atomic<bool> invalid_stop_flag{false};
+local rev::CANSparkMax indexer{INDEXER::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+local rev::CANSparkMax transport{TRANSPORT::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+local auto pid_controller = transport.GetPIDController();
+local auto encoder = transport.GetEncoder();
+local frc::DigitalInput limit_switch{LIMIT_SWITCH};
+int number_of_balls = 3;
+double target_distance = TRANSPORT::DISTANCE;
+bool is_transporting = false;
+std::atomic<bool> invalid_stop_flag{false};
 
 /******************************************************************/
-/*                      Non Static Functions                      */
+/*                   Public Function Definitions                  */
 /******************************************************************/
 
 void Hopper::init()
@@ -87,7 +88,7 @@ bool Hopper::index(bool warn_if_shooting)
 
     if (!limit_switch.Get() && number_of_balls < 3 && !is_transporting)
     {
-        pid_controller.SetReference(target_distance, rev::ControlType::kPosition);
+        pid_controller.SetReference(target_distance, rev::CANSparkMax::ControlType::kPosition);
         number_of_balls++;
         is_transporting = true;
     }

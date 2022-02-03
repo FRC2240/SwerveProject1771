@@ -1,30 +1,29 @@
 #include "Intake.hpp"
+#include "ngr.hpp"
 
 #include <frc/Solenoid.h>
 #include <rev/CANSparkMax.h>
 
 using can_adr = int;
 /******************************************************************/
-/*                             Constants                          */
+/*                       Private Constants                        */
 /******************************************************************/
-const can_adr PCM_PORT = 1;
-const can_adr PORT     = 22;
-
 const auto IDLE_MODE = rev::CANSparkMax::IdleMode::kCoast;
 
-
-const double IN_SPEED  = -1;
+const double IN_SPEED = -1;
 const double OUT_SPEED = 1;
 
 /******************************************************************/
-/*                          Non-constant Vars                     */
+/*                        Private Variables                       */
 /******************************************************************/
-inline static frc::Solenoid    intake_air{frc::PneumaticsModuleType::CTREPCM, 1};
-inline static bool             intake_deployed = false;
-inline static rev::CANSparkMax wheels { PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless };
+local frc::Solenoid intake_air{frc::PneumaticsModuleType::CTREPCM, 1};
+
+bool intake_deployed = false;
+
+local rev::CANSparkMax wheels{22, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
 
 /******************************************************************/
-/*                      Non Static Functions                      */
+/*                   Public Function Definitions                  */
 /******************************************************************/
 
 void Intake::init()
@@ -35,7 +34,7 @@ void Intake::init()
 
 void Intake::drive(Intake::DIRECTION mode)
 {
-    switch(mode)
+    switch (mode)
     {
     case Intake::DIRECTION::IN:
         wheels.Set(IN_SPEED);

@@ -16,7 +16,7 @@ constexpr units::degrees_per_second_t
     MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
 
 /******************************************************************/
-/*                        Private Variables                        */
+/*                        Private Variables                       */
 /******************************************************************/
 
 auto first_time_getting_angle = true;

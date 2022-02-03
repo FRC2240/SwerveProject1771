@@ -3,6 +3,9 @@
 
 #include <algorithm>
 
+/******************************************************************/
+/*                   Public Function Definitions                  */
+/******************************************************************/
 PID_CANSparkMax::PID_CANSparkMax(int id, MotorType motor_type)
     : rev::CANSparkMax(id, motor_type), pid_controller{rev::CANSparkMax::GetPIDController()}, encoder{GetEncoder()}
 {
@@ -34,7 +37,7 @@ void PID_CANSparkMax::SetOutputRange(double min, double max)
     pid_controller.SetOutputRange(min, max);
 }
 
-void PID_CANSparkMax::SetTarget(double position, rev::ControlType control_type)
+void PID_CANSparkMax::SetTarget(double position, CANSparkMax::ControlType control_type)
 {
     pid_controller.SetReference(std::clamp(position, min_position, max_position), control_type);
 }

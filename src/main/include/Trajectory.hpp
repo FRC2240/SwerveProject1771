@@ -6,10 +6,13 @@
 
 #include <functional>
 
-using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 sets of namespaces so it is safe to remove the first layer
+using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 sets of namespaces so it's safe to remove the first layer
 
 namespace Trajectory
 {
+    /******************************************************************/
+    /*                   Public Variable Definitions                  */
+    /******************************************************************/
     void putField2d();
 
     [[nodiscard]] frc::Pose2d getOdometryPose();

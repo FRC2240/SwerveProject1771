@@ -8,30 +8,31 @@
 extern LimeLight camera; // From Robot.cpp
 
 using can_adr = int;
+
 /******************************************************************/
-/*                             Constants                          */
+/*                       Private Constants                        */
 /******************************************************************/
-const can_adr PORT = 7;
+constexpr can_adr PORT = 7;
 
-const auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
+constexpr auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
 
-const double P = 0.1;
-const double I = 0.0;
-const double D = 0.0;
+constexpr double P = 0.1;
+constexpr double I = 0.0;
+constexpr double D = 0.0;
 
-const double MAX_SPEED = 0.8;
+constexpr double MAX_SPEED = 0.8;
 
 // Average<10>   averageInputCameraY;
 
 /******************************************************************/
-/*                          Non-constant Vars                     */
+/*                        Private Variables                       */
 /******************************************************************/
 
-static inline PID_CANSparkMax hood { PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless };
-static inline Hood::POSITION  position = Hood::POSITION::BOTTOM;
+local PID_CANSparkMax hood{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+local Hood::POSITION position = Hood::POSITION::BOTTOM;
 
 /******************************************************************/
-/*                      Non Static Functions                      */
+/*                   Public Function Definitions                  */
 /******************************************************************/
 
 void Hood::init()
@@ -51,7 +52,7 @@ void Hood::init()
 
 bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
 {
-    if(pos != position)
+    if (pos != position)
     {
         hood.SetTarget(pos);
         position = pos;
@@ -67,27 +68,27 @@ bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
         double hood_val;
     };
 
-    constexpr table_row lookup_table[] {
-        { 16.1, -17.023779 },
-        { 10.8, -18.190428 },
-        { 5.6, -19.476120 },
-        { 1.95, -20.190395 },
-        { -0.9, -20.809433 },
-        { -3.6, -21.118952 }
-    };
+    constexpr table_row lookup_table[]{
+        {16.1, -17.023779},
+        {10.8, -18.190428},
+        {5.6, -19.476120},
+        {1.95, -20.190395},
+        {-0.9, -20.809433},
+        {-3.6, -21.118952}};
 
-    if(yval < -3.6)
+    if (yval < -3.6)
     {
         yval = -3.6;
     }
 
-    auto find_value_in_table = [](auto yval, auto begin, auto end) {
-        return std::find_if(std::next(begin), end, [=](auto const& val) {
-            return yval >= val.y_val;
-        });
+    auto find_value_in_table = [](auto yval, auto begin, auto end)
+    {
+        return std::find_if(std::next(begin), end, [=](auto const &val)
+                            { return yval >= val.y_val; });
     };
 
-    constexpr auto interpolate = [](auto value, table_row const* ref1, table_row const* ref2) {
+    constexpr auto interpolate = [](auto value, table_row const *ref1, table_row const *ref2)
+    {
         return ((ref1->hood_val - ref2->hood_val) / (ref1->y_val - ref2->y_val)) * (value - ref2->y_val) + ref2->hood_val;
     };
 
@@ -96,7 +97,7 @@ bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
                        std::prev(range),
                        range);
 
-    //tests
+    // tests
     static_assert(std::end(lookup_table) - std::begin(lookup_table) >= 2, "lookup table too small");
     // Commented tests are valid C++20
     // static_assert(std::is_sorted(std::begin(lookup_table), std::end(lookup_table), [](auto const &lhs, auto const &rhs) {
@@ -116,7 +117,7 @@ bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
 bool Hood::visionTrack(double tolerance)
 {
     // auto const result       = camera.GetLatestResult();
-    if(camera.hasTarget())
+    if (camera.hasTarget())
     {
         // auto const cameratarget = result.GetBestTarget();
         double target = getTrackingValue(camera.getY());
@@ -130,15 +131,15 @@ bool Hood::visionTrack(double tolerance)
 void Hood::manualPositionControl(double pos)
 {
     hood.SetTarget(scaleOutput(0,
-                                    1,
-                                    Hood::POSITION::TRAVERSE,
-                                    Hood::POSITION::SAFE_TO_TURN,
-                                    std::clamp(pos, 0.0, 1.0)));
+                               1,
+                               Hood::POSITION::TRAVERSE,
+                               Hood::POSITION::SAFE_TO_TURN,
+                               std::clamp(pos, 0.0, 1.0)));
 }
 
 void Hood::printAngle()
 {
-    printf("hood angle: %f\n", hood.encoder.GetPosition());
+    fmt::print("Hood Angle: {}\n", hood.encoder.GetPosition());
 }
 
 double Hood::getAngle()

@@ -2,17 +2,23 @@
 
 namespace Hood
 {
+    /******************************************************************/
+    /*                        Public Constants                        */
+    /******************************************************************/
     constexpr double TOLERANCE = 1;
 
-    enum POSITION {
-        BOTTOM       = 0,
-        TRAVERSE     = -9,
+    enum POSITION
+    {
+        BOTTOM = 0,
+        TRAVERSE = -9,
         SAFE_TO_TURN = -38,
-        MIDPOINT     = -26,
-        BATTER       = -89
+        MIDPOINT = -26,
+        BATTER = -89
     };
-    
-    //Public Function Definitions
+
+    /******************************************************************/
+    /*                  Public Function Declarations                  */
+    /******************************************************************/
     void init();
 
     /// returns true if tolerance is met
@@ -24,7 +30,7 @@ namespace Hood
     /// used for tuning interpolation tables
     void manualPositionControl(double position);
 
-    void   printAngle();
+    void printAngle();
     double getAngle();
     double getCameraY();
-} // namespace Hood
+}
