@@ -98,7 +98,7 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
     // tests
     static_assert(std::end(lookup_table) - std::begin(lookup_table) >= 2, "lookup table too small");
     // Commented tests are valid C++20
-    // static_assert(std::is_sorted(std::begin(lookup_table), std::end(lookup_table), [](auto const &lhs, auto const &rhs) {
+    //static_assert(std::is_sorted(std::begin(lookup_table), std::end(lookup_table), [](auto const &lhs, auto const &rhs) {
     //                   return lhs.y_val > rhs.y_val;
     //               }),
     //               "Lookup table not sorted");
@@ -108,8 +108,11 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
     //         lookup_table[1].y_val,
     //     "Invalid Table Search");
 
-    // static_assert(ngr::isCloseTo(std::midpoint(lookup_table[0].hood_val, lookup_table[1].hood_val), interpolate(std::midpoint(lookup_table[0].y_val, lookup_table[1].y_val), &lookup_table[0], &lookup_table[1])),
-    //               "interpolation error");
+    static_assert(ngr::isCloseTo(ngr::midpoint(lookup_table[0].hood_val, lookup_table[1].hood_val),
+                                 interpolate(ngr::midpoint(lookup_table[0].y_val, lookup_table[1].y_val),
+                                             &lookup_table[0],
+                                             &lookup_table[1])),
+                  "interpolation error");
 }
 
 bool Hood::visionTrack(double const &tolerance)
@@ -128,11 +131,11 @@ bool Hood::visionTrack(double const &tolerance)
 
 void Hood::manualPositionControl(double const &pos)
 {
-    hood.SetTarget(scaleOutput(0,
-                               1,
-                               Hood::POSITION::TRAVERSE,
-                               Hood::POSITION::SAFE_TO_TURN,
-                               std::clamp(pos, 0.0, 1.0)));
+    hood.SetTarget(ngr::scaleOutput(0,
+                                    1,
+                                    Hood::POSITION::TRAVERSE,
+                                    Hood::POSITION::SAFE_TO_TURN,
+                                    std::clamp(pos, 0.0, 1.0)));
 }
 
 void Hood::printAngle()

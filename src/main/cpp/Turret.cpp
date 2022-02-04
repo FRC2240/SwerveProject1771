@@ -10,7 +10,7 @@
 #include <cmath>
 
 /******************************************************************/
-/*                             Constants                          */
+/*                        Private Constants                        */
 /******************************************************************/
 
 constexpr units::degree_t CAMERA_X_OFFSET{3.75}; // 4.2517710;
@@ -106,7 +106,7 @@ Turret::visionState Turret::visionTrack(Turret::POSITION const &initPosition, do
 
 void Turret::manualPositionControl(double const &pos)
 {
-    turretTurnyTurny.SetTarget(scaleOutput(
+    turretTurnyTurny.SetTarget(ngr::scaleOutput(
                                    -1,
                                    1,
                                    POSITION::MAX_LEFT,

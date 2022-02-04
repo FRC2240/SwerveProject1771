@@ -13,7 +13,7 @@ PID_CANSparkMax::PID_CANSparkMax(int const &id, MotorType const &motor_type)
 
 void PID_CANSparkMax::Set(double value)
 {
-    auto current_position = encoder.GetPosition();
+    auto const current_position = encoder.GetPosition();
     if (current_position > min_position && current_position < max_position)
         rev::CANSparkMax::Set(value);
     else
@@ -22,7 +22,7 @@ void PID_CANSparkMax::Set(double value)
 
 void PID_CANSparkMax::SetVoltage(units::volt_t value)
 {
-    auto current_position = encoder.GetPosition();
+    auto const current_position = encoder.GetPosition();
     if (current_position > min_position && current_position < max_position)
         rev::CANSparkMax::SetVoltage(value);
     else
