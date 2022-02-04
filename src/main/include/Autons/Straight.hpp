@@ -7,7 +7,6 @@ namespace Autons
 {
     constexpr auto straight_auton = []()
     {
-                Trajectory::follow(PathPlanner::loadPath("Straight Line", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION),
-                           [](units::second_t current_time) {});
+        Trajectory::follow(PathPlanner::loadPath("Straight Line", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
     };
 }

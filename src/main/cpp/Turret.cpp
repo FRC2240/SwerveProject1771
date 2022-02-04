@@ -19,7 +19,7 @@ constexpr int PORT = 6;
 
 constexpr auto IDLE_MODE = rev::CANSparkMax::IdleMode::kCoast;
 
-//TOLERANCE in .hpp
+// TOLERANCE in .hpp
 
 constexpr double TICKS_PER_REVOLUTION = 212;
 constexpr double TICKS_PER_RADIAN = TICKS_PER_REVOLUTION / (2 * wpi::numbers::pi);
@@ -53,15 +53,13 @@ void Turret::init()
 
     turretTurnyTurny.SetSmartCurrentLimit(20);
 
-    turretTurnyTurny.SetP(P);
-    turretTurnyTurny.SetI(I);
-    turretTurnyTurny.SetD(D);
+    turretTurnyTurny.SetPID(P, I, D);
     turretTurnyTurny.SetOutputRange(-TRAVERSE_SPEED, TRAVERSE_SPEED);
     turretTurnyTurny.SetPositionRange(Turret::POSITION::MAX_LEFT, Turret::POSITION::MAX_RIGHT);
     turretTurnyTurny.SetTarget(Turret::POSITION::ZERO);
 }
 
-bool Turret::goToPosition(Turret::POSITION pos, double tolerance)
+bool Turret::goToPosition(Turret::POSITION const &pos, double const &tolerance)
 {
     if (pos != position)
     {
@@ -74,26 +72,7 @@ bool Turret::goToPosition(Turret::POSITION pos, double tolerance)
     return std::fabs(turretTurnyTurny.encoder.GetPosition() - pos) < tolerance;
 }
 
-// Turret::visionState Turret::visionTrack_v1(Turret::POSITION initPosition, double tolerance)
-// {
-//     if(! tracking) // move to initPosition
-//     {
-//         tracking = goToPosition(initPosition);
-//         return { false, false };
-//     }
-
-//     if(camera.hasTarget())
-//     {
-//         double const xOffset = camera.getX() + CAMERA_X_OFFSET;
-//         double const output  = xOffset / 35;
-//         turretTurnyTurny.Set(output);
-//         return { true, fabs(xOffset) < tolerance };
-//     }
-//     turretTurnyTurny.Set(0);
-//     return { false, false };
-// }
-
-Turret::visionState Turret::visionTrack(Turret::POSITION initPosition, double tolerance)
+Turret::visionState Turret::visionTrack(Turret::POSITION const &initPosition, double const &tolerance)
 {
     if (!tracking) // move to initPosition
     {
@@ -125,7 +104,7 @@ Turret::visionState Turret::visionTrack(Turret::POSITION initPosition, double to
     return {false, false};
 }
 
-void Turret::manualPositionControl(double pos)
+void Turret::manualPositionControl(double const &pos)
 {
     turretTurnyTurny.SetTarget(scaleOutput(
                                    -1,

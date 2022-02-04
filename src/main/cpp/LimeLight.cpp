@@ -18,11 +18,11 @@ int    LimeLight::getVerticalSideLength() const { return table->GetNumber("tvert
 int    LimeLight::getPipe() const { return table->GetNumber("getpipe", 0.0); }
 double LimeLight::getLatency_ms() const { return table->GetNumber("tl", 0.0) + 11; } // documentation said to add 11ms for image capture
 // Step 3: set LEDs, Camera, Stream, Snapshot, Pipeline
-void LimeLight::setLEDMode(LimeLight::LED_Mode mode) { table->PutNumber("ledMode", static_cast<int>(mode)); }
-void LimeLight::setCameraMode(Camera_Mode mode) { table->PutNumber("camMode", static_cast<int>(mode)); }
-void LimeLight::setStream(Stream_Mode mode) { table->PutNumber("stream", static_cast<int>(mode)); }
-void LimeLight::setSnapshot(Snapshot_Mode mode) { table->PutNumber("snapshot", static_cast<int>(mode)); }
-void LimeLight::setPipeline(unsigned pipe)
+void LimeLight::setLEDMode(LimeLight::LED_Mode const &mode) { table->PutNumber("ledMode", static_cast<int>(mode)); }
+void LimeLight::setCameraMode(Camera_Mode const &mode) { table->PutNumber("camMode", static_cast<int>(mode)); }
+void LimeLight::setStream(Stream_Mode const &mode) { table->PutNumber("stream", static_cast<int>(mode)); }
+void LimeLight::setSnapshot(Snapshot_Mode const &mode) { table->PutNumber("snapshot", static_cast<int>(mode)); }
+void LimeLight::setPipeline(unsigned const &pipe)
 {
     if(pipe > 9)
     {

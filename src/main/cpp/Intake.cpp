@@ -31,7 +31,7 @@ void Intake::init()
     wheels.SetSmartCurrentLimit(20);
 }
 
-void Intake::drive(Intake::DIRECTION mode)
+void Intake::drive(Intake::DIRECTION const &mode)
 {
     switch (mode)
     {
@@ -49,7 +49,7 @@ void Intake::drive(Intake::DIRECTION mode)
     }
 }
 
-void Intake::deploy(bool val)
+void Intake::deploy(bool const &val)
 {
     intake_air.Set(val);
     deployed = val;

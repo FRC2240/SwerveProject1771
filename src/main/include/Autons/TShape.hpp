@@ -5,5 +5,7 @@
 namespace Autons
 {
     constexpr auto t_shape_auton = []()
-    { Trajectory::follow(PathPlanner::loadPath("T shape", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION), [](units::second_t current_time) {}); };
+    {
+        Trajectory::follow(PathPlanner::loadPath("T shape", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
+    };
 }

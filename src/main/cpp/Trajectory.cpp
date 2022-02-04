@@ -182,7 +182,8 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj, std::function<v
         driveToState(sample);
         updateOdometry();
 
-        extra_control(current_time);
+        if (extra_control != nullptr)
+            extra_control(current_time);
 
         if constexpr (debugging)
         {

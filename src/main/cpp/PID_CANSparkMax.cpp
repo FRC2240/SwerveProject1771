@@ -5,7 +5,7 @@
 /******************************************************************/
 /*                   Public Function Definitions                  */
 /******************************************************************/
-PID_CANSparkMax::PID_CANSparkMax(int id, MotorType motor_type)
+PID_CANSparkMax::PID_CANSparkMax(int const &id, MotorType const &motor_type)
     : rev::CANSparkMax(id, motor_type), pid_controller{rev::CANSparkMax::GetPIDController()}, encoder{GetEncoder()}
 {
     pid_controller.SetFeedbackDevice(encoder);
@@ -29,30 +29,22 @@ void PID_CANSparkMax::SetVoltage(units::volt_t value)
         rev::CANSparkMax::Set(0);
 }
 
-void PID_CANSparkMax::SetOutputRange(double min, double max)
+void PID_CANSparkMax::SetOutputRange(double const &min, double const &max)
 {
     if (min >= max)
         fmt::print("Invalid Output Range: min: {}, max: \n", min, max);
     pid_controller.SetOutputRange(min, max);
 }
 
-void PID_CANSparkMax::SetTarget(double position, CANSparkMax::ControlType control_type)
+void PID_CANSparkMax::SetTarget(double const &position, CANSparkMax::ControlType const &control_type)
 {
     pid_controller.SetReference(std::clamp(position, min_position, max_position), control_type);
 }
 
-void PID_CANSparkMax::SetP(double P)
+void PID_CANSparkMax::SetPID(double const &P, double const &I, double const &D)
 {
     pid_controller.SetP(P);
-}
-
-void PID_CANSparkMax::SetI(double I)
-{
     pid_controller.SetI(I);
-}
-
-void PID_CANSparkMax::SetD(double D)
-{
     pid_controller.SetD(D);
 }
 

@@ -15,8 +15,8 @@ namespace Intake
     /*                  Public Function Declarations                  */
     /******************************************************************/
     void init();
-    void drive(DIRECTION mode);
-    void deploy(bool val);
+    void drive(DIRECTION const &mode);
+    void deploy(bool const &val);
 
     [[nodiscard]] bool isIntakeDown();
 }

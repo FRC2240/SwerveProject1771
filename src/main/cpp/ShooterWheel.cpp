@@ -64,7 +64,7 @@ double ShooterWheel::getTemp()
 }
 
 // True makes bangbang use SHOOTING_RPM, false uses IDLE_RPM
-void ShooterWheel::setShooting(bool input)
+void ShooterWheel::setShooting(bool const &input)
 {
     run_at_max_speed = input;
 }

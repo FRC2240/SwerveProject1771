@@ -9,5 +9,5 @@ namespace ShooterWheel
     void stop();
     double getSpeed();
     double getTemp();
-    void setShooting(bool boolean);
+    void setShooting(bool const &boolean);
 }

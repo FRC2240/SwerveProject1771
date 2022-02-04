@@ -29,7 +29,7 @@ namespace Trajectory
 
     void driveToState(PathPlannerTrajectory::PathPlannerState const &state);
 
-    void follow(pathplanner::PathPlannerTrajectory traj, std::function<void(units::second_t time)> extra_control);
+    void follow(pathplanner::PathPlannerTrajectory traj, std::function<void(units::second_t time)> periodic = nullptr);
 
     void testHolonomic(frc::Pose2d const &target_pose,
                        units::velocity::meters_per_second_t const &velocity,

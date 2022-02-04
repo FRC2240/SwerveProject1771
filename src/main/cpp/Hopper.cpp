@@ -75,7 +75,7 @@ void Hopper::init()
     encoder.SetPosition(0);
 }
 
-bool Hopper::index(bool warn_if_shooting)
+bool Hopper::index(bool const &warn_if_shooting)
 {
     if (invalid_stop_flag)
     {

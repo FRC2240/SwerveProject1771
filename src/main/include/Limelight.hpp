@@ -58,9 +58,9 @@ public:
     [[nodiscard]] int getPipe() const;
     [[nodiscard]] double getLatency_ms() const;
 
-    void setLEDMode(LED_Mode mode);
-    void setCameraMode(Camera_Mode mode);
-    void setPipeline(unsigned pipe);
-    void setStream(Stream_Mode mode);
-    void setSnapshot(Snapshot_Mode mode);
+    void setLEDMode(LED_Mode const &mode);
+    void setCameraMode(Camera_Mode const &mode);
+    void setPipeline(unsigned const &pipe);
+    void setStream(Stream_Mode const &mode);
+    void setSnapshot(Snapshot_Mode const &mode);
 };

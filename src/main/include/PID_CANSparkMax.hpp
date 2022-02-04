@@ -23,6 +23,7 @@
  *
  * Note: This class will not help if encoder positions are lost
  */
+
 class PID_CANSparkMax : public rev::CANSparkMax
 {
 private:
@@ -34,7 +35,7 @@ private:
     double min_position = -std::numeric_limits<double>().infinity();
     double max_position = std::numeric_limits<double>().infinity();
 
-    static ControlType const default_control_type = ControlType::kPosition;
+    static constexpr ControlType default_control_type = ControlType::kPosition;
 
 public:
     /******************************************************************/
@@ -45,14 +46,14 @@ public:
     /******************************************************************/
     /*                  Public Function Declarations                  */
     /******************************************************************/
-    PID_CANSparkMax(int id, MotorType motor_type);
+    PID_CANSparkMax(int const &id, MotorType const &motor_type);
 
     // Sets motor to Zero if ouside range
     void Set(double) override;
     void SetVoltage(units::volt_t output) override;
 
-    void SetOutputRange(double min, double max);
-    constexpr void SetPositionRange(double min, double max)
+    void SetOutputRange(double const &min, double const &max);
+    constexpr void SetPositionRange(double const &min, double const &max)
     {
         min_position = min;
         max_position = max;
@@ -70,9 +71,7 @@ public:
      * If the target is within the position range, it will go to the target
      * If not, it will go as close as it can to the target without exceding the range
      */
-    void SetTarget(double target, ControlType = default_control_type);
+    void SetTarget(double const &target, ControlType const& control_type = default_control_type);
 
-    void SetP(double P);
-    void SetI(double I);
-    void SetD(double D);
+    void SetPID(double const &P, double const &I, double const &D);
 };

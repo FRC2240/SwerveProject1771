@@ -41,9 +41,7 @@ void Hood::init()
     hood.SetIdleMode(IDLE_MODE);
     hood.SetSmartCurrentLimit(20);
 
-    hood.SetP(P);
-    hood.SetI(I);
-    hood.SetD(D);
+    hood.SetPID(P, I, D);
 
     hood.SetTarget(Hood::POSITION::BOTTOM);
     hood.SetOutputRange(-MAX_SPEED, MAX_SPEED);
