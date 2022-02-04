@@ -1,5 +1,6 @@
 #include "Drivetrain.hpp"
 #include "SwerveModule.hpp"
+#include "ngr.hpp"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 

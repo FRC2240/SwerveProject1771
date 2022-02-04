@@ -1,5 +1,4 @@
 #include "Intake.hpp"
-#include "ngr.hpp"
 
 #include <frc/Solenoid.h>
 #include <rev/CANSparkMax.h>

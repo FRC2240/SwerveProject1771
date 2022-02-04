@@ -9,6 +9,7 @@
 #include "Turret.hpp"
 #include "Hopper.hpp"
 #include "Limelight.hpp"
+#include "ngr.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>

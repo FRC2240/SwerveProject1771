@@ -1,5 +1,4 @@
 #include "ShooterWheel.hpp"
-#include "ngr.hpp"
 
 #include <rev/CANSparkMax.h>
 #include <rev/CANEncoder.h>

@@ -1,5 +1,4 @@
 #include "PID_CANSparkMax.hpp"
-#include "ngr.hpp"
 
 #include <algorithm>
 

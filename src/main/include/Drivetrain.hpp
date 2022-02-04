@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ngr.hpp"
-
 #include <wpi/numbers>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/ChassisSpeeds.h>

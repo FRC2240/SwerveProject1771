@@ -1,6 +1,5 @@
 #include "Hopper.hpp"
 #include "ShooterWheel.hpp"
-#include "ngr.hpp"
 
 #include <rev/CANSparkMax.h>
 #include <frc/DigitalInput.h>
