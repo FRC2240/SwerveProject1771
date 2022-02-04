@@ -85,13 +85,14 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
                            { return yval >= val.y_val; });
     };
 
-    constexpr auto interpolate = [](auto const &value, table_row const *ref1, table_row const *ref2)
+    constexpr auto interpolate_old = [](auto const &value, table_row const *ref1, table_row const *ref2)
     {
         return ((ref1->hood_val - ref2->hood_val) / (ref1->y_val - ref2->y_val)) * (value - ref2->y_val) + ref2->hood_val;
     };
 
     auto const range = findValueInTable(yval, std::begin(lookup_table), std::end(lookup_table));
-    return interpolate(yval,
+    
+    return interpolate_old(yval,
                        std::prev(range),
                        range);
 
@@ -109,7 +110,7 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
                   "Lookup table not sorted");
 
     static_assert(ngr::isCloseTo(ngr::midpoint(lookup_table[0].hood_val, lookup_table[1].hood_val),
-                                 interpolate(ngr::midpoint(lookup_table[0].y_val, lookup_table[1].y_val),
+                                 interpolate_old(ngr::midpoint(lookup_table[0].y_val, lookup_table[1].y_val),
                                              &lookup_table[0],
                                              &lookup_table[1])),
                   "Interpolation Error");

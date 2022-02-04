@@ -1,5 +1,8 @@
 #pragma once
 
+#include <type_traits>
+#include <array>
+
 constexpr bool debugging = true;
 
 /******************************************************************/
@@ -59,9 +62,9 @@ namespace ngr
         return (a + b) / 2;
     }
 
-    static_assert(midpoint(1, 3) == 2, "Error with midopint()");
-    static_assert(midpoint(-1, 3) == 1, "Error with midopint()");
-    static_assert(midpoint(-10, -4) == -7, "Error with midopint()");
+    static_assert(midpoint(1, 3) == 2, "Error with midpoint()");
+    static_assert(midpoint(-1, 3) == 1, "Error with midpoint()");
+    static_assert(midpoint(-10, -4) == -7, "Error with midpoint()");
 
     // Constexpr version of isSorted
     // Can be removed if upgraded to C++20
