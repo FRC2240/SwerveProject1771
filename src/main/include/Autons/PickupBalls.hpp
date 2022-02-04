@@ -8,7 +8,7 @@
 
 namespace Autons
 {
-    constexpr auto pickup_balls_auton = []()
+    constexpr auto pickupBalls = []()
     {
         Intake::deploy(true);
         Intake::drive(Intake::DIRECTION::IN);

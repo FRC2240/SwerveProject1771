@@ -7,7 +7,7 @@
 
 namespace Autons
 {
-    constexpr auto complex_auton = []()
+    constexpr auto complex = []()
     {
         Trajectory::follow(PathPlanner::loadPath("Complex", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION), [](units::second_t current_time)
                            {

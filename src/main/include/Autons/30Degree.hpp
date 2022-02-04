@@ -5,7 +5,7 @@
 
 namespace Autons
 {
-    constexpr auto thirty_degree_auton = []()
+    constexpr auto thirtyDegree = []()
     {
         Trajectory::follow(PathPlanner::loadPath("30 degree turn", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
     };

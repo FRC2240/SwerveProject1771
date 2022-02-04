@@ -79,10 +79,10 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
         yval = -3.6;
     }
 
-    auto find_value_in_table = [](auto const &yval, auto const &begin, auto const &end)
+    auto findValueInTable = [](auto const &yval, auto const &begin, auto const &end)
     {
-        return std::find_if(std::next(begin), end, [=](auto const &val)
-                            { return yval >= val.y_val; });
+        return ngr::findIf(std::next(begin), end, [=](auto const &val)
+                           { return yval >= val.y_val; });
     };
 
     constexpr auto interpolate = [](auto const &value, table_row const *ref1, table_row const *ref2)
@@ -90,29 +90,29 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
         return ((ref1->hood_val - ref2->hood_val) / (ref1->y_val - ref2->y_val)) * (value - ref2->y_val) + ref2->hood_val;
     };
 
-    auto const range = find_value_in_table(yval, std::begin(lookup_table), std::end(lookup_table));
+    auto const range = findValueInTable(yval, std::begin(lookup_table), std::end(lookup_table));
     return interpolate(yval,
                        std::prev(range),
                        range);
 
-    // tests
-    static_assert(std::end(lookup_table) - std::begin(lookup_table) >= 2, "lookup table too small");
-    // Commented tests are valid C++20
-    //static_assert(std::is_sorted(std::begin(lookup_table), std::end(lookup_table), [](auto const &lhs, auto const &rhs) {
-    //                   return lhs.y_val > rhs.y_val;
-    //               }),
-    //               "Lookup table not sorted");
+    // Tests to ensure logic and table are setup correctly
 
-    // static_assert(
-    //     find_value_in_table(lookup_table[0].y_val, std::begin(lookup_table), std::end(lookup_table))->y_val ==
-    //         lookup_table[1].y_val,
-    //     "Invalid Table Search");
+    static_assert(std::end(lookup_table) - std::begin(lookup_table) >= 2, "lookup table too small");
+
+    static_assert(
+        findValueInTable(lookup_table[3].y_val, std::begin(lookup_table), std::end(lookup_table))->y_val == lookup_table[3].y_val,
+        "Error with findValueInTable()");
+
+    static_assert(ngr::isSorted(std::begin(lookup_table), std::end(lookup_table),
+                                [](auto const &lhs, auto const &rhs)
+                                { return lhs.y_val > rhs.y_val; }),
+                  "Lookup table not sorted");
 
     static_assert(ngr::isCloseTo(ngr::midpoint(lookup_table[0].hood_val, lookup_table[1].hood_val),
                                  interpolate(ngr::midpoint(lookup_table[0].y_val, lookup_table[1].y_val),
                                              &lookup_table[0],
                                              &lookup_table[1])),
-                  "interpolation error");
+                  "Interpolation Error");
 }
 
 bool Hood::visionTrack(double const &tolerance)
