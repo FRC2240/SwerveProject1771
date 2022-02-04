@@ -53,16 +53,13 @@ namespace Drivetrain
     // Distance of module from center is 1.294ft
 
     // These are all very high and shouldn't normally be used
-    local constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 5.47_fps;
-    local constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{2 * wpi::numbers::pi};
-    local constexpr units::meters_per_second_t MODULE_MAX_SPEED = 13.9_fps;
-
-    local constexpr units::meters_per_second_t TELEOP_MAX_SPEED = 5_fps;
-    local constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{wpi::numbers::pi};
-
-    local constexpr units::meters_per_second_t TRAJ_MAX_SPEED = ROBOT_MAX_SPEED;
-    local constexpr units::acceleration::meters_per_second_squared_t TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 0.5_s;
-
-    local constexpr units::radians_per_second_t TRAJ_MAX_ANGULAR_SPEED{wpi::numbers::pi};
-    local constexpr units::radians_per_second_squared_t TRAJ_MAX_ANGULAR_ACCELERATION{wpi::numbers::pi};
+    constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 5.47_fps;
+    constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{2 * wpi::numbers::pi};
+    constexpr units::meters_per_second_t MODULE_MAX_SPEED = 13.9_fps;
+    constexpr units::meters_per_second_t TELEOP_MAX_SPEED = 5_fps;
+    constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{wpi::numbers::pi};
+    constexpr units::meters_per_second_t TRAJ_MAX_SPEED = ROBOT_MAX_SPEED;
+    constexpr units::acceleration::meters_per_second_squared_t TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 0.5_s;
+    constexpr units::radians_per_second_t TRAJ_MAX_ANGULAR_SPEED{wpi::numbers::pi};
+    constexpr units::radians_per_second_squared_t TRAJ_MAX_ANGULAR_ACCELERATION{wpi::numbers::pi};
 }

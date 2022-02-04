@@ -37,9 +37,9 @@ constexpr double D = 0.0;
 
 extern LimeLight camera; // camera from Robot.cpp
 
-local PID_CANSparkMax turretTurnyTurny{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-local Turret::POSITION position = Turret::POSITION::ZERO;
-local bool tracking = false;
+static PID_CANSparkMax turretTurnyTurny{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+static Turret::POSITION position = Turret::POSITION::ZERO;
+static bool tracking = false;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */

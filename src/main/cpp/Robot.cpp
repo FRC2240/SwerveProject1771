@@ -18,13 +18,17 @@
 /*                        Private Variables                       */
 /******************************************************************/
 
-auto rotation_joystick = false;
+static auto rotation_joystick = false;
 
-local frc::SendableChooser<std::function<void()>> traj_selector;
+static frc::SendableChooser<std::function<void()>> traj_selector;
 
-auto field_centric = true;
+static auto field_centric = true;
 
-LimeLight camera {};
+/******************************************************************/
+/*                        Public Variables                        */
+/******************************************************************/
+
+LimeLight camera{};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -135,12 +139,10 @@ void Robot::TestPeriodic()
 {
   ShooterWheel::bangbang();
   Hopper::index(false);
-    if(BUTTON::DRIVETRAIN::TURN_90.getRawButtonReleased())
-        Hopper::stop();
-    if(BUTTON::DRIVETRAIN::TURN_90)
-        Hopper::shoot();
-
-    
+  if (BUTTON::DRIVETRAIN::TURN_90.getRawButtonReleased())
+    Hopper::stop();
+  if (BUTTON::DRIVETRAIN::TURN_90)
+    Hopper::shoot();
 }
 
 /******************************************************************/

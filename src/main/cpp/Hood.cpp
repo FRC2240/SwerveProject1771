@@ -28,8 +28,8 @@ constexpr double MAX_SPEED = 0.8;
 /*                        Private Variables                       */
 /******************************************************************/
 
-local PID_CANSparkMax hood{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-local Hood::POSITION position = Hood::POSITION::BOTTOM;
+static PID_CANSparkMax hood{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+static Hood::POSITION position = Hood::POSITION::BOTTOM;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -50,7 +50,7 @@ void Hood::init()
     hood.SetPositionRange(Hood::POSITION::BATTER, Hood::POSITION::BOTTOM);
 }
 
-bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
+bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
 {
     if (pos != position)
     {
@@ -60,7 +60,7 @@ bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
     return std::fabs(hood.encoder.GetPosition() - pos) < tolerance;
 }
 
-[[nodiscard]] inline static double getTrackingValue(double yval)
+[[nodiscard]] double getTrackingValue(double yval)
 {
     struct table_row
     {
@@ -81,13 +81,13 @@ bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
         yval = -3.6;
     }
 
-    auto find_value_in_table = [](auto yval, auto begin, auto end)
+    auto find_value_in_table = [](auto const &yval, auto const &begin, auto const &end)
     {
         return std::find_if(std::next(begin), end, [=](auto const &val)
                             { return yval >= val.y_val; });
     };
 
-    constexpr auto interpolate = [](auto value, table_row const *ref1, table_row const *ref2)
+    constexpr auto interpolate = [](auto const &value, table_row const *ref1, table_row const *ref2)
     {
         return ((ref1->hood_val - ref2->hood_val) / (ref1->y_val - ref2->y_val)) * (value - ref2->y_val) + ref2->hood_val;
     };
@@ -114,7 +114,7 @@ bool Hood::goToPosition(Hood::POSITION pos, double tolerance)
     //               "interpolation error");
 }
 
-bool Hood::visionTrack(double tolerance)
+bool Hood::visionTrack(double const &tolerance)
 {
     // auto const result       = camera.GetLatestResult();
     if (camera.hasTarget())
@@ -128,7 +128,7 @@ bool Hood::visionTrack(double tolerance)
     return false;
 }
 
-void Hood::manualPositionControl(double pos)
+void Hood::manualPositionControl(double const &pos)
 {
     hood.SetTarget(scaleOutput(0,
                                1,

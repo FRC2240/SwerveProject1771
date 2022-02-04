@@ -8,50 +8,49 @@
 #include <cmath>
 
 using can_adr = int;
+
 /******************************************************************/
 /*                       Private Constants                        */
 /******************************************************************/
 namespace INDEXER
 {
-    const can_adr PORT = 10;
-    const double SPEED = 0.7;
+    constexpr can_adr LIMIT_SWITCH_PORT = 0;
+    constexpr can_adr PORT = 10;
+    constexpr double SPEED = 0.7;
 
-    const auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
+    constexpr auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
 }
 
 namespace TRANSPORT
 {
-    const can_adr PORT = 3;
+    constexpr can_adr PORT = 3;
 
-    const auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
+    constexpr auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
 
-    const double SPEED = 0.4;
-    const double SHOOT_SPEED = 1.0; // previous value was 1.0
+    constexpr double SPEED = 0.4;
+    constexpr double SHOOT_SPEED = 1.0; // previous value was 1.0
 
-    const double DISTANCE = 79.0 / 3;
-    const double TOLERANCE = 1;
+    constexpr double DISTANCE = 79.0 / 3;
+    constexpr double TOLERANCE = 1;
 
-    const double P = 0.3;
-    const double I = 0;
-    const double D = 0.0001;
+    constexpr double P = 0.3;
+    constexpr double I = 0;
+    constexpr double D = 0.0001;
 }
 
-using can_adr = int;
-
-const can_adr LIMIT_SWITCH = 0;
 /******************************************************************/
 /*                        Public Variables                        */
 /******************************************************************/
 
-local rev::CANSparkMax indexer{INDEXER::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-local rev::CANSparkMax transport{TRANSPORT::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-local auto pid_controller = transport.GetPIDController();
-local auto encoder = transport.GetEncoder();
-local frc::DigitalInput limit_switch{LIMIT_SWITCH};
-int number_of_balls = 3;
-double target_distance = TRANSPORT::DISTANCE;
-bool is_transporting = false;
-std::atomic<bool> invalid_stop_flag{false};
+static rev::CANSparkMax indexer{INDEXER::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+static rev::CANSparkMax transport{TRANSPORT::PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+static auto pid_controller = transport.GetPIDController();
+static auto encoder = transport.GetEncoder();
+static frc::DigitalInput limit_switch{INDEXER::LIMIT_SWITCH_PORT};
+static int number_of_balls = 3;
+static double target_distance = TRANSPORT::DISTANCE;
+static bool is_transporting = false;
+static std::atomic<bool> invalid_stop_flag{false};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */

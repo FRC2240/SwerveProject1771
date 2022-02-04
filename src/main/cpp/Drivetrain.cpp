@@ -19,7 +19,9 @@ constexpr units::degrees_per_second_t
 /*                        Private Variables                       */
 /******************************************************************/
 
-auto first_time_getting_angle = true;
+static auto first_time_getting_angle = true;
+
+static std::unique_ptr<AHRS> navx;
 
 /******************************************************************/
 /*                        Public Variables                        */
@@ -40,8 +42,6 @@ frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
                                          frc::Translation2d{11_in, -11_in},
                                          frc::Translation2d{-11_in, 11_in},
                                          frc::Translation2d{-11_in, -11_in}};
-
-local std::unique_ptr<AHRS> navx;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */

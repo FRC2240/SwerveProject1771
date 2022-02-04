@@ -19,9 +19,9 @@ constexpr double IDLE_RPM = 6500;
 /*                        Private Variables                       */
 /******************************************************************/
 
-local rev::CANSparkMax shooter{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-local auto shooter_encoder = shooter.GetEncoder();
-bool run_at_max_speed;
+static rev::CANSparkMax shooter{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+static auto shooter_encoder = shooter.GetEncoder();
+static bool run_at_max_speed;
 
 /******************************************************************/
 /*                        Public Variables                        */

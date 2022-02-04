@@ -28,10 +28,10 @@ extern frc::SwerveDriveKinematics<4> const kinematics;
 
 extern std::unique_ptr<AHRS> navx;
 
-local frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
+static frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 
 // This is using lambdas in order to use setters at beginning of runtime & save performance later
-local frc::HolonomicDriveController controller = []()
+static frc::HolonomicDriveController controller = []()
 {
     frc::HolonomicDriveController controller{
         frc2::PIDController{3, 0, 0},
@@ -50,7 +50,7 @@ local frc::HolonomicDriveController controller = []()
     return controller;
 }(); // This lambda creates a HolonomicDriveController, sets the tolerance, then returns it
 
-local frc::Field2d field2d;
+static frc::Field2d field2d;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */

@@ -22,13 +22,13 @@ namespace Hood
     void init();
 
     /// returns true if tolerance is met
-    bool goToPosition(Hood::POSITION position, double tolerance = TOLERANCE);
+    bool goToPosition(Hood::POSITION const &position, double const &tolerance = TOLERANCE);
 
     /// returns true if tolerance is met
-    bool visionTrack(double tolerance = TOLERANCE);
+    bool visionTrack(double const &tolerance = TOLERANCE);
 
     /// used for tuning interpolation tables
-    void manualPositionControl(double position);
+    void manualPositionControl(double const &position);
 
     void printAngle();
     double getAngle();
