@@ -12,7 +12,7 @@ namespace Autons
     {
         Intake::deploy(true);
         Intake::drive(Intake::DIRECTION::IN);
-        Trajectory::follow(PathPlanner::loadPath("Complex", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION), [](units::second_t current_time)
+        Trajectory::follow(PathPlanner::loadPath("Complex", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION, Trajectory::reverse_trajectory), [](units::second_t current_time)
                            { Hopper::index(false); });
         Intake::deploy(false);
     };

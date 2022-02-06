@@ -34,4 +34,6 @@ namespace Trajectory
     void testHolonomic(frc::Pose2d const &target_pose,
                        units::velocity::meters_per_second_t const &velocity,
                        frc::Rotation2d const &target_rot);
+
+    inline bool reverse_trajectory = false;
 }

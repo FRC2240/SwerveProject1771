@@ -75,6 +75,8 @@ Robot::Robot()
 
   frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
 
+  frc::SmartDashboard::PutBoolean("Traj Reversed", Trajectory::reverse_trajectory);
+
   // This is the second joystick's Y axis
   BUTTON::PS5.SetTwistChannel(5);
 }
@@ -82,6 +84,11 @@ Robot::Robot()
 void Robot::RobotInit()
 {
   Trajectory::putField2d();
+}
+
+void Robot::RobotPeriodic()
+{
+  Trajectory::reverse_trajectory = frc::SmartDashboard::GetBoolean("Traj Reversed", Trajectory::reverse_trajectory);
 }
 
 void Robot::AutonomousInit()

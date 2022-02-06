@@ -12,6 +12,7 @@ public:
     Robot();
 
     void RobotInit() override;
+    void RobotPeriodic() override;
     
     void AutonomousInit() override;
     void AutonomousPeriodic() override;

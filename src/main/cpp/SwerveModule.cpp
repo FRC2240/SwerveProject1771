@@ -69,7 +69,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
     turner_config.slot0.kI = 0;
     turner_config.slot0.kD = 0;
     turner_config.slot0.kF = 0;
-    turner_config.neutralDeadband = 0.001771;
+    turner_config.neutralDeadband = 0.01771;
     turner_config.peakOutputForward = .5;
     turner_config.peakOutputReverse = -.5;
     turner_config.remoteFilter0.remoteSensorDeviceID = cancoder.GetDeviceNumber();

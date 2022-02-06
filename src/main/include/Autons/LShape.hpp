@@ -7,6 +7,6 @@ namespace Autons
 {
     constexpr auto lShape = []()
     {
-        Trajectory::follow(PathPlanner::loadPath("L with Rotate", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION));
+        Trajectory::follow(PathPlanner::loadPath("L with Rotate", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION, Trajectory::reverse_trajectory));
     };
 }
