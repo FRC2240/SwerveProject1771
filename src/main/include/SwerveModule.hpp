@@ -20,6 +20,10 @@ public:
 
     void setDesiredState(const frc::SwerveModuleState &state);
 
+    void percentOutputControl(double const &percent_output);
+
+    void manualVelocityContol(double const &velocity_ticks_per_100ms);
+
     // No copies/moves should be occuring (Talons don't support this)
     SwerveModule(SwerveModule const &) = delete;
     SwerveModule(SwerveModule &&) = delete;

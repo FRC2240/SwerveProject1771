@@ -35,7 +35,11 @@ namespace Drivetrain
 
     void faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative);
 
-    void setAngleForTuning(units::degree_t const &desired_angle);
+    void tuneTurner(units::degree_t const &desired_angle);
+
+    void manualPercentOutput(double const &percent_output);
+
+    void manualVelocity(double const &velocity_ticks_per_100ms);
 
     /******************************************************************/
     /*                        Public Constants                        */

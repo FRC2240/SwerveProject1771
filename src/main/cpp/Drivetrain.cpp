@@ -170,10 +170,26 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
     faceDirection(dx, dy, 180_deg, field_relative);
 }
 
-void Drivetrain::setAngleForTuning(units::degree_t const &desired_angle)
+void Drivetrain::tuneTurner(units::degree_t const &desired_angle)
 {
   Module::front_left->setDesiredState({0_mps, desired_angle});
   Module::front_right->setDesiredState({0_mps, desired_angle});
   Module::back_left->setDesiredState({0_mps, desired_angle});
   Module::back_right->setDesiredState({0_mps, desired_angle});
+}
+
+void Drivetrain::manualPercentOutput(double const &percent_output)
+{
+  Module::front_left->percentOutputControl(percent_output);
+  Module::front_right->percentOutputControl(percent_output);
+  Module::back_left->percentOutputControl(percent_output);
+  Module::back_right->percentOutputControl(percent_output);
+}
+
+void Drivetrain::manualVelocity(double const &velocity_ticks_per_100ms)
+{
+  Module::front_left->manualVelocityContol(velocity_ticks_per_100ms);
+  Module::front_right->manualVelocityContol(velocity_ticks_per_100ms);
+  Module::back_left->manualVelocityContol(velocity_ticks_per_100ms);
+  Module::back_right->manualVelocityContol(velocity_ticks_per_100ms);
 }

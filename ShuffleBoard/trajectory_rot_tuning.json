@@ -1,0 +1,300 @@
+{
+  "tabPane": [
+    {
+      "title": "LiveWindow",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Ungrouped",
+              "_title": "Ungrouped",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/navX-Sensor[4]",
+                  "_title": "navX-Sensor[4]",
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[11]/Position",
+                  "_title": "CANCoder[11]/Position"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[13]/Position",
+                  "_title": "CANCoder[13]/Position"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[12]/Position",
+                  "_title": "CANCoder[12]/Position"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/CANCoder[14]/Position",
+                  "_title": "CANCoder[14]/Position"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Trajectory",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "11,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Traj Selector",
+              "_title": "SmartDashboard/Traj Selector"
+            }
+          },
+          "4,3": {
+            "size": [
+              5,
+              3
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Odometry Field",
+              "_title": "SmartDashboard/Odometry Field",
+              "Game/Game": "A2021_Infinite_Recharge",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false,
+              "Colors/Traj": "#FFFFFFFF"
+            }
+          },
+          "11,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Inital State: ",
+              "_title": "/SmartDashboard/Inital State: "
+            }
+          },
+          "8,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Speed VX Change",
+              "_source1": "network_table:///SmartDashboard/Speed VY Change",
+              "_source2": "network_table:///SmartDashboard/Speed Omega Change",
+              "_source3": "network_table:///SmartDashboard/Estimated VY Speed",
+              "_source4": "network_table:///SmartDashboard/Estimated Omega Speed",
+              "_title": "SmartDashboard/Speed VX Change",
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul"
+            }
+          },
+          "4,0": {
+            "size": [
+              4,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Real VX Speed",
+              "_source1": "network_table:///SmartDashboard/Real VY Speed",
+              "_source2": "network_table:///SmartDashboard/Real Omega Speed",
+              "_title": "SmartDashboard/Real VX Speed",
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Real Omega Speed": true,
+              "Visible data/SmartDashboard/Real VX Speed": true,
+              "Visible data/SmartDashboard/Real VY Speed": true
+            }
+          },
+          "9,3": {
+            "size": [
+              4,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Holonomic x error",
+              "_source1": "network_table:///SmartDashboard/Holonomic y error",
+              "_source2": "network_table:///SmartDashboard/Holonomic z error",
+              "_title": "SmartDashboard/Holonomic x error",
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Holonomic x error": true,
+              "Visible data/SmartDashboard/Holonomic y error": true,
+              "Visible data/SmartDashboard/Holonomic z error": true
+            }
+          },
+          "0,0": {
+            "size": [
+              4,
+              6
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Subsystem Layout",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Target Rotation",
+                  "_title": "SmartDashboard/Target Rotation",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": false,
+                  "Y-axis/Upper bound": 2.0,
+                  "Y-axis/Lower bound": -2.0,
+                  "Y-axis/Unit": "rad",
+                  "Visible data/SmartDashboard/Target Rotation": true
+                },
+                {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Real Rotation",
+                  "_title": "SmartDashboard/Real Rotation",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": false,
+                  "Y-axis/Upper bound": 2.0,
+                  "Y-axis/Lower bound": -2.0,
+                  "Y-axis/Unit": "rad",
+                  "Visible data/SmartDashboard/Real Rotation": true
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tab 3",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "3,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Subsystem Layout",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Front Left Module",
+                  "_title": "/SmartDashboard/Actual Front Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Front Right Module",
+                  "_title": "/SmartDashboard/Actual Front Right Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Back Left Module",
+                  "_title": "/SmartDashboard/Actual Back Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Actual Back Right Module",
+                  "_title": "/SmartDashboard/Actual Back Right Module"
+                }
+              ]
+            }
+          },
+          "6,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Subsystem Layout",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Front Left Module",
+                  "_title": "/SmartDashboard/Target Front Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Front Right Module",
+                  "_title": "/SmartDashboard/Target Front Right Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Back Left Module",
+                  "_title": "/SmartDashboard/Target Back Left Module"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Target Back Right Module",
+                  "_title": "/SmartDashboard/Target Back Right Module"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1056.0
+  }
+}

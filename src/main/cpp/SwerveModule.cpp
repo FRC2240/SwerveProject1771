@@ -54,10 +54,11 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
     // Configure Driver
     TalonFXConfiguration driver_config{};
     driver_config.slot0.kP = 0.1;
-    driver_config.slot0.kI = 0;
-    driver_config.slot0.kD = 0;
-    driver_config.slot0.kF = 0;
-    driver_config.closedloopRamp = .1;
+    driver_config.slot0.kI = 0.002;
+    driver_config.slot0.integralZone = 200;
+    driver_config.slot0.kD = 10;
+    driver_config.slot0.kF = 0.04857549857549857;
+    driver_config.closedloopRamp = .2;
     // driver_config.voltageCompSaturation = 12;
     driver.ConfigAllSettings(driver_config);
     driver.SetNeutralMode(NeutralMode::Brake);
@@ -123,4 +124,16 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
+}
+
+void SwerveModule::percentOutputControl(double const &percent_output)
+{
+    driver.Set(TalonFXControlMode::PercentOutput, percent_output);
+    turner.Set(TalonFXControlMode::Position, 0);
+}
+
+void SwerveModule::manualVelocityContol(double const &velocity_ticks_per_100ms)
+{
+    driver.Set(TalonFXControlMode::Velocity, velocity_ticks_per_100ms);
+    turner.Set(TalonFXControlMode::Position, 0);
 }

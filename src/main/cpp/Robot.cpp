@@ -129,21 +129,35 @@ void Robot::TeleopPeriodic()
 
 void Robot::TestInit()
 {
+  /*
   Intake::deploy(true);
   using namespace std::chrono_literals;
   std::this_thread::sleep_for(1s);
   Hood::goToPosition(Hood::POSITION::MIDPOINT);
   Turret::goToPosition(Turret::POSITION::FRONT);
+  */
 }
 
 void Robot::TestPeriodic()
 {
+  /*
   ShooterWheel::bangbang();
   Hopper::index(false);
-  if (BUTTON::DRIVETRAIN::TURN_90.getRawButtonReleased())
-    Hopper::stop();
-  if (BUTTON::DRIVETRAIN::TURN_90)
-    Hopper::shoot();
+    if(BUTTON::DRIVETRAIN::TURN_90.getRawButtonReleased())
+        Hopper::stop();
+    if(BUTTON::DRIVETRAIN::TURN_90)
+        Hopper::shoot();
+*/
+  if (BUTTON::DRIVETRAIN::TURN_45)
+    Drivetrain::manualVelocity(7500);
+  else if (BUTTON::DRIVETRAIN::TURN_90)
+    Drivetrain::manualVelocity(10000);
+  else if (BUTTON::DRIVETRAIN::TURN_neg45)
+    Drivetrain::manualVelocity(2500);
+  else if (BUTTON::DRIVETRAIN::TURN_neg90)
+    Drivetrain::manualVelocity(5000);
+  else
+    Drivetrain::manualVelocity(0);
 }
 
 /******************************************************************/
@@ -154,23 +168,23 @@ void Robot::tunePID()
 {
   if (BUTTON::DRIVETRAIN::TURN_45)
   {
-    Drivetrain::setAngleForTuning(45_deg);
+    Drivetrain::tuneTurner(45_deg);
   }
   else if (BUTTON::DRIVETRAIN::TURN_neg45)
   {
-    Drivetrain::setAngleForTuning(-45_deg);
+    Drivetrain::tuneTurner(-45_deg);
   }
   else if (BUTTON::DRIVETRAIN::TURN_90)
   {
-    Drivetrain::setAngleForTuning(90_deg);
+    Drivetrain::tuneTurner(90_deg);
   }
   else if (BUTTON::DRIVETRAIN::TURN_neg90)
   {
-    Drivetrain::setAngleForTuning(-90_deg);
+    Drivetrain::tuneTurner(-90_deg);
   }
   else
   {
-    Drivetrain::setAngleForTuning(0_deg);
+    Drivetrain::tuneTurner(0_deg);
   }
 }
 

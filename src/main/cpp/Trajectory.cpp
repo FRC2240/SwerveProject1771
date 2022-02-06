@@ -35,18 +35,19 @@ static frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 static frc::HolonomicDriveController controller = []()
 {
     frc::HolonomicDriveController controller{
-        frc2::PIDController{3, 0, 0},
-        frc2::PIDController{3, 0, 0},
+        frc2::PIDController{1, 0, 0},
+        frc2::PIDController{1, 0, 0},
         []()
         {
             frc::ProfiledPIDController<units::radian> theta_controller{
-                10, 150, 1,
+                10, -0.003, 0,
                 frc::TrapezoidProfile<units::radian>::Constraints{
                     Drivetrain::TRAJ_MAX_ANGULAR_SPEED,
                     Drivetrain::TRAJ_MAX_ANGULAR_ACCELERATION}};
-            theta_controller.EnableContinuousInput(units::radian_t{-wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
+            theta_controller.SetIntegratorRange(-0.5, 0.5);
+            theta_controller.EnableContinuousInput(-units::radian_t{wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
             return theta_controller;
-        }()}; // This lambdas makes a ProfilePIDController, enables continuous input, then returns it
+        }()}; // This lambdas makes a ProfilePIDController, enables continuous input, then returns it0
     controller.SetTolerance(frc::Pose2d{{0.05_m, 0.05_m}, {3_deg}});
     return controller;
 }(); // This lambda creates a HolonomicDriveController, sets the tolerance, then returns it
@@ -110,6 +111,7 @@ frc::ChassisSpeeds const Trajectory::getRealSpeeds()
 
 void Trajectory::printEstimatedSpeeds()
 {
+    return;
     frc::ChassisSpeeds const estimated_speeds = getEstimatedSpeeds();
 
     frc::SmartDashboard::PutNumber("Estimated VX Speed", estimated_speeds.vx.value());
@@ -139,15 +141,13 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
     if constexpr (debugging)
     {
         frc::Transform2d const holonomic_error = {odometry.GetPose(), state.pose};
-        frc::ChassisSpeeds const current_speeds = getRealSpeeds();
 
         frc::SmartDashboard::PutNumber("Holonomic x error", holonomic_error.X().value());
         frc::SmartDashboard::PutNumber("Holonomic y error", holonomic_error.Y().value());
-        frc::SmartDashboard::PutNumber("Holonomic z error", holonomic_error.Rotation().Degrees().value());
+        frc::SmartDashboard::PutNumber("Holonomic z error", holonomic_error.Rotation().Radians().value());
 
-        frc::SmartDashboard::PutNumber("Speed VX Change", (correction.vx - current_speeds.vx).value());
-        frc::SmartDashboard::PutNumber("Speed VY Change", (correction.vy - current_speeds.vy).value());
-        frc::SmartDashboard::PutNumber("Speed Omega Change", units::degrees_per_second_t{correction.omega - current_speeds.omega}.value() / 720);
+        frc::SmartDashboard::PutNumber("Target Rotation", state.holonomicRotation.Radians().value());
+        frc::SmartDashboard::PutNumber("Real Rotation", odometry.GetPose().Rotation().Radians().value());
     }
 }
 
@@ -171,7 +171,7 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj, std::function<v
         frc::SmartDashboard::PutString("Inital State: ", fmt::format("X: {}, Y: {}, Z: {}, Holonomic: {}\n", inital_pose.X().value(), inital_pose.Y().value(), inital_pose.Rotation().Degrees().value(), inital_state.holonomicRotation.Degrees().value()));
     }
 
-    while (RobotState::IsAutonomousEnabled() && (trajTimer.Get() <= traj.getTotalTime() + .5_s))
+    while (RobotState::IsAutonomousEnabled() && (trajTimer.Get() <= traj.getTotalTime() + 0.1_s))
     {
         auto current_time = trajTimer.Get();
 
