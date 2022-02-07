@@ -11,7 +11,7 @@ namespace Autons
     {
         Intake::deploy(true);
         Intake::drive(Intake::DIRECTION::IN);
-        Trajectory::follow(PathPlanner::loadPath("Pickup Balls", Drivetrain::TRAJ_MAX_SPEED, Drivetrain::TRAJ_MAX_ACCELERATION, Trajectory::reverse_trajectory),
+        Trajectory::follow("Pickup Balls",
                            [](units::second_t current_time)
                            {
             Hopper::index(false); });

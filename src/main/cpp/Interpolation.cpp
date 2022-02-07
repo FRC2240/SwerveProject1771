@@ -33,7 +33,7 @@ constexpr std::array<table_row, 6> lookup_table{
 
 constexpr table_row const *findValueInTable(double const &yval)
 {
-    return ngr::findIf(std::next(lookup_table.begin()), std::end(lookup_table), [=](auto const &val)
+    return ngr::findIf(std::next(std::begin(lookup_table)), std::end(lookup_table), [=](auto const &val)
                        { return yval >= val.y_val; });
 }
 
@@ -41,7 +41,7 @@ constexpr double interpolate(double const &x_value, point const &lower_bound, po
 {
     double const slope = (upper_bound.y - lower_bound.y) / (upper_bound.x - lower_bound.x);
     double const adjusted_x_value = x_value - lower_bound.x;
-    double const y_intercept = upper_bound.y;
+    double const y_intercept = lower_bound.y;
 
     // This is just y = ax + b;
     return slope * adjusted_x_value + y_intercept;
@@ -86,9 +86,8 @@ static_assert(ngr::isSorted(std::begin(lookup_table), std::end(lookup_table),
                             [](auto const &lhs, auto const &rhs)
                             { return lhs.y_val > rhs.y_val; }),
               "Lookup table not sorted");
-/*
-static_assert(ngr::isCloseTo(Interpolation::getHoodValue(16), -17.0, .5), "Error with getHoodValue()");
-static_assert(ngr::isCloseTo(Interpolation::getHoodValue(-1), -20.8, .5), "Error with getHoodValue()");
+
+static_assert(ngr::isCloseTo(Interpolation::getHoodValue(16), -17.0, .2), "Error with getHoodValue()");
+static_assert(ngr::isCloseTo(Interpolation::getHoodValue(-1), -20.8, .2), "Error with getHoodValue()");
 static_assert(ngr::isCloseTo(Interpolation::getFlySpeed(11), .6, .05), "Error with getFlySpeed()");
-static_assert(ngr::isCloseTo(Interpolation::getHoodValue(-3.5), 1, .05), "Error with getFlySpeed()");
-*/
+static_assert(ngr::isCloseTo(Interpolation::getFlySpeed(-3.5), 1, .05), "Error with getFlySpeed()");

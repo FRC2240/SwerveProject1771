@@ -151,8 +151,13 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
     }
 }
 
-void Trajectory::follow(pathplanner::PathPlannerTrajectory traj, std::function<void(units::second_t time)> extra_control)
+void Trajectory::follow(std::string const &traj_dir,
+                        std::function<void(units::second_t time)> const &periodic,
+                        units::meters_per_second_t const &max_vel,
+                        units::meters_per_second_squared_t const &max_accl)
 {
+    auto traj = PathPlanner::loadPath(traj_dir, max_vel, max_accl, reverse_trajectory);
+
     auto const inital_state = *traj.getInitialState();
     auto const inital_pose = inital_state.pose;
 
@@ -182,8 +187,8 @@ void Trajectory::follow(pathplanner::PathPlannerTrajectory traj, std::function<v
         driveToState(sample);
         updateOdometry();
 
-        if (extra_control != nullptr)
-            extra_control(current_time);
+        if (periodic != nullptr)
+            periodic(current_time);
 
         if constexpr (debugging)
         {
