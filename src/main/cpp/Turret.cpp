@@ -69,7 +69,7 @@ bool Turret::goToPosition(Turret::POSITION const &pos, double const &tolerance)
 
     tracking = false; // Reset for Turret::visionTrack(...)
 
-    return std::fabs(turretTurnyTurny.encoder.GetPosition() - pos) < tolerance;
+    return std::abs(turretTurnyTurny.encoder.GetPosition() - pos) < tolerance;
 }
 
 Turret::visionState Turret::visionTrack(Turret::POSITION const &initPosition, double const &tolerance)
@@ -93,12 +93,12 @@ Turret::visionState Turret::visionTrack(Turret::POSITION const &initPosition, do
 
         static auto prev_offset_deg = 0_deg;
         if (prev_offset_deg == x_offset_deg) // prevents reusing outdated data
-            return {true, fabs(x_offset_deg.value()) < tolerance};
+            return {true, std::abs(x_offset_deg.value()) < tolerance};
         prev_offset_deg = x_offset_deg;
 
         turretTurnyTurny.SetTarget(x_target);
 
-        return {true, fabs(x_offset_deg.value()) < tolerance};
+        return {true, std::abs(x_offset_deg.value()) < tolerance};
     }
 
     return {false, false};

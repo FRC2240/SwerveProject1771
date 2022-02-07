@@ -22,14 +22,14 @@ constexpr units::degrees_per_second_t
 
 static auto first_time_getting_angle = true;
 
-static std::unique_ptr<AHRS> navx;
-
 /******************************************************************/
 /*                        Public Variables                        */
 /******************************************************************/
 
 // All variables interacting with hardware need initalized in init()
 // to avoid issues with initalizing before wpilib
+
+// These are "public" (not static) bc they are accessed by the Trajectory namespace
 
 namespace Module
 {
@@ -43,6 +43,8 @@ frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
                                          frc::Translation2d{11_in, -11_in},
                                          frc::Translation2d{-11_in, 11_in},
                                          frc::Translation2d{-11_in, -11_in}};
+
+std::unique_ptr<AHRS> navx;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -71,8 +73,14 @@ units::degree_t Drivetrain::getAngle()
 }
 
 frc::Rotation2d Drivetrain::getCCWHeading() { return {-getAngle()}; }
+// or navx->GetRotation()
 
 frc::Rotation2d Drivetrain::getCWHeading() { return {getAngle()}; }
+
+bool Drivetrain::isTipping()
+{
+  return std::abs(navx->GetRoll()) > 30 || std::abs(navx->GetPitch()) > 30;
+}
 
 /******************************************************************/
 /*                       Driving Functions                        */
@@ -105,32 +113,48 @@ void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 // Sets each module to the desired state
 void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 {
-
-  kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
-
-  auto const [fl, fr, bl, br] = states;
-
-  Module::front_left->setDesiredState(fl);
-  Module::front_right->setDesiredState(fr);
-  Module::back_left->setDesiredState(bl);
-  Module::back_right->setDesiredState(br);
-
-  if constexpr (debugging)
+  if (isTipping())
   {
-    frc::SmartDashboard::PutString("Target Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl.speed.value(), fl.angle.Degrees().value()));
-    frc::SmartDashboard::PutString("Target Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr.speed.value(), fr.angle.Degrees().value()));
-    frc::SmartDashboard::PutString("Target Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl.speed.value(), bl.angle.Degrees().value()));
-    frc::SmartDashboard::PutString("Target Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br.speed.value(), br.angle.Degrees().value()));
-
-    auto const fl_old = Module::front_left->getState();
-    auto const fr_old = Module::front_left->getState();
-    auto const bl_old = Module::back_left->getState();
-    auto const br_old = Module::back_right->getState();
-    frc::SmartDashboard::PutString("Actual Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl_old.speed, fl_old.angle.Degrees().value()));
-    frc::SmartDashboard::PutString("Actual Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr_old.speed.value(), fr_old.angle.Degrees().value()));
-    frc::SmartDashboard::PutString("Actual Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl_old.speed.value(), bl_old.angle.Degrees().value()));
-    frc::SmartDashboard::PutString("Actual Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br_old.speed.value(), br_old.angle.Degrees().value()));
+    Drivetrain::stop();
   }
+  else
+  {
+
+    kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
+
+    auto const [fl, fr, bl, br] = states;
+
+    Module::front_left->setDesiredState(fl);
+    Module::front_right->setDesiredState(fr);
+    Module::back_left->setDesiredState(bl);
+    Module::back_right->setDesiredState(br);
+
+    if constexpr (debugging)
+    {
+      frc::SmartDashboard::PutString("Target Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl.speed.value(), fl.angle.Degrees().value()));
+      frc::SmartDashboard::PutString("Target Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr.speed.value(), fr.angle.Degrees().value()));
+      frc::SmartDashboard::PutString("Target Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl.speed.value(), bl.angle.Degrees().value()));
+      frc::SmartDashboard::PutString("Target Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br.speed.value(), br.angle.Degrees().value()));
+
+      auto const fl_old = Module::front_left->getState();
+      auto const fr_old = Module::front_left->getState();
+      auto const bl_old = Module::back_left->getState();
+      auto const br_old = Module::back_right->getState();
+      frc::SmartDashboard::PutString("Actual Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl_old.speed, fl_old.angle.Degrees().value()));
+      frc::SmartDashboard::PutString("Actual Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr_old.speed.value(), fr_old.angle.Degrees().value()));
+      frc::SmartDashboard::PutString("Actual Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl_old.speed.value(), bl_old.angle.Degrees().value()));
+      frc::SmartDashboard::PutString("Actual Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br_old.speed.value(), br_old.angle.Degrees().value()));
+    }
+  }
+}
+
+void Drivetrain::stop()
+{
+  constexpr frc::SwerveModuleState stopped{0_mps, {}};
+  Module::front_left->setDesiredState(stopped);
+  Module::front_right->setDesiredState(stopped);
+  Module::back_left->setDesiredState(stopped);
+  Module::back_right->setDesiredState(stopped);
 }
 
 /******************************************************************/
@@ -145,12 +169,12 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::mete
     error_theta += 360; // Ensure angle is between -180 and 360
   if (error_theta > 180)
     error_theta -= 360; // Optimizes angle if over 180
-  if (abs(error_theta) < 10)
+  if (std::abs(error_theta) < 10)
     error_theta = 0; // Dead-zone to prevent oscillation
 
   double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
 
-  if (abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())
+  if (std::abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())
     p_rotation = MAX_FACE_DIRECTION_SPEED.value() * ((p_rotation > 0) ? 1 : -1); // Constrains turn speed
 
   // p_rotation is negated since the robot actually turns ccw, not cw

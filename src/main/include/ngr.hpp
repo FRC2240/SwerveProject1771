@@ -20,24 +20,12 @@ namespace ngr
     static_assert(valueInRange(2, 0, 1) == false, "Error with valueInRange()");
     static_assert(valueInRange(-1, 0, 1) == false, "Error with valueInRange()");
 
-    // Compiles fine without, but VSCode will complain (std::fabs isn't constexpr)
-    [[nodiscard]] constexpr static double fabs(double value)
-    {
-        if (value < 0)
-            return -value;
-        else
-            return value;
-    }
-    static_assert(fabs(1) == 1, "Error with ngr::fabs()");
-    static_assert(fabs(-1) == 1, "Error with ngr::fabs()");
-    static_assert(fabs(0) == 0, "Error with ngr::fabs()");
-
     // Constexpr floating point comparison
     [[nodiscard]] constexpr bool isCloseTo(double value,
                                            double target,
                                            double tol = 0.00001)
     {
-        return fabs(value - target) < tol;
+        return std::abs(value - target) < tol;
     }
 
     static_assert(isCloseTo(.5, .500000001) == true, "Error in isCloseTo()");

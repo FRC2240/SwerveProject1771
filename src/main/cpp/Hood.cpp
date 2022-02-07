@@ -55,7 +55,7 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
         hood.SetTarget(pos);
         position = pos;
     }
-    return std::fabs(hood.encoder.GetPosition() - pos) < tolerance;
+    return std::abs(hood.encoder.GetPosition() - pos) < tolerance;
 }
 
 [[nodiscard]] double getTrackingValue(double yval)
@@ -124,7 +124,7 @@ bool Hood::visionTrack(double const &tolerance)
         // auto const cameratarget = result.GetBestTarget();
         double target = getTrackingValue(camera.getY());
         hood.SetTarget(std::clamp(target, static_cast<double>(Hood::POSITION::SAFE_TO_TURN), 0.0));
-        return std::fabs(target - hood.encoder.GetPosition()) < tolerance;
+        return std::abs(target - hood.encoder.GetPosition()) < tolerance;
     }
     goToPosition(Hood::POSITION::TRAVERSE);
     return false;

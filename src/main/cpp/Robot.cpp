@@ -97,7 +97,7 @@ void Robot::AutonomousInit()
 
   traj_selector.GetSelected()();
 
-  Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
+  Drivetrain::stop();
 
   // If driving after "stop" is called is a problem, I will add a "stop" method
   //  which runs a few times to ensure all modules are stopped
@@ -108,7 +108,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   // This is what gets called after Init()
-  Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
+  Drivetrain::stop();
 }
 
 void Robot::TeleopInit()
@@ -212,7 +212,7 @@ void Robot::driveWithJoystick(bool const &field_relative)
     double const rotate_joy_y = -BUTTON::PS5.GetTwist() * 10;
 
     // If we aren't actually pressing the joystick, leave rotation at previous
-    if (abs(rotate_joy_x) > 0.1 || abs(rotate_joy_y) > 0.1)
+    if (std::abs(rotate_joy_x) > 0.1 || std::abs(rotate_joy_y) > 0.1)
     {
       // Get degree using arctan, then convert from unit circle to front-centered values with positive being CW
       Drivetrain::faceDirection(front_back, left_right, -units::radian_t{atan2(rotate_joy_y, rotate_joy_x)} + 90_deg, field_relative);

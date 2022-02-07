@@ -36,12 +36,12 @@ void ShooterWheel::bangbang() // original code with commented code removed
 {
     shooter.SetOpenLoopRampRate(0);
 
-    if ((abs(shooter_encoder.GetVelocity()) < 2000))
+    if ((std::abs(shooter_encoder.GetVelocity()) < 2000))
         shooter.Set(-.5);
-    else if (run_at_max_speed && abs(shooter_encoder.GetVelocity()) < SHOOTING_RPM)
+    else if (run_at_max_speed && std::abs(shooter_encoder.GetVelocity()) < SHOOTING_RPM)
         shooter.Set(-1),
             fmt::print("1\n");
-    else if (abs(shooter_encoder.GetVelocity()) < IDLE_RPM)
+    else if (std::abs(shooter_encoder.GetVelocity()) < IDLE_RPM)
         shooter.Set(-1),
             fmt::print("1\n");
     else

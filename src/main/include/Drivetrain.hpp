@@ -21,6 +21,8 @@ namespace Drivetrain
 
     [[nodiscard]] frc::Rotation2d getCWHeading();
 
+    [[nodiscard]] bool isTipping();
+
     void drive(units::meters_per_second_t const &xSpeed,
                units::meters_per_second_t const &ySpeed,
                units::radians_per_second_t const &rot,
@@ -29,6 +31,8 @@ namespace Drivetrain
     void drive(frc::ChassisSpeeds const &speeds);
 
     void drive(wpi::array<frc::SwerveModuleState, 4> states);
+
+    void stop();
 
     // For theta, positive is CCW
     void faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative);

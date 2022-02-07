@@ -100,7 +100,7 @@ frc::ChassisSpeeds const Trajectory::getRealSpeeds()
 
     units::meters_per_second_t const Y = delta_pose.Y() / time_elapsed;
 
-    units::degrees_per_second_t const rot = delta_pose.Rotation().Degrees() / time_elapsed;
+    units::degrees_per_second_t const rot{navx->GetRate()};
 
     previous_pose = odometry.GetPose(); // Set the previous_pose for the next time this loop is run
 
@@ -205,7 +205,7 @@ void Trajectory::follow(std::string const &traj_dir,
         // This is the refresh rate of the HolonomicDriveController's PID controllers (can be tweaked if needed)
         std::this_thread::sleep_for(20ms);
     }
-    Drivetrain::drive(0_mps, 0_mps, units::radians_per_second_t{0}, true);
+    Drivetrain::stop();
 }
 
 void Trajectory::testHolonomic(frc::Pose2d const &target_pose, units::velocity::meters_per_second_t const &velocity, frc::Rotation2d const &target_rot)
