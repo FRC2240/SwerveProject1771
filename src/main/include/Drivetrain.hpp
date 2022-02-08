@@ -23,6 +23,9 @@ namespace Drivetrain
 
     [[nodiscard]] bool isTipping();
 
+    //Handles inversing
+    void tankDrive(double const& x_speed, double const& y_speed);
+
     void drive(units::meters_per_second_t const &xSpeed,
                units::meters_per_second_t const &ySpeed,
                units::radians_per_second_t const &rot,

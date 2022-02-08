@@ -155,16 +155,23 @@ void Robot::TestPeriodic()
     if(BUTTON::DRIVETRAIN::TURN_90)
         Hopper::shoot();
 */
-  if (BUTTON::DRIVETRAIN::TURN_45)
-    Drivetrain::manualVelocity(7500);
-  else if (BUTTON::DRIVETRAIN::TURN_90)
-    Drivetrain::manualVelocity(10000);
-  else if (BUTTON::DRIVETRAIN::TURN_neg45)
-    Drivetrain::manualVelocity(2500);
-  else if (BUTTON::DRIVETRAIN::TURN_neg90)
-    Drivetrain::manualVelocity(5000);
-  else
-    Drivetrain::manualVelocity(0);
+  /*
+    if (BUTTON::DRIVETRAIN::TURN_45)
+      Drivetrain::manualVelocity(7500);
+    else if (BUTTON::DRIVETRAIN::TURN_90)
+      Drivetrain::manualVelocity(10000);
+    else if (BUTTON::DRIVETRAIN::TURN_neg45)
+      Drivetrain::manualVelocity(2500);
+    else if (BUTTON::DRIVETRAIN::TURN_neg90)
+      Drivetrain::manualVelocity(5000);
+    else
+      Drivetrain::manualVelocity(0);
+      */
+     auto const l_speed = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08);
+     auto const r_speed = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.08);
+
+     Drivetrain::tankDrive(l_speed, r_speed);
+
 }
 
 /******************************************************************/

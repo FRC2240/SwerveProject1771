@@ -86,6 +86,14 @@ bool Drivetrain::isTipping()
 /*                       Driving Functions                        */
 /******************************************************************/
 
+void Drivetrain::tankDrive(double const &l_speed, double const &r_speed)
+{
+  using namespace Module;
+  front_left->percentOutputControl(l_speed);
+  front_right->percentOutputControl(-r_speed);
+  back_left->percentOutputControl(l_speed);
+  back_right->percentOutputControl(-r_speed);
+}
 // Converts inputted speeds into a frc::ChassisSpeeds object
 void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
                        units::meters_per_second_t const &ySpeed,
@@ -124,11 +132,11 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 
     auto const [fl, fr, bl, br] = states;
 
-    Module::front_left->setDesiredState(fl);
-    Module::front_right->setDesiredState(fr);
-    Module::back_left->setDesiredState(bl);
-    Module::back_right->setDesiredState(br);
-
+    using namespace Module;
+    front_left->setDesiredState(fl);
+    front_right->setDesiredState(fr);
+    back_left->setDesiredState(bl);
+    back_right->setDesiredState(br);
     if constexpr (debugging)
     {
       frc::SmartDashboard::PutString("Target Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl.speed.value(), fl.angle.Degrees().value()));
@@ -136,10 +144,10 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
       frc::SmartDashboard::PutString("Target Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl.speed.value(), bl.angle.Degrees().value()));
       frc::SmartDashboard::PutString("Target Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br.speed.value(), br.angle.Degrees().value()));
 
-      auto const fl_old = Module::front_left->getState();
-      auto const fr_old = Module::front_left->getState();
-      auto const bl_old = Module::back_left->getState();
-      auto const br_old = Module::back_right->getState();
+      auto const fl_old = front_left->getState();
+      auto const fr_old = front_left->getState();
+      auto const bl_old = back_left->getState();
+      auto const br_old = back_right->getState();
       frc::SmartDashboard::PutString("Actual Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl_old.speed, fl_old.angle.Degrees().value()));
       frc::SmartDashboard::PutString("Actual Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr_old.speed.value(), fr_old.angle.Degrees().value()));
       frc::SmartDashboard::PutString("Actual Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl_old.speed.value(), bl_old.angle.Degrees().value()));
@@ -151,10 +159,12 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 void Drivetrain::stop()
 {
   constexpr frc::SwerveModuleState stopped{0_mps, {}};
-  Module::front_left->setDesiredState(stopped);
-  Module::front_right->setDesiredState(stopped);
-  Module::back_left->setDesiredState(stopped);
-  Module::back_right->setDesiredState(stopped);
+
+  using namespace Module;
+  front_left->setDesiredState(stopped);
+  front_right->setDesiredState(stopped);
+  back_left->setDesiredState(stopped);
+  back_right->setDesiredState(stopped);
 }
 
 /******************************************************************/
@@ -196,24 +206,27 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
 
 void Drivetrain::tuneTurner(units::degree_t const &desired_angle)
 {
-  Module::front_left->setDesiredState({0_mps, desired_angle});
-  Module::front_right->setDesiredState({0_mps, desired_angle});
-  Module::back_left->setDesiredState({0_mps, desired_angle});
-  Module::back_right->setDesiredState({0_mps, desired_angle});
+  using namespace Module;
+  front_left->setDesiredState({0_mps, desired_angle});
+  front_right->setDesiredState({0_mps, desired_angle});
+  back_left->setDesiredState({0_mps, desired_angle});
+  back_right->setDesiredState({0_mps, desired_angle});
 }
 
 void Drivetrain::manualPercentOutput(double const &percent_output)
 {
-  Module::front_left->percentOutputControl(percent_output);
-  Module::front_right->percentOutputControl(percent_output);
-  Module::back_left->percentOutputControl(percent_output);
-  Module::back_right->percentOutputControl(percent_output);
+  using namespace Module;
+  front_left->percentOutputControl(percent_output);
+  front_right->percentOutputControl(percent_output);
+  back_left->percentOutputControl(percent_output);
+  back_right->percentOutputControl(percent_output);
 }
 
 void Drivetrain::manualVelocity(double const &velocity_ticks_per_100ms)
 {
-  Module::front_left->manualVelocityContol(velocity_ticks_per_100ms);
-  Module::front_right->manualVelocityContol(velocity_ticks_per_100ms);
-  Module::back_left->manualVelocityContol(velocity_ticks_per_100ms);
-  Module::back_right->manualVelocityContol(velocity_ticks_per_100ms);
+  using namespace Module;
+  front_left->manualVelocityContol(velocity_ticks_per_100ms);
+  front_right->manualVelocityContol(velocity_ticks_per_100ms);
+  back_left->manualVelocityContol(velocity_ticks_per_100ms);
+  back_right->manualVelocityContol(velocity_ticks_per_100ms);
 }

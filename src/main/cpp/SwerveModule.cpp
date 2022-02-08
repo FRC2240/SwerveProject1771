@@ -129,7 +129,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 void SwerveModule::percentOutputControl(double const &percent_output)
 {
     driver.Set(TalonFXControlMode::PercentOutput, percent_output);
-    turner.Set(TalonFXControlMode::Position, 0);
+    turner.Set(TalonFXControlMode::Position, turner.GetSelectedSensorPosition());
 }
 
 void SwerveModule::manualVelocityContol(double const &velocity_ticks_per_100ms)
