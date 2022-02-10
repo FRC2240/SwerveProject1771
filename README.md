@@ -1,4 +1,4 @@
-**Welcome to Team 1771's (North Gwinnett Robotics) GitHub repo containing code for their 2022 Rapid React robot**
+**Welcome to Team 1771's (North Gwinnett Robotics) GitHub repo containing some updates (mainly trajectory following) for our 2020/21 Infinite Recharge "Black Widow" robot**
 
 *Please follow these guidelines while editing code:*
 -  If classes are only used once, try making them namespaces.
