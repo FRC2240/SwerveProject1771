@@ -10,12 +10,6 @@
 /*                       Private Constants                        */
 /******************************************************************/
 
-// faceDirection && faceClosest constants
-constexpr auto ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P)
-
-constexpr units::degrees_per_second_t
-    MAX_FACE_DIRECTION_SPEED = 150_deg / 1_s; // only used for faceDirection
-
 /******************************************************************/
 /*                        Private Variables                       */
 /******************************************************************/
@@ -171,27 +165,37 @@ void Drivetrain::stop()
 /*                        Facing Functions                        */
 /******************************************************************/
 
-void Drivetrain::faceDirection(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, units::degree_t const &theta, bool const &field_relative)
+void Drivetrain::faceDirection(units::meters_per_second_t const &dx,
+                               units::meters_per_second_t const &dy,
+                               units::degree_t const &theta,
+                               bool const &field_relative,
+                               double const &rot_p = ROTATE_P,
+                               units::radians_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED)
 {
-  int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle; gets the equivalent value between -360 and 360
+  int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle;
+                                                          // gets the equivalent value between -360 and 360
 
   if (error_theta < -180)
     error_theta += 360; // Ensure angle is between -180 and 360
   if (error_theta > 180)
     error_theta -= 360; // Optimizes angle if over 180
-  if (std::abs(error_theta) < 10)
+  if (std::abs(error_theta) < 5)
     error_theta = 0; // Dead-zone to prevent oscillation
 
-  double p_rotation = error_theta * ROTATE_P; // Modifies error_theta in order to get a faster turning speed
+  double p_rotation = error_theta * rot_p; // Modifies error_theta in order to get a faster turning speed
 
-  if (std::abs(p_rotation) > MAX_FACE_DIRECTION_SPEED.value())
-    p_rotation = MAX_FACE_DIRECTION_SPEED.value() * ((p_rotation > 0) ? 1 : -1); // Constrains turn speed
+  if (std::abs(p_rotation) > max_rot_speed.value())
+    p_rotation = max_rot_speed.value() * ((p_rotation > 0) ? 1 : -1); // Constrains turn speed
 
   // p_rotation is negated since the robot actually turns ccw, not cw
   drive(dx, dy, units::degrees_per_second_t{-p_rotation}, field_relative);
 }
 
-void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters_per_second_t const &dy, bool const &field_relative)
+void Drivetrain::faceClosest(units::meters_per_second_t const &dx,
+                             units::meters_per_second_t const &dy,
+                             bool const &field_relative,
+                             double const &rot_p = ROTATE_P,
+                             units::radians_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED)
 {
   int current_rotation = getAngle().to<int>() % 360; // Ensure angle is between -360 and 360
 
@@ -199,9 +203,9 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx, units::meters
     current_rotation += 360; // Ensure angle is between 0 and 360
 
   if (current_rotation <= 90 || current_rotation >= 270)
-    faceDirection(dx, dy, 0_deg, field_relative);
+    faceDirection(dx, dy, 0_deg, field_relative, rot_p, max_rot_speed);
   else
-    faceDirection(dx, dy, 180_deg, field_relative);
+    faceDirection(dx, dy, 180_deg, field_relative, rot_p, max_rot_speed);
 }
 
 void Drivetrain::tuneTurner(units::degree_t const &desired_angle)
