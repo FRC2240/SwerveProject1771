@@ -187,7 +187,7 @@ void Trajectory::follow(std::string const &traj_dir,
         driveToState(sample);
         updateOdometry();
 
-        if (periodic != nullptr)
+        if (periodic)
             periodic(current_time);
 
         if constexpr (debugging)

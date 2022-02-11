@@ -126,3 +126,9 @@ void Hopper::stop()
         transport.Set(0);
     }
 }
+
+wpi::array<double, 2> Hopper::getTemps()
+{
+    return {indexer.GetMotorTemperature(),
+            transport.GetMotorTemperature()};
+}

@@ -40,4 +40,6 @@ namespace Turret
 
     /// used for tuning interpolation tables
     void manualPositionControl(double const &position);
+
+    [[nodiscard]] double getTemp();
 }

@@ -18,6 +18,10 @@ public:
 
     [[nodiscard]] units::degree_t getAngle();
 
+    [[nodiscard]] double getDriverTemp();
+
+    [[nodiscard]] double getTurnerTemp();
+
     void setDesiredState(const frc::SwerveModuleState &state);
 
     void percentOutputControl(double const &percent_output);

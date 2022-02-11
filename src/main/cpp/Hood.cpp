@@ -29,7 +29,7 @@ constexpr double MAX_SPEED = 0.8;
 /******************************************************************/
 
 static PID_CANSparkMax hood{PORT, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
-static Hood::POSITION position = Hood::POSITION::BOTTOM;
+static Hood::POSITION current_position = Hood::POSITION::BOTTOM;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -48,14 +48,14 @@ void Hood::init()
     hood.SetPositionRange(Hood::POSITION::BATTER, Hood::POSITION::BOTTOM);
 }
 
-bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
+bool Hood::goToPosition(Hood::POSITION const &target_position, double const &tolerance)
 {
-    if (pos != position)
+    if (target_position != current_position)
     {
-        hood.SetTarget(pos);
-        position = pos;
+        hood.SetTarget(target_position);
+        current_position = target_position;
     }
-    return std::abs(hood.encoder.GetPosition() - pos) < tolerance;
+    return std::abs(hood.encoder.GetPosition() - target_position) < tolerance;
 }
 
 [[nodiscard]] double getTrackingValue(double yval)
@@ -85,14 +85,14 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
                            { return yval >= val.y_val; });
     };
 
-    constexpr auto interpolate_old = [](auto const &value, table_row const *ref1, table_row const *ref2)
+    constexpr auto interpolate = [](auto const &value, table_row const *ref1, table_row const *ref2)
     {
         return ((ref1->hood_val - ref2->hood_val) / (ref1->y_val - ref2->y_val)) * (value - ref2->y_val) + ref2->hood_val;
     };
 
     auto const range = findValueInTable(yval, std::begin(lookup_table), std::end(lookup_table));
     
-    return interpolate_old(yval,
+    return interpolate(yval,
                        std::prev(range),
                        range);
 
@@ -110,7 +110,7 @@ bool Hood::goToPosition(Hood::POSITION const &pos, double const &tolerance)
                   "Lookup table not sorted");
 
     static_assert(ngr::isCloseTo(ngr::midpoint(lookup_table[0].hood_val, lookup_table[1].hood_val),
-                                 interpolate_old(ngr::midpoint(lookup_table[0].y_val, lookup_table[1].y_val),
+                                 interpolate(ngr::midpoint(lookup_table[0].y_val, lookup_table[1].y_val),
                                              &lookup_table[0],
                                              &lookup_table[1])),
                   "Interpolation Error");
@@ -130,13 +130,13 @@ bool Hood::visionTrack(double const &tolerance)
     return false;
 }
 
-void Hood::manualPositionControl(double const &pos)
+void Hood::manualPositionControl(double const &target_position)
 {
     hood.SetTarget(ngr::scaleOutput(0,
                                     1,
                                     Hood::POSITION::TRAVERSE,
                                     Hood::POSITION::SAFE_TO_TURN,
-                                    std::clamp(pos, 0.0, 1.0)));
+                                    std::clamp(target_position, 0.0, 1.0)));
 }
 
 void Hood::printAngle()
@@ -154,4 +154,9 @@ double Hood::getCameraY()
     // auto const result       = camera.GetLatestResult();
     // auto const cameratarget = result.GetBestTarget();
     return camera.getY();
+}
+
+double Hood::getTemp()
+{
+    return hood.GetMotorTemperature();
 }

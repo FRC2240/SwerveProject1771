@@ -19,4 +19,6 @@ namespace Intake
     void deploy(bool const &val);
 
     [[nodiscard]] bool isIntakeDown();
+
+    [[nodiscard]] double getWheelTemp();
 }

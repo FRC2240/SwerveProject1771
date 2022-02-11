@@ -114,3 +114,8 @@ void Turret::manualPositionControl(double const &pos)
                                    std::clamp(pos, -1.0, 1.0)),
                                rev::CANSparkMax::ControlType::kPosition);
 }
+
+double Turret::getTemp()
+{
+    return turretTurnyTurny.GetMotorTemperature();
+}

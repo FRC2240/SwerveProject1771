@@ -77,3 +77,9 @@ void Climber::buttonManager()
     else if (hasBeenPressed)
         set(Climber::POSITION::DOWN);
 }
+
+wpi::array<double, 2> Climber::getTemps()
+{
+    return {climber_1.GetMotorTemperature(),
+            climber_2.GetMotorTemperature()};
+}

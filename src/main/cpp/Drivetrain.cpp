@@ -7,16 +7,6 @@
 #include <AHRS.h>
 
 /******************************************************************/
-/*                       Private Constants                        */
-/******************************************************************/
-
-/******************************************************************/
-/*                        Private Variables                       */
-/******************************************************************/
-
-static auto first_time_getting_angle = true;
-
-/******************************************************************/
 /*                        Public Variables                        */
 /******************************************************************/
 
@@ -58,6 +48,8 @@ void Drivetrain::init()
 // Returns values with 0 being front and positive angles going CW
 units::degree_t Drivetrain::getAngle()
 {
+  static bool first_time_getting_angle = true;
+
   if (first_time_getting_angle)
   {
     navx->ZeroYaw(); // This can't be called in init() since the gyro will still be calibrating
@@ -76,6 +68,23 @@ bool Drivetrain::isTipping()
   return std::abs(navx->GetRoll()) > 30 || std::abs(navx->GetPitch()) > 30;
 }
 
+wpi::array<double, 4> Drivetrain::getDriverTemps()
+{
+  using namespace Module;
+  return {front_left->getDriverTemp(),
+          front_right->getDriverTemp(),
+          back_left->getDriverTemp(),
+          back_right->getDriverTemp()};
+}
+
+wpi::array<double, 4> Drivetrain::getTurnerTemps()
+{
+  using namespace Module;
+  return {front_left->getTurnerTemp(),
+          front_right->getTurnerTemp(),
+          back_left->getTurnerTemp(),
+          back_right->getTurnerTemp()};
+}
 /******************************************************************/
 /*                       Driving Functions                        */
 /******************************************************************/
@@ -169,8 +178,8 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx,
                                units::meters_per_second_t const &dy,
                                units::degree_t const &theta,
                                bool const &field_relative,
-                               double const &rot_p = ROTATE_P,
-                               units::radians_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED)
+                               double const &rot_p,
+                               units::radians_per_second_t const &max_rot_speed)
 {
   int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle;
                                                           // gets the equivalent value between -360 and 360
@@ -194,8 +203,8 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx,
 void Drivetrain::faceClosest(units::meters_per_second_t const &dx,
                              units::meters_per_second_t const &dy,
                              bool const &field_relative,
-                             double const &rot_p = ROTATE_P,
-                             units::radians_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED)
+                             double const &rot_p,
+                             units::radians_per_second_t const &max_rot_speed)
 {
   int current_rotation = getAngle().to<int>() % 360; // Ensure angle is between -360 and 360
 

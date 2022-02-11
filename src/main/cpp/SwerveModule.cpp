@@ -28,8 +28,8 @@ constexpr auto DRIVER_TICKS_PER_WHEEL_RADIAN =
 constexpr auto HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
 constexpr auto ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
 
-constexpr auto TALON_ENCODER_DEGREES_TO_TICKS = MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS / 360;
-constexpr auto CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
+constexpr auto TICKS_PER_TALON_ENCODER_DEGREE = MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS / 360;
+constexpr auto TICKS_PER_CANCODER_DEGREE = CANCODER_TICKS_PER_ROTATION / 360;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -86,10 +86,11 @@ frc::SwerveModuleState SwerveModule::getState()
             frc::Rotation2d(getAngle())};
 }
 
-units::degree_t SwerveModule::getAngle()
-{
-    return units::degree_t{cancoder.GetAbsolutePosition()};
-}
+units::degree_t SwerveModule::getAngle() { return units::degree_t{cancoder.GetAbsolutePosition()}; }
+
+double SwerveModule::getDriverTemp() { return driver.GetTemperature(); }
+
+double SwerveModule::getTurnerTemp() { return turner.GetTemperature(); }
 
 void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 {
@@ -106,11 +107,11 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
 
     // Convert change in angle to change in (cancoder) ticks
-    double const delta_ticks = delta_rotation.Degrees().value() * CANCODER_DEGREES_TO_TICKS;
+    double const delta_ticks = delta_rotation.Degrees().value() * TICKS_PER_CANCODER_DEGREE;
 
     // Get the current cancoder position
     double const current_ticks = turner.GetSelectedSensorPosition();
-    // Can (theoretically) be replaced with current_ticks = current_rotation * CANCODER_DEGREES_TO_TICKS;
+    // Can (theoretically) be replaced with current_ticks = current_rotation * TICKS_PER_CANCODER_DEGREE;
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;

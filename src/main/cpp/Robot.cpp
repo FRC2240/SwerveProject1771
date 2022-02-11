@@ -11,6 +11,7 @@
 #include "Limelight.hpp"
 #include "ngr.hpp"
 #include "Climber.hpp"
+#include "TempMonitoring.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -33,144 +34,45 @@ static auto field_centric = true;
 LimeLight camera{};
 
 /******************************************************************/
-/*                   Public Function Definitions                  */
-/******************************************************************/
-
-Robot::Robot()
-{
-  // setup RobotStates
-  RobotState::IsEnabled = [this]()
-  { return IsEnabled(); };
-
-  RobotState::IsDisabled = [this]()
-  { return IsDisabled(); };
-
-  RobotState::IsAutonomous = [this]()
-  { return IsAutonomous(); };
-
-  RobotState::IsAutonomousEnabled = [this]()
-  { return IsAutonomousEnabled(); };
-
-  RobotState::IsTeleop = [this]()
-  { return IsTeleop(); };
-
-  RobotState::IsTeleopEnabled = [this]()
-  { return IsTeleopEnabled(); };
-
-  RobotState::IsTest = [this]()
-  { return IsTest(); };
-
-  // Call the inits for all subsystems here
-  Drivetrain::init();
-  Trajectory::putField2d();
-
-  // Add all paths here
-
-  for (auto &[name, auton] : autons)
-  {
-    if (name.find("Default") != std::string::npos)
-      traj_selector.SetDefaultOption(name, auton);
-    else
-      traj_selector.AddOption(name, auton);
-  }
-
-  frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
-
-  frc::SmartDashboard::PutBoolean("Traj Reversed", Trajectory::reverse_trajectory);
-
-  // This is the second joystick's Y axis
-  BUTTON::PS5.SetTwistChannel(5);
-}
-
-void Robot::RobotInit()
-{
-  Trajectory::putField2d();
-}
-
-void Robot::RobotPeriodic()
-{
-  Trajectory::reverse_trajectory = frc::SmartDashboard::GetBoolean("Traj Reversed", Trajectory::reverse_trajectory);
-}
-
-void Robot::AutonomousInit()
-{
-  // Start aiming
-
-  traj_selector.GetSelected()();
-
-  Drivetrain::stop();
-
-  // If driving after "stop" is called is a problem, I will add a "stop" method
-  //  which runs a few times to ensure all modules are stopped
-
-  // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
-}
-
-void Robot::AutonomousPeriodic()
-{
-  // This is what gets called after Init()
-  Drivetrain::stop();
-}
-
-void Robot::TeleopInit()
-{
-}
-
-void Robot::TeleopPeriodic()
-{
-  shooterTempUpdate();
-
-  buttonManager();
-
-  swerveDrive(field_centric);
-
-  Trajectory::updateOdometry();
-
-  if constexpr (debugging)
-  {
-    Trajectory::printEstimatedSpeeds();
-    Trajectory::printRealSpeeds();
-  }
-}
-
-void Robot::TestInit()
-{
-  /*
-  Intake::deploy(true);
-  using namespace std::chrono_literals;
-  std::this_thread::sleep_for(1s);
-  Hood::goToPosition(Hood::POSITION::MIDPOINT);
-  Turret::goToPosition(Turret::POSITION::FRONT);
-  */
-}
-
-void Robot::TestPeriodic()
-{
-  /*
-  ShooterWheel::bangbang();
-  Hopper::index(false);
-    if(BUTTON::DRIVETRAIN::TURN_90.getRawButtonReleased())
-        Hopper::stop();
-    if(BUTTON::DRIVETRAIN::TURN_90)
-        Hopper::shoot();
-*/
-  /*
-    if (BUTTON::DRIVETRAIN::TURN_45)
-      Drivetrain::manualVelocity(7500);
-    else if (BUTTON::DRIVETRAIN::TURN_90)
-      Drivetrain::manualVelocity(10000);
-    else if (BUTTON::DRIVETRAIN::TURN_neg45)
-      Drivetrain::manualVelocity(2500);
-    else if (BUTTON::DRIVETRAIN::TURN_neg90)
-      Drivetrain::manualVelocity(5000);
-    else
-      Drivetrain::manualVelocity(0);
-      */
-}
-
-/******************************************************************/
 /*                  Private Function Definitions                  */
 /******************************************************************/
+
+bool aim(Turret::POSITION direction)
+{
+  if (auto [is_tracking, readyToShoot] = Turret::visionTrack(direction); is_tracking)
+    return Hood::visionTrack() && readyToShoot;
+  Hood::goToPosition(Hood::POSITION::TRAVERSE);
+  return false;
+}
+
+// Needed to flash on/off temp warnings on SmartDashboard/ShuffleBoard
+static bool shooter_wheel_flashing_red = false;
+static bool drivers_flashing_red = false;
+static bool turners_flashing_red = false;
+static bool climbers_flashing_red = false;
+static bool hood_flashing_red = false;
+static bool hopper_flashing_red = false;
+static bool intake_flashing_red = false;
+static bool turret_flashing_red = false;
+
+void monitorTemps()
+{
+  TempMonitoring::monitorTemp(ShooterWheel::getTemp(), 70, "Shooter Temp", "Shooter Overheating", shooter_wheel_flashing_red);
+
+  TempMonitoring::monitorTemps(Drivetrain::getDriverTemps(), 70, "Driver Temps", "Drivers Overheating", drivers_flashing_red);
+
+  TempMonitoring::monitorTemps(Drivetrain::getTurnerTemps(), 60, "Turner Temps", "Turners Overheating", turners_flashing_red);
+
+  TempMonitoring::monitorTemps(Climber::getTemps(), 60, "Climber Temps", "Climbers Overheating", climbers_flashing_red);
+
+  TempMonitoring::monitorTemp(Hood::getTemp(), 65, "Hood Temp", "Hood Overheating", hood_flashing_red);
+
+  TempMonitoring::monitorTemps(Hopper::getTemps(), 65, "Hopper Temps", "Hopper Overheating", hopper_flashing_red);
+
+  TempMonitoring::monitorTemp(Intake::getWheelTemp(), 65, "Intake Wheel Temp", "Intake Wheel Overheating", intake_flashing_red);
+
+  TempMonitoring::monitorTemp(Turret::getTemp(), 65, "Turret Temp", "Turret Overheating", turret_flashing_red);
+}
 
 void buttonManager()
 {
@@ -241,51 +143,12 @@ void buttonManager()
   Climber::buttonManager();
 }
 
-bool aim(Turret::POSITION direction)
-{
-  if (auto [is_tracking, readyToShoot] = Turret::visionTrack(direction); is_tracking)
-    return Hood::visionTrack() && readyToShoot;
-  Hood::goToPosition(Hood::POSITION::TRAVERSE);
-  return false;
-}
-
 void tankDrive()
 {
   auto const l_speed = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08);
   auto const r_speed = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.08);
 
   Drivetrain::tankDrive(l_speed, r_speed);
-}
-
-static bool overheating_flash_red = true;
-
-bool shooterTempUpdate()
-{
-  frc::SmartDashboard::PutNumber("Shooter Temp", ShooterWheel::getTemp());
-  // printf("\n Shooter Temp: %f", ShooterWheel::getTemp());
-  if (ShooterWheel::getTemp() > 70)
-  {
-    // oscillating between green & red to grab attention
-    if (overheating_flash_red)
-    {
-      frc::SmartDashboard::PutBoolean("Shooter (not) Overheating", false);
-      overheating_flash_red = false;
-    }
-    else
-    {
-      frc::SmartDashboard::PutBoolean("Shooter (not) Overheating", true);
-      overheating_flash_red = true;
-    }
-    // BUTTON::PS5.SetRumble(BUTTON::PS5.kLeftRumble, .7);
-    // BUTTON::PS5.SetRumble(BUTTON::PS5.kRightRumble, .7);
-  }
-  else
-  {
-    frc::SmartDashboard::PutBoolean("Shooter (not) Overheating", true);
-    // BUTTON::PS5.SetRumble(BUTTON::PS5.kLeftRumble, 0);
-    // BUTTON::PS5.SetRumble(BUTTON::PS5.kRightRumble, 0);
-  }
-  return ShooterWheel::getTemp() > 70;
 }
 
 void tunePID()
@@ -310,6 +173,20 @@ void tunePID()
   {
     Drivetrain::tuneTurner(0_deg);
   }
+}
+
+void tuneFF()
+{
+  if (BUTTON::DRIVETRAIN::TURN_45)
+    Drivetrain::manualVelocity(7500);
+  else if (BUTTON::DRIVETRAIN::TURN_90)
+    Drivetrain::manualVelocity(10000);
+  else if (BUTTON::DRIVETRAIN::TURN_neg45)
+    Drivetrain::manualVelocity(2500);
+  else if (BUTTON::DRIVETRAIN::TURN_neg90)
+    Drivetrain::manualVelocity(5000);
+  else
+    Drivetrain::manualVelocity(0);
 }
 
 void swerveDrive(bool const &field_relative)
@@ -343,6 +220,114 @@ void swerveDrive(bool const &field_relative)
 
     Drivetrain::drive(front_back, left_right, rot, field_relative);
   }
+}
+
+/******************************************************************/
+/*                   Public Function Definitions                  */
+/******************************************************************/
+
+Robot::Robot()
+{
+  // setup RobotStates
+  RobotState::IsEnabled = [this]()
+  { return IsEnabled(); };
+
+  RobotState::IsDisabled = [this]()
+  { return IsDisabled(); };
+
+  RobotState::IsAutonomous = [this]()
+  { return IsAutonomous(); };
+
+  RobotState::IsAutonomousEnabled = [this]()
+  { return IsAutonomousEnabled(); };
+
+  RobotState::IsTeleop = [this]()
+  { return IsTeleop(); };
+
+  RobotState::IsTeleopEnabled = [this]()
+  { return IsTeleopEnabled(); };
+
+  RobotState::IsTest = [this]()
+  { return IsTest(); };
+
+  // Call the inits for all subsystems here
+  Drivetrain::init();
+  Trajectory::putField2d();
+
+  // Add all paths here
+
+  for (auto &[name, auton] : autons)
+  {
+    if (name.find("Default") != std::string::npos)
+      traj_selector.SetDefaultOption(name, auton);
+    else
+      traj_selector.AddOption(name, auton);
+  }
+
+  frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
+
+  frc::SmartDashboard::PutBoolean("Traj Reversed", Trajectory::reverse_trajectory);
+
+  // This is the second joystick's Y axis
+  BUTTON::PS5.SetTwistChannel(5);
+}
+
+void Robot::RobotInit()
+{
+  Trajectory::putField2d();
+}
+
+void Robot::RobotPeriodic()
+{
+  Trajectory::reverse_trajectory = frc::SmartDashboard::GetBoolean("Traj Reversed", Trajectory::reverse_trajectory);
+  monitorTemps();
+}
+
+void Robot::AutonomousInit()
+{
+  // Start aiming
+
+  traj_selector.GetSelected()();
+
+  Drivetrain::stop();
+
+  // If driving after "stop" is called is a problem, I will add a "stop" method
+  //  which runs a few times to ensure all modules are stopped
+
+  // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
+}
+
+void Robot::AutonomousPeriodic()
+{
+  // This is what gets called after Init()
+  Drivetrain::stop();
+}
+
+void Robot::TeleopInit()
+{
+}
+
+void Robot::TeleopPeriodic()
+{
+  buttonManager();
+
+  swerveDrive(field_centric);
+
+  Trajectory::updateOdometry();
+
+  if constexpr (debugging)
+  {
+    Trajectory::printEstimatedSpeeds();
+    Trajectory::printRealSpeeds();
+  }
+}
+
+void Robot::TestInit()
+{
+}
+
+void Robot::TestPeriodic()
+{
 }
 
 #ifndef RUNNING_FRC_TESTS

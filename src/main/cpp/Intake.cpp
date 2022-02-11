@@ -59,3 +59,8 @@ bool Intake::isIntakeDown()
 {
     return deployed;
 }
+
+double Intake::getWheelTemp()
+{
+    return wheels.GetMotorTemperature();
+}

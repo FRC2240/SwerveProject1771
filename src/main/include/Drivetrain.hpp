@@ -38,7 +38,7 @@ namespace Drivetrain
     constexpr units::radians_per_second_t TRAJ_MAX_ANGULAR_SPEED = ROBOT_MAX_ANGULAR_SPEED;
     constexpr units::radians_per_second_squared_t TRAJ_MAX_ANGULAR_ACCELERATION{wpi::numbers::pi};
 
-    constexpr auto ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P)
+    constexpr auto ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P) / 1sec
 
     /******************************************************************/
     /*                  Public Function Declarations                  */
@@ -53,6 +53,10 @@ namespace Drivetrain
     [[nodiscard]] frc::Rotation2d getCWHeading();
 
     [[nodiscard]] bool isTipping();
+
+    [[nodiscard]] wpi::array<double, 4> getDriverTemps();
+
+    [[nodiscard]] wpi::array<double, 4> getTurnerTemps();
 
     // Handles inversing
     void tankDrive(double const &x_speed, double const &y_speed);
