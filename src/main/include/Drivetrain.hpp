@@ -52,8 +52,6 @@ namespace Drivetrain
 
     [[nodiscard]] frc::Rotation2d getCWHeading();
 
-    [[nodiscard]] bool isTipping();
-
     [[nodiscard]] wpi::array<double, 4> getDriverTemps();
 
     [[nodiscard]] wpi::array<double, 4> getTurnerTemps();
