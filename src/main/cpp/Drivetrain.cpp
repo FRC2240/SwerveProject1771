@@ -63,11 +63,6 @@ frc::Rotation2d Drivetrain::getCCWHeading() { return {-getAngle()}; }
 
 frc::Rotation2d Drivetrain::getCWHeading() { return {getAngle()}; }
 
-bool Drivetrain::isTipping()
-{
-  return std::abs(navx->GetRoll()) > 30 || std::abs(navx->GetPitch()) > 30;
-}
-
 wpi::array<double, 4> Drivetrain::getDriverTemps()
 {
   using namespace Module;
@@ -124,38 +119,31 @@ void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 // Sets each module to the desired state
 void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 {
-  if (isTipping())
+  kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
+
+  auto const [fl, fr, bl, br] = states;
+
+  using namespace Module;
+  front_left->setDesiredState(fl);
+  front_right->setDesiredState(fr);
+  back_left->setDesiredState(bl);
+  back_right->setDesiredState(br);
+  
+  if constexpr (debugging)
   {
-    Drivetrain::stop();
-  }
-  else
-  {
+    frc::SmartDashboard::PutString("Target Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl.speed.value(), fl.angle.Degrees().value()));
+    frc::SmartDashboard::PutString("Target Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr.speed.value(), fr.angle.Degrees().value()));
+    frc::SmartDashboard::PutString("Target Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl.speed.value(), bl.angle.Degrees().value()));
+    frc::SmartDashboard::PutString("Target Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br.speed.value(), br.angle.Degrees().value()));
 
-    kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
-
-    auto const [fl, fr, bl, br] = states;
-
-    using namespace Module;
-    front_left->setDesiredState(fl);
-    front_right->setDesiredState(fr);
-    back_left->setDesiredState(bl);
-    back_right->setDesiredState(br);
-    if constexpr (debugging)
-    {
-      frc::SmartDashboard::PutString("Target Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl.speed.value(), fl.angle.Degrees().value()));
-      frc::SmartDashboard::PutString("Target Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr.speed.value(), fr.angle.Degrees().value()));
-      frc::SmartDashboard::PutString("Target Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl.speed.value(), bl.angle.Degrees().value()));
-      frc::SmartDashboard::PutString("Target Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br.speed.value(), br.angle.Degrees().value()));
-
-      auto const fl_old = front_left->getState();
-      auto const fr_old = front_left->getState();
-      auto const bl_old = back_left->getState();
-      auto const br_old = back_right->getState();
-      frc::SmartDashboard::PutString("Actual Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl_old.speed, fl_old.angle.Degrees().value()));
-      frc::SmartDashboard::PutString("Actual Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr_old.speed.value(), fr_old.angle.Degrees().value()));
-      frc::SmartDashboard::PutString("Actual Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl_old.speed.value(), bl_old.angle.Degrees().value()));
-      frc::SmartDashboard::PutString("Actual Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br_old.speed.value(), br_old.angle.Degrees().value()));
-    }
+    auto const fl_old = front_left->getState();
+    auto const fr_old = front_left->getState();
+    auto const bl_old = back_left->getState();
+    auto const br_old = back_right->getState();
+    frc::SmartDashboard::PutString("Actual Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl_old.speed, fl_old.angle.Degrees().value()));
+    frc::SmartDashboard::PutString("Actual Front Right Module", fmt::format("Speed (mps): {}, Direction: {}", fr_old.speed.value(), fr_old.angle.Degrees().value()));
+    frc::SmartDashboard::PutString("Actual Back Left Module", fmt::format("Speed (mps): {}, Direction: {}", bl_old.speed.value(), bl_old.angle.Degrees().value()));
+    frc::SmartDashboard::PutString("Actual Back Right Module", fmt::format("Speed (mps): {}, Direction: {}", br_old.speed.value(), br_old.angle.Degrees().value()));
   }
 }
 
