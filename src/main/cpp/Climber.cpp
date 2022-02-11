@@ -2,32 +2,31 @@
 #include "PID_CANSparkMax.hpp"
 #include "Buttons.hpp"
 
+/******************************************************************/
+/*                       Private Constants                        */
+/******************************************************************/
+
+constexpr int PORT_1 = 9;
+constexpr int PORT_2 = 35;
+constexpr auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
+constexpr double P = 0.1771;
+constexpr double I = 0.0;
+constexpr double D = 0.0;
+constexpr double MAX_OUTPUT = 1;
+
+// Climber Position Constants are held in Climber.hpp
 
 /******************************************************************/
-/*                             Constants                          */
+/*                        Private Variables                       */
 /******************************************************************/
-inline static constexpr int PORT_1 = 9;
-inline static constexpr int PORT_2 = 35;
 
-inline static constexpr auto IDLE_MODE = rev::CANSparkMax::IdleMode::kBrake;
-
-inline static constexpr double P = 0.1771;
-inline static constexpr double I = 0.0;
-inline static constexpr double D = 0.0;
-
-inline static constexpr double MAX_OUTPUT = 1;
-
-//Climber Position Constants are held in Climber.hpp
+static PID_CANSparkMax climber_1{PORT_1, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
+static PID_CANSparkMax climber_2{PORT_2, rev::CANSparkMaxLowLevel::MotorType::kBrushless};
 
 /******************************************************************/
-/*                          Non-constant Vars                     */
+/*                   Public Function Definitions                  */
 /******************************************************************/
-inline static PID_CANSparkMax climber_1 { PORT_1, rev::CANSparkMaxLowLevel::MotorType::kBrushless };
-inline static PID_CANSparkMax climber_2 { PORT_2, rev::CANSparkMaxLowLevel::MotorType::kBrushless };
 
-/******************************************************************/
-/*                      Non Static Functions                      */
-/******************************************************************/
 void Climber::init()
 {
     climber_1.RestoreFactoryDefaults();
@@ -70,11 +69,11 @@ void Climber::printStatus()
 void Climber::buttonManager()
 {
     static bool hasBeenPressed = false;
-    if(BUTTON::CLIMBER::RAISE && BUTTON::oStick.GetThrottle() < 0)
+    if (BUTTON::CLIMBER::RAISE && BUTTON::oStick.GetThrottle() < 0)
     {
         hasBeenPressed = true;
         set(Climber::POSITION::UP);
     }
-    else if(hasBeenPressed)
+    else if (hasBeenPressed)
         set(Climber::POSITION::DOWN);
 }

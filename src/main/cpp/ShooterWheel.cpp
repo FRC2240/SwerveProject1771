@@ -40,13 +40,10 @@ void ShooterWheel::bangbang() // original code with commented code removed
         shooter.Set(-.5);
     else if (run_at_max_speed && std::abs(shooter_encoder.GetVelocity()) < SHOOTING_RPM)
         shooter.Set(-1);
-            // fmt::print("1\n");
     else if (std::abs(shooter_encoder.GetVelocity()) < IDLE_RPM)
         shooter.Set(-1);
-            // fmt::print("1\n");
     else
         shooter.Set(0);
-        // fmt::print("0\n");
 }
 
 double ShooterWheel::getSpeed()

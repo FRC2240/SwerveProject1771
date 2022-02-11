@@ -3,7 +3,6 @@
 
 #include <wpi/numbers>
 #include <units/angular_velocity.h>
-#include <frc/controller/SimpleMotorFeedforward.h>
 
 /******************************************************************/
 /*                       Private Constants                        */
@@ -31,12 +30,6 @@ constexpr auto ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Tic
 
 constexpr auto TALON_ENCODER_DEGREES_TO_TICKS = MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS / 360;
 constexpr auto CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
-
-
-constexpr units::volt_t kS{0.66805};
-constexpr auto kV = units::volt_t{2.7602} * 1_s / 1_m;
-constexpr auto kA = units::volt_t{0.2558} * 1_s * 1_s / 1_m;
-constexpr frc::SimpleMotorFeedforward<units::meters> feed_forward{kS, kV, kA};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -130,8 +123,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
                 desired_driver_velocity_ticks, desired_turner_pos_ticks);
     */
 
-    driver.Set(TalonFXControlMode::Velocity, 
-    desired_driver_velocity_ticks);
+    driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
 
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
 }

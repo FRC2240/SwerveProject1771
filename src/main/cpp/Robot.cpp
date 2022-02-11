@@ -6,7 +6,7 @@
 #include "Intake.hpp"
 #include "ShooterWheel.hpp"
 #include "Hood.hpp"
-// #include "Turret.hpp"
+#include "Turret.hpp"
 #include "Hopper.hpp"
 #include "Limelight.hpp"
 #include "ngr.hpp"
@@ -172,7 +172,7 @@ void Robot::TestPeriodic()
 /*                  Private Function Definitions                  */
 /******************************************************************/
 
-void Robot::buttonManager()
+void buttonManager()
 {
   if (BUTTON::oStick.GetThrottle() > 0)
     ShooterWheel::bangbang();
@@ -241,7 +241,7 @@ void Robot::buttonManager()
   Climber::buttonManager();
 }
 
-bool Robot::aim(Turret::POSITION direction)
+bool aim(Turret::POSITION direction)
 {
   if (auto [is_tracking, readyToShoot] = Turret::visionTrack(direction); is_tracking)
     return Hood::visionTrack() && readyToShoot;
@@ -249,7 +249,7 @@ bool Robot::aim(Turret::POSITION direction)
   return false;
 }
 
-void Robot::tankDrive()
+void tankDrive()
 {
   auto const l_speed = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08);
   auto const r_speed = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.08);
@@ -259,7 +259,7 @@ void Robot::tankDrive()
 
 static bool overheating_flash_red = true;
 
-bool Robot::shooterTempUpdate()
+bool shooterTempUpdate()
 {
   frc::SmartDashboard::PutNumber("Shooter Temp", ShooterWheel::getTemp());
   // printf("\n Shooter Temp: %f", ShooterWheel::getTemp());
@@ -288,7 +288,7 @@ bool Robot::shooterTempUpdate()
   return ShooterWheel::getTemp() > 70;
 }
 
-void Robot::tunePID()
+void tunePID()
 {
   if (BUTTON::DRIVETRAIN::TURN_45)
   {
@@ -312,7 +312,7 @@ void Robot::tunePID()
   }
 }
 
-void Robot::swerveDrive(bool const &field_relative)
+void swerveDrive(bool const &field_relative)
 {
   auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
   auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
