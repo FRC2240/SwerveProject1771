@@ -3,6 +3,7 @@
 
 #include <wpi/numbers>
 #include <units/angular_velocity.h>
+#include <frc/controller/SimpleMotorFeedforward.h>
 
 /******************************************************************/
 /*                       Private Constants                        */
@@ -15,20 +16,27 @@ constexpr auto CANCODER_TICKS_PER_ROTATION = 4096;
 constexpr auto DRIVER_GEAR_RATIO = 8.16;
 constexpr auto TURNER_GEAR_RATIO = 12.8;
 
-constexpr auto MOTOR_RADIAN_TO_TALON_ENCODER_TICKS =
+constexpr auto TICKS_PER_MOTOR_RADIAN =
+
     MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS / (2 * wpi::numbers::pi); // Number of ticks per radian
 
-constexpr auto DRIVER_WHEEL_ROTATIONS_TO_TICKS =
+constexpr auto TICKS_PER_DRIVER_WHEEL_ROTATION =
     MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS * DRIVER_GEAR_RATIO;
 
-constexpr auto WHEEL_RADIAN_TO_DRIVER_ENCODER_TICKS =
-    MOTOR_RADIAN_TO_TALON_ENCODER_TICKS * DRIVER_GEAR_RATIO; // Total amount of ticks per wheel radian
+constexpr auto DRIVER_TICKS_PER_WHEEL_RADIAN =
+    TICKS_PER_MOTOR_RADIAN * DRIVER_GEAR_RATIO; // Total amount of ticks per wheel radian
 
 constexpr auto HUNDREDMILLISECONDS_TO_1SECOND = 10; // Ticks / 100 milliseconds * 10 = Ticks / 1 second
 constexpr auto ONESECOND_TO_100MILLISECONDS = .1;   // Ticks / second * .1 = Ticks / 100 milliseconds
 
 constexpr auto TALON_ENCODER_DEGREES_TO_TICKS = MOTOR_ROTATIONS_TO_TALON_ENCODER_TICKS / 360;
 constexpr auto CANCODER_DEGREES_TO_TICKS = CANCODER_TICKS_PER_ROTATION / 360;
+
+
+constexpr units::volt_t kS{0.66805};
+constexpr auto kV = units::volt_t{2.7602} * 1_s / 1_m;
+constexpr auto kA = units::volt_t{0.2558} * 1_s * 1_s / 1_m;
+constexpr frc::SimpleMotorFeedforward<units::meters> feed_forward{kS, kV, kA};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -81,7 +89,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
 
 frc::SwerveModuleState SwerveModule::getState()
 {
-    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() / WHEEL_RADIAN_TO_DRIVER_ENCODER_TICKS * WHEEL_RADIUS) / 0.1_s},
+    return {units::meters_per_second_t{(driver.GetSelectedSensorVelocity() / DRIVER_TICKS_PER_WHEEL_RADIAN * WHEEL_RADIUS) / 0.1_s},
             frc::Rotation2d(getAngle())};
 }
 
@@ -99,7 +107,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Convert speed (m/s) to ticks per 100 milliseconds
     double const desired_driver_velocity_ticks =
-        (optimized_speed / WHEEL_RADIUS * WHEEL_RADIAN_TO_DRIVER_ENCODER_TICKS * ONESECOND_TO_100MILLISECONDS).value();
+        (optimized_speed / WHEEL_RADIUS * DRIVER_TICKS_PER_WHEEL_RADIAN * ONESECOND_TO_100MILLISECONDS).value();
 
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
@@ -122,7 +130,9 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
                 desired_driver_velocity_ticks, desired_turner_pos_ticks);
     */
 
-    driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
+    driver.Set(TalonFXControlMode::Velocity, 
+    desired_driver_velocity_ticks);
+
     turner.Set(TalonFXControlMode::Position, desired_turner_pos_ticks);
 }
 

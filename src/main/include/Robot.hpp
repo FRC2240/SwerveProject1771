@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
+#include "Turret.hpp"
 
 class Robot : public frc::TimedRobot
 {
@@ -32,5 +33,9 @@ private:
     /******************************************************************/
 
     void tunePID();
-    void driveWithJoystick(bool const &field_relative);
+    void tankDrive();
+    void swerveDrive(bool const &field_relative);
+    void buttonManager();
+    bool shooterTempUpdate();
+    bool aim(Turret::POSITION direction);
 };

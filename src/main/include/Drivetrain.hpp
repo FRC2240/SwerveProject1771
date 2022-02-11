@@ -23,8 +23,8 @@ namespace Drivetrain
 
     [[nodiscard]] bool isTipping();
 
-    //Handles inversing
-    void tankDrive(double const& x_speed, double const& y_speed);
+    // Handles inversing
+    void tankDrive(double const &x_speed, double const &y_speed);
 
     void drive(units::meters_per_second_t const &xSpeed,
                units::meters_per_second_t const &ySpeed,
@@ -62,11 +62,11 @@ namespace Drivetrain
     // Distance of module from center is 1.294ft
 
     // These are all very high and shouldn't normally be used
-    constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 5.47_fps;
+    constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 8.5_fps; // 5.47_fps;
     constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{2 * wpi::numbers::pi};
     constexpr units::meters_per_second_t MODULE_MAX_SPEED = 13.9_fps;
-    constexpr units::meters_per_second_t TELEOP_MAX_SPEED = 5_fps;
-    constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{wpi::numbers::pi};
+    constexpr units::meters_per_second_t TELEOP_MAX_SPEED = 8.5_fps;
+    constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{3 * wpi::numbers::pi / 2};
     constexpr units::meters_per_second_t TRAJ_MAX_SPEED = ROBOT_MAX_SPEED;
     constexpr units::acceleration::meters_per_second_squared_t TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 0.5_s;
     constexpr units::radians_per_second_t TRAJ_MAX_ANGULAR_SPEED{wpi::numbers::pi};
