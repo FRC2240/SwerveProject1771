@@ -136,7 +136,7 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
 {
     // Correction to help the robot follow trajectory (combination of original trajectory speeds & error correction)
     frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
-    Drivetrain::drive(correction);
+    Drivetrain::faceDirection(correction.vx, correction.vy, state.holonomicRotation.Degrees(), false, 1.5, Drivetrain::TRAJ_MAX_ANGULAR_SPEED);
 
     if constexpr (debugging)
     {
