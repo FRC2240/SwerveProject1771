@@ -300,6 +300,209 @@
           }
         }
       }
+    },
+    {
+      "title": "Tab 4",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Climbers",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Climber Temps",
+                  "_title": "SmartDashboard/Climber Temps",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": true,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul",
+                  "Visible data/SmartDashboard/Climber Temps[0]": true,
+                  "Visible data/SmartDashboard/Climber Temps[1]": true
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Climbers Overheating",
+                  "_title": "SmartDashboard/Climbers Overheating",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
+          },
+          "3,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Shooter",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Shooter Overheating",
+                  "_title": "SmartDashboard/Shooter Overheating",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Shooter Temp",
+                  "_title": "SmartDashboard/Shooter Temp"
+                }
+              ]
+            }
+          },
+          "5,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Drivers",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Driver Temps",
+                  "_title": "SmartDashboard/Driver Temps",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": true,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul",
+                  "Visible data/SmartDashboard/Driver Temps[0]": true,
+                  "Visible data/SmartDashboard/Driver Temps[1]": true,
+                  "Visible data/SmartDashboard/Driver Temps[2]": true,
+                  "Visible data/SmartDashboard/Driver Temps[3]": true
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Drivers Overheating",
+                  "_title": "SmartDashboard/Drivers Overheating",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
+          },
+          "0,3": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Hoppers",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Graph",
+                  "_source0": "network_table:///SmartDashboard/Hopper Temps",
+                  "_title": "SmartDashboard/Hopper Temps",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": true,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul",
+                  "Visible data/SmartDashboard/Hopper Temps[0]": true,
+                  "Visible data/SmartDashboard/Hopper Temps[1]": true
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Hopper Overheating",
+                  "_title": "SmartDashboard/Hopper Overheating",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
+          },
+          "3,4": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Hood",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Hood Temp",
+                  "_title": "SmartDashboard/Hood Temp"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Hood Overheating",
+                  "_title": "SmartDashboard/Hood Overheating",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
+          },
+          "3,2": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Intake Wheel",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Intake Wheel Temp",
+                  "_title": "SmartDashboard/Intake Wheel Temp"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Intake Wheel Overheating",
+                  "_title": "SmartDashboard/Intake Wheel Overheating",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tab 5",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
     }
   ],
   "windowGeometry": {

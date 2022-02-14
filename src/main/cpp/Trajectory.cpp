@@ -32,25 +32,14 @@ extern std::unique_ptr<AHRS> navx;
 static frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
 
 // This is using lambdas in order to use setters at beginning of runtime & save performance later
-static frc::HolonomicDriveController controller = []()
-{
-    frc::HolonomicDriveController controller{
-        frc2::PIDController{1, 0, 0},
-        frc2::PIDController{1, 0, 0},
-        []()
-        {
-            frc::ProfiledPIDController<units::radian> theta_controller{
-                10, -0.003, 0,
-                frc::TrapezoidProfile<units::radian>::Constraints{
-                    Drivetrain::TRAJ_MAX_ANGULAR_SPEED,
-                    Drivetrain::TRAJ_MAX_ANGULAR_ACCELERATION}};
-            theta_controller.SetIntegratorRange(-0.5, 0.5);
-            theta_controller.EnableContinuousInput(-units::radian_t{wpi::numbers::pi}, units::radian_t{wpi::numbers::pi});
-            return theta_controller;
-        }()}; // This lambdas makes a ProfilePIDController, enables continuous input, then returns it0
-    controller.SetTolerance(frc::Pose2d{{0.05_m, 0.05_m}, {3_deg}});
-    return controller;
-}(); // This lambda creates a HolonomicDriveController, sets the tolerance, then returns it
+static frc::HolonomicDriveController controller{
+    frc2::PIDController{1, 0, 0},
+    frc2::PIDController{1, 0, 0},
+    frc::ProfiledPIDController<units::radian>{
+        10, -0.003, 0,
+        frc::TrapezoidProfile<units::radian>::Constraints{
+            Drivetrain::TRAJ_MAX_ANGULAR_SPEED,
+            Drivetrain::TRAJ_MAX_ANGULAR_ACCELERATION}}};
 
 static frc::Field2d field2d;
 
@@ -136,7 +125,7 @@ void Trajectory::driveToState(PathPlannerTrajectory::PathPlannerState const &sta
 {
     // Correction to help the robot follow trajectory (combination of original trajectory speeds & error correction)
     frc::ChassisSpeeds const correction = controller.Calculate(odometry.GetPose(), state.pose, state.velocity, state.holonomicRotation);
-    Drivetrain::faceDirection(correction.vx, correction.vy, state.holonomicRotation.Degrees(), false, 1.5, Drivetrain::TRAJ_MAX_ANGULAR_SPEED);
+    Drivetrain::faceDirection(correction.vx, correction.vy, state.holonomicRotation.Degrees(), false, 4, Drivetrain::TRAJ_MAX_ANGULAR_SPEED);
 
     if constexpr (debugging)
     {

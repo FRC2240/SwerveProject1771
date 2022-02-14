@@ -167,7 +167,7 @@ void Drivetrain::faceDirection(units::meters_per_second_t const &dx,
                                units::degree_t const &theta,
                                bool const &field_relative,
                                double const &rot_p,
-                               units::radians_per_second_t const &max_rot_speed)
+                               units::degrees_per_second_t const &max_rot_speed)
 {
   int error_theta = (theta - getAngle()).to<int>() % 360; // Get difference between old and new angle;
                                                           // gets the equivalent value between -360 and 360
@@ -192,7 +192,7 @@ void Drivetrain::faceClosest(units::meters_per_second_t const &dx,
                              units::meters_per_second_t const &dy,
                              bool const &field_relative,
                              double const &rot_p,
-                             units::radians_per_second_t const &max_rot_speed)
+                             units::degrees_per_second_t const &max_rot_speed)
 {
   int current_rotation = getAngle().to<int>() % 360; // Ensure angle is between -360 and 360
 

@@ -27,18 +27,18 @@ namespace Drivetrain
     // Distance of module from center is 1.294ft
 
     //Max effective linear speed
-    constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 5.47_fps; // 5.47_fps;
-    constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{2 * wpi::numbers::pi};
+    constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 9.533_fps; // 5.47_fps;
+    constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi};
 
     
     constexpr units::meters_per_second_t TELEOP_MAX_SPEED = ROBOT_MAX_SPEED;
-    constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{3 * wpi::numbers::pi / 2};
+    constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{wpi::numbers::pi};
     constexpr units::meters_per_second_t TRAJ_MAX_SPEED = ROBOT_MAX_SPEED;
-    constexpr units::acceleration::meters_per_second_squared_t TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 1_s;
+    constexpr units::acceleration::meters_per_second_squared_t TRAJ_MAX_ACCELERATION = TRAJ_MAX_SPEED / 0.5_s;
     constexpr units::radians_per_second_t TRAJ_MAX_ANGULAR_SPEED = ROBOT_MAX_ANGULAR_SPEED;
     constexpr units::radians_per_second_squared_t TRAJ_MAX_ANGULAR_ACCELERATION{wpi::numbers::pi};
 
-    constexpr auto ROTATE_P = 1.75; // Modifier for rotational speed -> (degree * ROTATE_P) / 1sec
+    constexpr auto ROTATE_P = 2; // Modifier for rotational speed -> (degree * ROTATE_P) / 1sec
 
     /******************************************************************/
     /*                  Public Function Declarations                  */
@@ -76,13 +76,13 @@ namespace Drivetrain
                        units::degree_t const &theta,
                        bool const &field_relative,
                        double const &rot_p = ROTATE_P,
-                       units::radians_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED);
+                       units::degrees_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED);
 
     void faceClosest(units::meters_per_second_t const &dx,
                      units::meters_per_second_t const &dy,
                      bool const &field_relative,
                      double const &rot_p = ROTATE_P,
-                     units::radians_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED);
+                     units::degrees_per_second_t const &max_rot_speed = TELEOP_MAX_ANGULAR_SPEED);
 
     void tuneTurner(units::degree_t const &desired_angle);
 

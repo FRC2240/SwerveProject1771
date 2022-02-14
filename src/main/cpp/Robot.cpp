@@ -126,12 +126,14 @@ void buttonManager()
 
   Intake::deploy(BUTTON::INTAKE::DEPLOY || deploy_intake);
 
-  if (BUTTON::SHOOTER::SHOOT.getRawButtonReleased())
-    Hopper::stop();
-  if (target_locked && BUTTON::SHOOTER::SHOOT)
-    Hopper::shoot();
-  else if (!BUTTON::SHOOTER::SHOOT)
-    Hopper::index();
+  /*
+    if (BUTTON::SHOOTER::SHOOT.getRawButtonReleased())
+      Hopper::stop();
+    if (target_locked && BUTTON::SHOOTER::SHOOT)
+      Hopper::shoot();
+    else if (!BUTTON::SHOOTER::SHOOT)
+      Hopper::index();
+      */
 
   if (BUTTON::INTAKE::INTAKE)
     Intake::drive(Intake::DIRECTION::IN);
