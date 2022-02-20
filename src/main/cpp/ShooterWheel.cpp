@@ -23,7 +23,7 @@ static auto shooter_encoder = shooter.GetEncoder();
 static bool run_at_max_speed;
 
 /******************************************************************/
-/*                        Public Variables                        */
+/*                   Public Function Definitions                  */
 /******************************************************************/
 
 void ShooterWheel::init()

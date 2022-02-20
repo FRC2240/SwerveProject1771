@@ -2,9 +2,16 @@
 #include "SwerveModule.hpp"
 #include "ngr.hpp"
 
+#include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
 #include <AHRS.h>
+
+/******************************************************************/
+/*                        Private Variables                       */
+/******************************************************************/
+
+static std::unique_ptr<AHRS> navx;
 
 /******************************************************************/
 /*                        Public Variables                        */
@@ -27,8 +34,6 @@ frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
                                          frc::Translation2d{11_in, -11_in},
                                          frc::Translation2d{-11_in, 11_in},
                                          frc::Translation2d{-11_in, -11_in}};
-
-std::unique_ptr<AHRS> navx;
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -80,6 +85,22 @@ wpi::array<double, 4> Drivetrain::getTurnerTemps()
           back_left->getTurnerTemp(),
           back_right->getTurnerTemp()};
 }
+
+frc::ChassisSpeeds Drivetrain::getRobotRelativeSpeeds()
+{
+  return kinematics.ToChassisSpeeds(Module::front_left->getState(),
+                                    Module::front_right->getState(),
+                                    Module::back_left->getState(),
+                                    Module::back_right->getState());
+}
+
+wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates()
+{
+  return {Module::front_left->getState(),
+          Module::front_right->getState(),
+          Module::back_left->getState(),
+          Module::back_right->getState()};
+}
 /******************************************************************/
 /*                       Driving Functions                        */
 /******************************************************************/
@@ -128,7 +149,7 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
   front_right->setDesiredState(fr);
   back_left->setDesiredState(bl);
   back_right->setDesiredState(br);
-  
+
   if constexpr (debugging)
   {
     frc::SmartDashboard::PutString("Target Front Left Module", fmt::format("Speed (mps): {}, Direction: {}", fl.speed.value(), fl.angle.Degrees().value()));

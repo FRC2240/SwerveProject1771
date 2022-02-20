@@ -13,21 +13,12 @@ using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 set
 namespace Trajectory
 {
     /******************************************************************/
-    /*                   Public Variable Definitions                  */
+    /*                  Public Function Declarations                  */
     /******************************************************************/
-    void putField2d();
 
-    [[nodiscard]] frc::Pose2d getOdometryPose();
+    void printRobotRelativeSpeeds();
 
-    void updateOdometry();
-
-    [[nodiscard]] frc::ChassisSpeeds const getEstimatedSpeeds();
-
-    [[nodiscard]] frc::ChassisSpeeds const getRealSpeeds();
-
-    void printEstimatedSpeeds();
-
-    void printRealSpeeds();
+    void printFieldRelativeSpeeds();
 
     void driveToState(PathPlannerTrajectory::PathPlannerState const &state);
 
@@ -40,5 +31,8 @@ namespace Trajectory
                        units::velocity::meters_per_second_t const &velocity,
                        frc::Rotation2d const &target_rot);
 
+    /******************************************************************/
+    /*                        Public Variables                        */
+    /******************************************************************/
     inline bool reverse_trajectory = false;
 }

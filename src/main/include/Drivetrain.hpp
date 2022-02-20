@@ -1,8 +1,8 @@
 #pragma once
 
 #include <wpi/numbers>
-#include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/kinematics/SwerveModuleState.h>
 #include <wpi/array.h>
 #include <units/acceleration.h>
 #include <units/angular_acceleration.h>
@@ -14,7 +14,7 @@ namespace Drivetrain
     /*                        Public Constants                        */
     /******************************************************************/
 
-    //Absolute max module speed
+    // Absolute max module speed
     constexpr units::meters_per_second_t MODULE_MAX_SPEED = 13.9_fps;
 
     /*
@@ -26,11 +26,10 @@ namespace Drivetrain
     // Or Robot Max Speed = Max wheel speed - Omega max speed * distance from center
     // Distance of module from center is 1.294ft
 
-    //Max effective linear speed
+    // Max effective linear speed
     constexpr units::meters_per_second_t ROBOT_MAX_SPEED = 9.533_fps; // 5.47_fps;
     constexpr units::radians_per_second_t ROBOT_MAX_ANGULAR_SPEED{wpi::numbers::pi};
 
-    
     constexpr units::meters_per_second_t TELEOP_MAX_SPEED = ROBOT_MAX_SPEED;
     constexpr units::radians_per_second_t TELEOP_MAX_ANGULAR_SPEED{wpi::numbers::pi};
     constexpr units::meters_per_second_t TRAJ_MAX_SPEED = ROBOT_MAX_SPEED;
@@ -55,6 +54,10 @@ namespace Drivetrain
     [[nodiscard]] wpi::array<double, 4> getDriverTemps();
 
     [[nodiscard]] wpi::array<double, 4> getTurnerTemps();
+
+    [[nodiscard]] frc::ChassisSpeeds getRobotRelativeSpeeds();
+
+    [[nodiscard]] wpi::array<frc::SwerveModuleState, 4> getModuleStates();
 
     // Handles inversing
     void tankDrive(double const &x_speed, double const &y_speed);

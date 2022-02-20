@@ -12,6 +12,7 @@
 #include "ngr.hpp"
 #include "Climber.hpp"
 #include "TempMonitoring.hpp"
+#include "Odometry.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -254,7 +255,7 @@ Robot::Robot()
 
   // Call the inits for all subsystems here
   Drivetrain::init();
-  Trajectory::putField2d();
+  Odometry::putField2d();
 
   // Add all paths here
 
@@ -276,7 +277,7 @@ Robot::Robot()
 
 void Robot::RobotInit()
 {
-  Trajectory::putField2d();
+  Odometry::putField2d();
 }
 
 void Robot::RobotPeriodic()
@@ -315,12 +316,12 @@ void Robot::TeleopPeriodic()
 
   swerveDrive(field_centric);
 
-  Trajectory::updateOdometry();
+  Odometry::update();
 
   if constexpr (debugging)
   {
-    Trajectory::printEstimatedSpeeds();
-    Trajectory::printRealSpeeds();
+    Trajectory::printRobotRelativeSpeeds();
+    Trajectory::printFieldRelativeSpeeds();
   }
 }
 

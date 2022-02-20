@@ -1,8 +1,7 @@
 #pragma once
 
-// #include "frc/smartdashboard/Smartdashboard.h"
-#include "networktables/NetworkTable.h"
-#include "networktables/NetworkTableInstance.h"
+#include <networktables/NetworkTable.h>
+#include <networktables/NetworkTableInstance.h>
 
 class LimeLight
 {
