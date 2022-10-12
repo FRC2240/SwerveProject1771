@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <array>
 
-constexpr bool debugging = false;
+constexpr bool debugging = true;
 
 /******************************************************************/
 /*               Public Helper Function Definitions               */

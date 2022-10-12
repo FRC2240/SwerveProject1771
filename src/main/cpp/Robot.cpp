@@ -2,17 +2,11 @@
 #include "Drivetrain.hpp"
 #include "Buttons.hpp"
 #include "RobotState.hpp"
-#include "Autons.hpp"
-#include "Intake.hpp"
-#include "ShooterWheel.hpp"
-#include "Hood.hpp"
-#include "Turret.hpp"
-#include "Hopper.hpp"
-#include "Limelight.hpp"
 #include "ngr.hpp"
-#include "Climber.hpp"
 #include "TempMonitoring.hpp"
 #include "Odometry.hpp"
+#include "Trajectory.hpp"
+
 
 #include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -32,118 +26,28 @@ static auto field_centric = true;
 /*                        Public Variables                        */
 /******************************************************************/
 
-LimeLight camera{};
-
 /******************************************************************/
 /*                  Private Function Definitions                  */
 /******************************************************************/
 
-bool aim(Turret::POSITION direction)
-{
-  if (auto [is_tracking, readyToShoot] = Turret::visionTrack(direction); is_tracking)
-    return Hood::visionTrack() && readyToShoot;
-  Hood::goToPosition(Hood::POSITION::TRAVERSE);
-  return false;
-}
 
 // Needed to flash on/off temp warnings on SmartDashboard/ShuffleBoard
-static bool shooter_wheel_flashing_red = false;
-static bool drivers_flashing_red = false;
-static bool turners_flashing_red = false;
-static bool climbers_flashing_red = false;
-static bool hood_flashing_red = false;
-static bool hopper_flashing_red = false;
-static bool intake_flashing_red = false;
-static bool turret_flashing_red = false;
+//static bool drivers_flashing_red = false;
+//static bool turners_flashing_red = false;
 
 void monitorTemps()
 {
-  TempMonitoring::monitorTemp(ShooterWheel::getTemp(), 70, "Shooter Temp", "Shooter Overheating", shooter_wheel_flashing_red);
-
-  TempMonitoring::monitorTemps(Drivetrain::getDriverTemps(), 70, "Driver Temps", "Drivers Overheating", drivers_flashing_red);
-
-  TempMonitoring::monitorTemps(Drivetrain::getTurnerTemps(), 60, "Turner Temps", "Turners Overheating", turners_flashing_red);
-
-  TempMonitoring::monitorTemps(Climber::getTemps(), 60, "Climber Temps", "Climbers Overheating", climbers_flashing_red);
-
-  TempMonitoring::monitorTemp(Hood::getTemp(), 65, "Hood Temp", "Hood Overheating", hood_flashing_red);
-
-  TempMonitoring::monitorTemps(Hopper::getTemps(), 65, "Hopper Temps", "Hopper Overheating", hopper_flashing_red);
-
-  TempMonitoring::monitorTemp(Intake::getWheelTemp(), 65, "Intake Wheel Temp", "Intake Wheel Overheating", intake_flashing_red);
-
-  TempMonitoring::monitorTemp(Turret::getTemp(), 65, "Turret Temp", "Turret Overheating", turret_flashing_red);
+  //TempMonitoring::monitorTemps(Drivetrain::getDriverTemps(), 70, "Driver Temps", "Drivers Overheating", drivers_flashing_red);
+  //TempMonitoring::monitorTemps(Drivetrain::getTurnerTemps(), 60, "Turner Temps", "Turners Overheating", turners_flashing_red);
 }
 
 void buttonManager()
 {
-  if (BUTTON::oStick.GetThrottle() > 0)
-    ShooterWheel::bangbang();
-  else
-    ShooterWheel::stop();
-
-  bool target_locked = false;
-  bool deploy_intake = false;
-
-  if (BUTTON::SHOOTER::AIM_FRONT)
-  {
-    deploy_intake = true;
-    target_locked = aim(Turret::POSITION::FRONT);
-  }
-  else if (BUTTON::SHOOTER::AIM_BACK)
-  {
-    deploy_intake = true;
-    target_locked = aim(Turret::POSITION::BACK);
-  }
-  else if (BUTTON::SHOOTER::BATTERSHOT)
-  {
-    deploy_intake = true;
-
-    // turret_in_pos is true when it's safe to deploy hood
-    bool const turret_in_pos = Turret::goToPosition(Turret::POSITION::FRONT,
-                                                    std::abs(Turret::POSITION::FRONT - Turret::POSITION::SAFE_TO_DEPLOY_HOOD_FRONT));
-    if (turret_in_pos)
-      target_locked = Hood::goToPosition(Hood::POSITION::BATTER);
-    else
-      Hood::goToPosition(Hood::POSITION::TRAVERSE);
-  }
-  else if (BUTTON::SHOOTER::AIM_SIDE)
-  {
-    deploy_intake = true;
-    target_locked = Hood::goToPosition(Hood::POSITION::MIDPOINT);
-  }
-  else
-  {
-    deploy_intake = false;
-    if (Hood::goToPosition(Hood::POSITION::BOTTOM, std::abs(Hood::POSITION::SAFE_TO_TURN)))
-      Turret::goToPosition(Turret::POSITION::ZERO);
-
     if (BUTTON::DRIVETRAIN::ROTATION_MODE.getRawButtonPressed())
       rotation_joystick = !rotation_joystick;
 
     if (BUTTON::DRIVETRAIN::FIELD_CENTRIC.getRawButtonPressed())
       field_centric = !field_centric;
-  }
-
-  Intake::deploy(BUTTON::INTAKE::DEPLOY || deploy_intake);
-
-  /*
-    if (BUTTON::SHOOTER::SHOOT.getRawButtonReleased())
-      Hopper::stop();
-    if (target_locked && BUTTON::SHOOTER::SHOOT)
-      Hopper::shoot();
-    else if (!BUTTON::SHOOTER::SHOOT)
-      Hopper::index();
-      */
-
-  if (BUTTON::INTAKE::INTAKE)
-    Intake::drive(Intake::DIRECTION::IN);
-  else if (BUTTON::INTAKE::RETRACT)
-    Intake::drive(Intake::DIRECTION::OUT);
-  else
-    Intake::drive(Intake::DIRECTION::OFF);
-
-  Climber::buttonManager();
 }
 
 void tankDrive()
@@ -256,16 +160,6 @@ Robot::Robot()
   // Call the inits for all subsystems here
   Drivetrain::init();
   Odometry::putField2d();
-
-  // Add all paths here
-
-  for (auto &[name, auton] : autons)
-  {
-    if (name.find("Default") != std::string::npos)
-      traj_selector.SetDefaultOption(name, auton);
-    else
-      traj_selector.AddOption(name, auton);
-  }
 
   frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
 
