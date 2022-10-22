@@ -9,6 +9,7 @@
 
 
 #include <frc/MathUtil.h>
+#include <iostream>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
@@ -100,6 +101,8 @@ void swerveDrive(bool const &field_relative)
 {
   auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
   auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
+  //std::cout << "left_right = " << BUTTON::PS5.GetX() << "front_back = " << BUTTON::PS5.GetY() << std::endl;
+  
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
     Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
@@ -124,6 +127,7 @@ void swerveDrive(bool const &field_relative)
   else
   {
     auto const rot = -frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::TELEOP_MAX_ANGULAR_SPEED;
+    //std::cout << "drive here\n";
 
     Drivetrain::drive(front_back, left_right, rot, field_relative);
   }
@@ -206,6 +210,7 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
+  std::cout << "here0" << "\n";
   buttonManager();
 
   swerveDrive(field_centric);

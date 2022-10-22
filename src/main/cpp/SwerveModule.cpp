@@ -3,6 +3,7 @@
 
 #include <wpi/numbers>
 #include <units/angular_velocity.h>
+#include <iostream>
 
 /******************************************************************/
 /*                       Private Constants                        */
@@ -42,11 +43,12 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
       cancoder{cancoder_adr},
       magnet_offset{magnet_offset}
 {
+    turner_addr = turner_adr;
     // Configure CANCoder
     CANCoderConfiguration cancoder_config{};
     cancoder_config.initializationStrategy = SensorInitializationStrategy::BootToAbsolutePosition;
     cancoder_config.unitString = "deg";
-    cancoder_config.sensorDirection = false; // Counter-Clock Wise
+    cancoder_config.sensorDirection = true; //false; // Counter-Clock Wise
     cancoder_config.absoluteSensorRange = AbsoluteSensorRange::Signed_PlusMinus180;
     cancoder_config.magnetOffsetDegrees = magnet_offset;
     cancoder.ConfigAllSettings(cancoder_config);
@@ -94,7 +96,14 @@ double SwerveModule::getTurnerTemp() { return turner.GetTemperature(); }
 
 void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 {
+    std::cout << "here" << "\n";
+    //std::cout << "setDesiredState: " << turner_addr << "\n";
+
     frc::Rotation2d const current_rotation = getAngle();
+
+    //if (turner_addr == 61) {
+    //    std::cout << "turner angle = " << current_rotation.Degrees().value() << std::endl;
+    //}
 
     // Optimize the reference state to avoid spinning further than 90 degrees
     auto const [optimized_speed, optimized_angle] = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
@@ -106,6 +115,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
 
+
     // Convert change in angle to change in (cancoder) ticks
     double const delta_ticks = delta_rotation.Degrees().value() * TICKS_PER_CANCODER_DEGREE;
 
@@ -116,13 +126,18 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
 
-    /*
-    fmt::print("desired_speed: {}, desired_rotation {}\n, current_rotation: {}, optimized_speed: {}, optimized_angle: {},\ndelta_rotation: {}, delta_ticks: {}, current_ticks: {},\ndesired_driver: {}, desired_turner: {}\n",
-                desired_state.speed.value(), desired_state.angle.Degrees().value(),
-                optimized_speed.value(), optimized_angle.Degrees().value(),
-                delta_rotation.Degrees().value(), delta_ticks, current_ticks,
-                desired_driver_velocity_ticks, desired_turner_pos_ticks);
-    */
+    std::cout << "desired speed: " << desired_state.speed.value() << "\n" <<
+    " Desired Rotation: " << desired_state.angle.Degrees().value() <<  "\n\n" <<
+    " Current rotation" << current_rotation.Degrees().value() << "\n" << 
+    " Optomised speed " << optimized_angle.Degrees().value() << "\n" <<
+    " Optomised angle " << delta_rotation.Degrees().value() << "\n" <<
+    " Delta rotation " << delta_rotation.Degrees().value() << "\n" <<
+    " delta ticks " << delta_ticks << "\n" <<
+    " current ticks " << current_ticks << "\n" <<
+    " desired driver " << desired_driver_velocity_ticks << "\n" <<
+    " desired tuner " << desired_turner_pos_ticks << "\n";
+
+    
 
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
 

@@ -32,6 +32,8 @@ public:
     SwerveModule(SwerveModule const &) = delete;
     SwerveModule(SwerveModule &&) = delete;
 
+    WPI_CANCoder* getCanCoder() {return &cancoder;}
+
 private:
     /******************************************************************/
     /*                        Private Variables                       */
@@ -40,4 +42,5 @@ private:
     WPI_TalonFX driver, turner;
     WPI_CANCoder cancoder;
     double const magnet_offset;
+    int turner_addr;
 };

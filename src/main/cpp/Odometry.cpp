@@ -11,9 +11,9 @@
 /*                        Private Variables                       */
 /******************************************************************/
 
-extern frc::SwerveDriveKinematics<4> const kinematics;
+extern frc::SwerveDriveKinematics<2/*4*/> const kinematics;
 
-static frc::SwerveDriveOdometry<4> odometry{kinematics, frc::Rotation2d{0_deg}};
+static frc::SwerveDriveOdometry<2/*4*/> odometry{kinematics, frc::Rotation2d{0_deg}};
 
 frc::Field2d field2d;
 
