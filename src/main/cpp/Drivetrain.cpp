@@ -133,14 +133,14 @@ void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
 {
   auto const speeds = fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getCCWHeading())
                                     : frc::ChassisSpeeds{xSpeed, ySpeed, rot};
-  //std::cout << "here2\n";
+  std::cout << "here2\n";
   drive(speeds);
 }
 
 // Takes the speed & direction the robot should be going and figures out the states for each indivdual module
 void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 {
-  //std::cout << "here3\n";
+  std::cout << "here3\n";
 
   drive(kinematics.ToSwerveModuleStates(speeds));
 
@@ -155,12 +155,13 @@ void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 // Sets each module to the desired state
 void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 2/*4*/> states)
 {
-  //std::cout << "here4\n";
+  std::cout << "here4\n";
 
   kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
 
   auto const [fl, fr] = states;
   //auto const [fl, fr, bl, br] = states;
+
 
   using namespace Module;
   front_left->setDesiredState(fl);
