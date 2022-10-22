@@ -57,7 +57,7 @@ namespace Drivetrain
 
     [[nodiscard]] frc::ChassisSpeeds getRobotRelativeSpeeds();
 
-    [[nodiscard]] wpi::array<frc::SwerveModuleState, 4> getModuleStates();
+    [[nodiscard]] wpi::array<frc::SwerveModuleState, 2/*4*/> getModuleStates();
 
     // Handles inversing
     void tankDrive(double const &x_speed, double const &y_speed);
@@ -69,7 +69,7 @@ namespace Drivetrain
 
     void drive(frc::ChassisSpeeds const &speeds);
 
-    void drive(wpi::array<frc::SwerveModuleState, 4> states);
+    void drive(wpi::array<frc::SwerveModuleState, 2/*4*/> states);
 
     void stop();
 

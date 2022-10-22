@@ -25,30 +25,8 @@ public:
 
 namespace BUTTON
 {
-    inline frc::Joystick PS5{0}, oStick{1};
+    inline frc::Joystick PS5{0};
 
-    namespace INTAKE
-    {
-        inline JoystickButton DEPLOY{BUTTON::oStick, 3};
-        inline JoystickButton RETRACT{BUTTON::oStick, 4};
-        inline JoystickButton INTAKE{BUTTON::oStick, 5};
-    } // namespace INTAKE
-    namespace SHOOTER
-    {
-        inline JoystickButton AIM_FRONT{BUTTON::oStick, 8};
-        inline JoystickButton AIM_BACK{BUTTON::oStick, 10};
-        inline JoystickButton AIM_SIDE{BUTTON::oStick, 2};
-        inline JoystickButton BATTERSHOT{BUTTON::oStick, 6};
-        inline JoystickButton SHOOT{BUTTON::oStick, 1};
-        inline JoystickButton ADJUST_SHOOTER_UP{BUTTON::oStick, 12};
-        inline JoystickButton ADJUST_SHOOTER_DOWN{BUTTON::oStick, 11};
-
-    } // namespace SHOOTER
-
-    namespace CLIMBER
-    {
-        inline JoystickButton RAISE{BUTTON::oStick, 11};
-    }
     namespace DRIVETRAIN
     {
         inline JoystickButton ROTATE_FRONT{BUTTON::PS5, 4};

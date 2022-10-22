@@ -3,6 +3,7 @@
 
 #include <wpi/numbers>
 #include <units/angular_velocity.h>
+#include <iostream>
 
 /******************************************************************/
 /*                       Private Constants                        */
@@ -42,6 +43,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
       cancoder{cancoder_adr},
       magnet_offset{magnet_offset}
 {
+    turner_addr = turner_adr;
     // Configure CANCoder
     CANCoderConfiguration cancoder_config{};
     cancoder_config.initializationStrategy = SensorInitializationStrategy::BootToAbsolutePosition;
@@ -94,7 +96,13 @@ double SwerveModule::getTurnerTemp() { return turner.GetTemperature(); }
 
 void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 {
+    //std::cout << "setDesiredState: " << turner_addr << "\n";
+
     frc::Rotation2d const current_rotation = getAngle();
+
+    //if (turner_addr == 61) {
+    //    std::cout << "turner angle = " << current_rotation.Degrees().value() << std::endl;
+    //}
 
     // Optimize the reference state to avoid spinning further than 90 degrees
     auto const [optimized_speed, optimized_angle] = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
@@ -105,6 +113,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Difference between desired angle and current angle
     frc::Rotation2d delta_rotation = optimized_angle - current_rotation;
+
 
     // Convert change in angle to change in (cancoder) ticks
     double const delta_ticks = delta_rotation.Degrees().value() * TICKS_PER_CANCODER_DEGREE;
