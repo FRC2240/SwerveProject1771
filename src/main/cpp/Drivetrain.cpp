@@ -27,17 +27,18 @@ namespace Module
 {
   std::unique_ptr<SwerveModule> front_left;
   std::unique_ptr<SwerveModule> front_right;
-  //std::unique_ptr<SwerveModule> back_left;
-  //std::unique_ptr<SwerveModule> back_right;
+  std::unique_ptr<SwerveModule> back_left;
+  std::unique_ptr<SwerveModule> back_right;
 }
 
-frc::SwerveDriveKinematics<2> kinematics{frc::Translation2d{11_in, 11_in},
+/* frc::SwerveDriveKinematics<2> kinematics{frc::Translation2d{11_in, 11_in},
                                          frc::Translation2d{11_in, -11_in}};
+*/
 
- /*frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
+ frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{11_in, 11_in},
                                          frc::Translation2d{11_in, -11_in},
                                          frc::Translation2d{-11_in, 11_in},
-                                         frc::Translation2d{-11_in, -11_in}};*/                                       
+                                         frc::Translation2d{-11_in, -11_in}};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -50,8 +51,8 @@ void Drivetrain::init()
   using namespace Module;
   front_left = std::make_unique<SwerveModule>(60, 61, 14, -285.0293);
   front_right = std::make_unique<SwerveModule>(50, 51, 13, -91.54203);
-  //back_left = std::make_unique<SwerveModule>(30, 31, 11, -264.726563);
-  //back_right = std::make_unique<SwerveModule>(40, 41, 12, -344.53125);
+  back_left = std::make_unique<SwerveModule>(30, 31, 11, -264.726563);
+  back_right = std::make_unique<SwerveModule>(40, 41, 12, -344.53125);
 }
 
 // Returns values with 0 being front and positive angles going CW
@@ -72,7 +73,6 @@ frc::Rotation2d Drivetrain::getCCWHeading() { return {-getAngle()}; }
 
 frc::Rotation2d Drivetrain::getCWHeading() { return {getAngle()}; }
 
-/*
 wpi::array<double, 4> Drivetrain::getDriverTemps()
 {
   using namespace Module;
@@ -90,28 +90,22 @@ wpi::array<double, 4> Drivetrain::getTurnerTemps()
           back_left->getTurnerTemp(),
           back_right->getTurnerTemp()};
 }
-*/
+
 
 frc::ChassisSpeeds Drivetrain::getRobotRelativeSpeeds()
 {
   return kinematics.ToChassisSpeeds(Module::front_left->getState(),
-                                    Module::front_right->getState());
-                                
-
-                                    //Module::front_right->getState(),
-                                    //Module::back_left->getState(),
-                                    //Module::back_right->getState());
+                                    Module::front_right->getState(),
+                                    Module::back_left->getState(),
+                                    Module::back_right->getState());
 }
 
-wpi::array<frc::SwerveModuleState, 2/*4*/> Drivetrain::getModuleStates()
+wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates()
 {
   return {Module::front_left->getState(),
-          Module::front_right->getState()};
-    
-
-          //Module::front_right->getState(),
-          //Module::back_left->getState(),
-          //Module::back_right->getState()};
+          Module::front_right->getState(),
+          Module::back_left->getState(),
+          Module::back_right->getState()};
 }
 /******************************************************************/
 /*                       Driving Functions                        */
@@ -122,8 +116,8 @@ void Drivetrain::tankDrive(double const &l_speed, double const &r_speed)
   using namespace Module;
   front_left->percentOutputControl(l_speed);
   front_right->percentOutputControl(-r_speed);
-  //back_left->percentOutputControl(l_speed);
-  //back_right->percentOutputControl(-r_speed);
+  back_left->percentOutputControl(l_speed);
+  back_right->percentOutputControl(-r_speed);
 }
 // Converts inputted speeds into a frc::ChassisSpeeds object
 void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
@@ -133,14 +127,14 @@ void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
 {
   auto const speeds = fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getCCWHeading())
                                     : frc::ChassisSpeeds{xSpeed, ySpeed, rot};
-  std::cout << "here2\n";
+  //std::cout << "here2\n";
   drive(speeds);
 }
 
 // Takes the speed & direction the robot should be going and figures out the states for each indivdual module
 void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 {
-  std::cout << "here3\n";
+//  std::cout << "here3\n";
 
   drive(kinematics.ToSwerveModuleStates(speeds));
 
@@ -153,21 +147,21 @@ void Drivetrain::drive(frc::ChassisSpeeds const &speeds)
 }
 
 // Sets each module to the desired state
-void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 2/*4*/> states)
+void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
 {
-  std::cout << "here4\n";
+  //std::cout << "here4\n";
 
   kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
 
-  auto const [fl, fr] = states;
-  //auto const [fl, fr, bl, br] = states;
+  //auto const [fl, fr] = states;
+  auto const [fl, fr, bl, br] = states;
 
 
   using namespace Module;
   front_left->setDesiredState(fl);
   front_right->setDesiredState(fr);
-  //back_left->setDesiredState(bl);
-  //back_right->setDesiredState(br);
+  back_left->setDesiredState(bl);
+  back_right->setDesiredState(br);
 
   /*
   if constexpr (debugging)
@@ -196,8 +190,8 @@ void Drivetrain::stop()
   using namespace Module;
   front_left->setDesiredState(stopped);
   front_right->setDesiredState(stopped);
-  //back_left->setDesiredState(stopped);
-  //back_right->setDesiredState(stopped);
+  back_left->setDesiredState(stopped);
+  back_right->setDesiredState(stopped);
 }
 
 /******************************************************************/
@@ -252,8 +246,8 @@ void Drivetrain::tuneTurner(units::degree_t const &desired_angle)
   using namespace Module;
   front_left->setDesiredState({0_mps, desired_angle});
   front_right->setDesiredState({0_mps, desired_angle});
-  //back_left->setDesiredState({0_mps, desired_angle});
-  //back_right->setDesiredState({0_mps, desired_angle});
+  back_left->setDesiredState({0_mps, desired_angle});
+  back_right->setDesiredState({0_mps, desired_angle});
 }
 
 void Drivetrain::manualPercentOutput(double const &percent_output)
@@ -261,8 +255,8 @@ void Drivetrain::manualPercentOutput(double const &percent_output)
   using namespace Module;
   front_left->percentOutputControl(percent_output);
   front_right->percentOutputControl(percent_output);
-  //back_left->percentOutputControl(percent_output);
-  //back_right->percentOutputControl(percent_output);
+  back_left->percentOutputControl(percent_output);
+  back_right->percentOutputControl(percent_output);
 }
 
 void Drivetrain::manualVelocity(double const &velocity_ticks_per_100ms)
@@ -270,6 +264,6 @@ void Drivetrain::manualVelocity(double const &velocity_ticks_per_100ms)
   using namespace Module;
   front_left->manualVelocityContol(velocity_ticks_per_100ms);
   front_right->manualVelocityContol(velocity_ticks_per_100ms);
-  //back_left->manualVelocityContol(velocity_ticks_per_100ms);
-  //back_right->manualVelocityContol(velocity_ticks_per_100ms);
+  back_left->manualVelocityContol(velocity_ticks_per_100ms);
+  back_right->manualVelocityContol(velocity_ticks_per_100ms);
 }

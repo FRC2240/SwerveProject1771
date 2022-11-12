@@ -96,7 +96,7 @@ double SwerveModule::getTurnerTemp() { return turner.GetTemperature(); }
 
 void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 {
-    std::cout << "here" << "\n";
+    //std::cout << "here" << "\n"
     //std::cout << "setDesiredState: " << turner_addr << "\n";
 
     frc::Rotation2d const current_rotation = getAngle();
@@ -125,7 +125,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
-
+/*
     std::cout << "desired speed: " << desired_state.speed.value() << "\n" <<
     " Desired Rotation: " << desired_state.angle.Degrees().value() <<  "\n\n" <<
     " Current rotation" << current_rotation.Degrees().value() << "\n" << 
@@ -136,7 +136,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     " current ticks " << current_ticks << "\n" <<
     " desired driver " << desired_driver_velocity_ticks << "\n" <<
     " desired tuner " << desired_turner_pos_ticks << "\n";
-
+*/
     
 
     driver.Set(TalonFXControlMode::Velocity, desired_driver_velocity_ticks);
