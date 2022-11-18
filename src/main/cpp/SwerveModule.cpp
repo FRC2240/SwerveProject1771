@@ -48,11 +48,10 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
     CANCoderConfiguration cancoder_config{};
     cancoder_config.initializationStrategy = SensorInitializationStrategy::BootToAbsolutePosition;
     cancoder_config.unitString = "deg";
-    cancoder_config.sensorDirection = true; //false; // Counter-Clock Wise
+    cancoder_config.sensorDirection = true;
     cancoder_config.absoluteSensorRange = AbsoluteSensorRange::Signed_PlusMinus180;
     cancoder_config.magnetOffsetDegrees = magnet_offset;
     cancoder.ConfigAllSettings(cancoder_config);
-    // cancoder.ConfigSensorDirection()
 
     // Configure Driver
     TalonFXConfiguration driver_config{};
@@ -65,10 +64,11 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
     // driver_config.voltageCompSaturation = 12;
     driver.ConfigAllSettings(driver_config);
     driver.SetNeutralMode(NeutralMode::Brake);
+    driver.SetInverted(false);
 
     // Configure Turner
     TalonFXConfiguration turner_config{};
-    turner_config.slot0.kP = 0.5;
+    turner_config.slot0.kP = 1.1;
     turner_config.slot0.kI = 0;
     turner_config.slot0.kD = 0;
     turner_config.slot0.kF = 0;
@@ -80,6 +80,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
     turner_config.primaryPID.selectedFeedbackSensor = FeedbackDevice::RemoteSensor0;
     turner_config.closedloopRamp = .000;
     turner.ConfigAllSettings(turner_config);
+    turner.SetInverted(false);
 }
 
 frc::SwerveModuleState SwerveModule::getState()
@@ -96,14 +97,7 @@ double SwerveModule::getTurnerTemp() { return turner.GetTemperature(); }
 
 void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
 {
-    std::cout << "here" << "\n";
-    //std::cout << "setDesiredState: " << turner_addr << "\n";
-
     frc::Rotation2d const current_rotation = getAngle();
-
-    //if (turner_addr == 61) {
-    //    std::cout << "turner angle = " << current_rotation.Degrees().value() << std::endl;
-    //}
 
     // Optimize the reference state to avoid spinning further than 90 degrees
     auto const [optimized_speed, optimized_angle] = frc::SwerveModuleState::Optimize(desired_state, current_rotation);
