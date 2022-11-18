@@ -126,10 +126,9 @@ void swerveDrive(bool const &field_relative)
   }
   else
   {
-    auto const rot = -frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::TELEOP_MAX_ANGULAR_SPEED;
-    //std::cout << "drive here\n";
+    auto const rot = frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::TELEOP_MAX_ANGULAR_SPEED;
 
-    Drivetrain::drive(front_back, left_right, rot, field_relative);
+    Drivetrain::drive(front_back, -left_right, rot, field_relative);
   }
 }
 
@@ -171,6 +170,9 @@ Robot::Robot()
 
   // This is the second joystick's Y axis
   BUTTON::PS5.SetTwistChannel(5);
+
+  // Erik
+  BUTTON::PS5.SetZChannel(4);
 }
 
 void Robot::RobotInit()

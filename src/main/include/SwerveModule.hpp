@@ -32,8 +32,6 @@ public:
     SwerveModule(SwerveModule const &) = delete;
     SwerveModule(SwerveModule &&) = delete;
 
-    WPI_CANCoder* getCanCoder() {return &cancoder;}
-
 private:
     /******************************************************************/
     /*                        Private Variables                       */
