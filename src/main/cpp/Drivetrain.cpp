@@ -122,6 +122,7 @@ void Drivetrain::drive(units::meters_per_second_t const &xSpeed,
 {
   auto const speeds = fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getCCWHeading())
                                     : frc::ChassisSpeeds{xSpeed, ySpeed, rot};
+
   drive(speeds);
 }
 
@@ -144,6 +145,7 @@ void Drivetrain::drive(wpi::array<frc::SwerveModuleState, 4> states)
   kinematics.DesaturateWheelSpeeds(&states, MODULE_MAX_SPEED);
 
   auto const [fl, fr, bl, br] = states;
+
 
   using namespace Module;
   front_left->setDesiredState(fl);

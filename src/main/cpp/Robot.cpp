@@ -212,6 +212,7 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
+  std::cout << "here0" << "\n";
   buttonManager();
 
   swerveDrive(field_centric);
