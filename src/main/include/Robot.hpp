@@ -1,6 +1,6 @@
 #pragma once
-
 #include <frc/TimedRobot.h>
+#include <pathplanner/lib/PathPlanner.h>
 
 class Robot : public frc::TimedRobot
 {

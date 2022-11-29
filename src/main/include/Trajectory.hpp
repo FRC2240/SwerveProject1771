@@ -8,6 +8,8 @@
 
 #include <functional>
 
+auto *TRAJ_MAX_VEL = &Drivetrain::TRAJ_MAX_SPEED;
+
 using namespace pathplanner; // PathPlanner keeps everything hidden behind 2 sets of namespaces so it's safe to remove the first layer
 
 namespace Trajectory
@@ -24,7 +26,7 @@ namespace Trajectory
 
     void follow(std::string const &traj_dir,
                 std::function<void(units::second_t time)> const &periodic = nullptr,
-                units::meters_per_second_t const &max_vel = Drivetrain::TRAJ_MAX_SPEED,
+                units::meters_per_second_t const &max_vel = *TRAJ_MAX_VEL,
                 units::meters_per_second_squared_t const &max_accl = Drivetrain::TRAJ_MAX_ACCELERATION);
 
     void testHolonomic(frc::Pose2d const &target_pose,

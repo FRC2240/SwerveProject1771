@@ -188,14 +188,7 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit()
 {
-  // Start aiming
-
-  traj_selector.GetSelected()();
-
-  Drivetrain::stop();
-
-  // If driving after "stop" is called is a problem, I will add a "stop" method
-  //  which runs a few times to ensure all modules are stopped
+  // Safe to do this because PathPlanner hides evrything in two namespaces
 
   // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
 }
