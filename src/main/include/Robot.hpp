@@ -2,6 +2,8 @@
 
 #include <frc/TimedRobot.h>
 
+#define m_deadband 0.15
+
 class Robot : public frc::TimedRobot
 {
 public:
@@ -25,4 +27,5 @@ public:
 
     void TestInit() override;
     void TestPeriodic() override;
+private:
 };

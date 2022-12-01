@@ -9,6 +9,7 @@
 
 namespace Drivetrain
 {
+    void print_angle();
 
     /******************************************************************/
     /*                        Public Constants                        */
