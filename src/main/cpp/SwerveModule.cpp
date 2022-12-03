@@ -68,7 +68,7 @@ SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int con
 
     // Configure Turner
     TalonFXConfiguration turner_config{};
-    turner_config.slot0.kP = 1.1;
+    turner_config.slot0.kP = 0.5;
     turner_config.slot0.kI = 0;
     turner_config.slot0.kD = 0;
     turner_config.slot0.kF = 0;
@@ -120,7 +120,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     // Finally, calculate what the new tick value should be
     double const desired_turner_pos_ticks = current_ticks + delta_ticks;
 
-    std::cout << "desired speed: " << desired_state.speed.value() << "\n" <<
+    /*std::cout << "desired speed: " << desired_state.speed.value() << "\n" <<
     " Desired Rotation: " << desired_state.angle.Degrees().value() <<  "\n\n" <<
     " Current rotation" << current_rotation.Degrees().value() << "\n" << 
     " Optomised speed " << optimized_angle.Degrees().value() << "\n" <<
@@ -129,7 +129,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState const &desired_state)
     " delta ticks " << delta_ticks << "\n" <<
     " current ticks " << current_ticks << "\n" <<
     " desired driver " << desired_driver_velocity_ticks << "\n" <<
-    " desired tuner " << desired_turner_pos_ticks << "\n";
+    " desired tuner " << desired_turner_pos_ticks << "\n";*/
 
     
 

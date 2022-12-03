@@ -45,16 +45,22 @@ void monitorTemps()
 void buttonManager()
 {
     if (BUTTON::DRIVETRAIN::ROTATION_MODE.getRawButtonPressed())
+      {
+      std::cout << "MODE: FC" << "\n";
       rotation_joystick = !rotation_joystick;
+      }
 
     if (BUTTON::DRIVETRAIN::FIELD_CENTRIC.getRawButtonPressed())
+      {
+      std::cout << "MODE: RT" << "\n";
       field_centric = !field_centric;
+      }
 }
 
 void tankDrive()
 {
-  auto const l_speed = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08);
-  auto const r_speed = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), 0.08);
+  auto const l_speed = -frc::ApplyDeadband(BUTTON::PS5.GetY(), m_deadband);
+  auto const r_speed = -frc::ApplyDeadband(BUTTON::PS5.GetTwist(), m_deadband);
 
   Drivetrain::tankDrive(l_speed, r_speed);
 }
@@ -99,16 +105,25 @@ void tuneFF()
 
 void swerveDrive(bool const &field_relative)
 {
-  auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
-  auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), 0.08) * Drivetrain::TELEOP_MAX_SPEED;
+  auto const left_right = -frc::ApplyDeadband(BUTTON::PS5.GetX(), m_deadband) * Drivetrain::TELEOP_MAX_SPEED;
+  auto const front_back = -frc::ApplyDeadband(BUTTON::PS5.GetY(), m_deadband) * Drivetrain::TELEOP_MAX_SPEED;
   //std::cout << "left_right = " << BUTTON::PS5.GetX() << "front_back = " << BUTTON::PS5.GetY() << std::endl;
   
   if (BUTTON::DRIVETRAIN::ROTATE_FRONT)
+    {
     Drivetrain::faceDirection(front_back, left_right, 0_deg, field_relative);
+    std::cout << "rot front" << "\n";
+    }
   else if (BUTTON::DRIVETRAIN::ROTATE_BACK)
+    {
     Drivetrain::faceDirection(front_back, left_right, 180_deg, field_relative);
+    std::cout << "rot back" << "\n";
+    }
   else if (BUTTON::DRIVETRAIN::ROTATE_TO_CLOSEST)
+    {
     Drivetrain::faceClosest(front_back, left_right, field_relative);
+    std::cout << "rot close" << "\n";
+    }
   else if (rotation_joystick)
   {
     // Multiplied by 10 to avoid rounding to 0 by the atan2() method
@@ -126,7 +141,7 @@ void swerveDrive(bool const &field_relative)
   }
   else
   {
-    auto const rot = frc::ApplyDeadband(BUTTON::PS5.GetZ(), 0.04) * Drivetrain::TELEOP_MAX_ANGULAR_SPEED;
+    auto const rot = frc::ApplyDeadband(BUTTON::PS5.GetZ(), m_deadband) * Drivetrain::TELEOP_MAX_ANGULAR_SPEED;
 
     Drivetrain::drive(front_back, -left_right, rot, field_relative);
   }
@@ -212,7 +227,7 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
-  std::cout << "here0" << "\n";
+  Drivetrain::print_angle();
   buttonManager();
 
   swerveDrive(field_centric);
