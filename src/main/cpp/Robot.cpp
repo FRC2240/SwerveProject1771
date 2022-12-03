@@ -205,7 +205,8 @@ void Robot::AutonomousInit()
 {
   // Start aiming
 
-  traj_selector.GetSelected()();
+  traj_selector.GetSelected();
+  std::cout << "here\n";
 
   Drivetrain::stop();
 
