@@ -33,11 +33,13 @@ namespace Module
   std::unique_ptr<SwerveModule> back_left;
   std::unique_ptr<SwerveModule> back_right;
 }
-
+// This is not how it should be but doing it "correctly" (++,+-,-+,--) causes
+// the wheels to form an "X" instead of diamond while turning.
+// It's wrong but it works, no touchy.
 frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{9.125_in, -9.125_in},
                                          frc::Translation2d{9.125_in, 9.125_in},
                                          frc::Translation2d{-9.125_in, -9.125_in},
-                                         frc::Translation2d{-9.125_in, 9.125_in}};                                                                                                                    
+                                         frc::Translation2d{-9.125_in, 9.125_in}};
 
 /******************************************************************/
 /*                   Public Function Definitions                  */
@@ -66,11 +68,15 @@ units::degree_t Drivetrain::getAngle()
   }
   return units::degree_t{navx->GetAngle()};
 }
-
-frc::Rotation2d Drivetrain::getCCWHeading() { return {-getAngle()}; }
+// IMPORTANT: CCW (counterclockwise) must not be inverted and CW (clockwise)
+// must be. If CCW is negative and CW is positive, a 90 degree turn will
+// cause feild centric inputs to be inverted.
+// It's weird but the inversion as it stands is good and works, even though
+// it seems odd.
+frc::Rotation2d Drivetrain::getCCWHeading() { return {getAngle()}; }
 // or navx->GetRotation()
 
-frc::Rotation2d Drivetrain::getCWHeading() { return {getAngle()}; }
+frc::Rotation2d Drivetrain::getCWHeading() { return {-getAngle()}; }
 
 wpi::array<double, 4> Drivetrain::getDriverTemps()
 {
