@@ -179,15 +179,24 @@ Robot::Robot()
   Drivetrain::init();
   Odometry::putField2d();
 
+  /* legacy
   frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
 
   frc::SmartDashboard::PutBoolean("Traj Reversed", Trajectory::reverse_trajectory);
+  */
 
   // This is the second joystick's Y axis
   BUTTON::PS5.SetTwistChannel(5);
 
   // Erik
   BUTTON::PS5.SetZChannel(4);
+
+  // Auto paths
+  m_chooser.AddOption(Robot::CIRCLE, Robot::CIRCLE);
+  m_chooser.AddOption(Robot::LINE, Robot::LINE);
+  m_chooser.AddOption(Robot::NON_HOLONOMIC, Robot::NON_HOLONOMIC);
+
+  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 }
 
 void Robot::RobotInit()
@@ -205,9 +214,7 @@ void Robot::AutonomousInit()
 {
   // Start aiming
 
-  traj_selector.GetSelected();
-  std::cout << "here\n";
-
+  m_autoSelected = m_chooser.GetSelected();
   Drivetrain::stop();
 
   // If driving after "stop" is called is a problem, I will add a "stop" method
@@ -219,8 +226,26 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   // This is what gets called after Init()
-  Drivetrain::stop();
+  fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
+  if (m_autoSelected == CIRCLE)
+    {
+      deployDirectory =  "Circle";
+    }
+
+  if (m_autoSelected == LINE)
+    {
+      deployDirectory = "30 degree turn";
+    }
+
+ if (m_autoSelected == LINE)
+   {
+      deployDirectory = "Straight Line";
+   }
+
+  Trajectory::follow(deployDirectory);
 }
+
+//  Drivetrain::stop();
 
 void Robot::TeleopInit()
 {
