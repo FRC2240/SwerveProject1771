@@ -215,17 +215,7 @@ void Robot::AutonomousInit()
   // Start aiming
 
   m_autoSelected = m_chooser.GetSelected();
-  Drivetrain::stop();
 
-  // If driving after "stop" is called is a problem, I will add a "stop" method
-  //  which runs a few times to ensure all modules are stopped
-
-  // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
-}
-
-void Robot::AutonomousPeriodic()
-{
-  // This is what gets called after Init()
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   if (m_autoSelected == CIRCLE)
     {
@@ -242,7 +232,20 @@ void Robot::AutonomousPeriodic()
       deployDirectory = "Straight Line";
    }
 
-  Trajectory::follow(deployDirectory);
+ Trajectory::follow(deployDirectory);
+ Drivetrain::stop();
+
+  // If driving after "stop" is called is a problem, I will add a "stop" method
+  //  which runs a few times to ensure all modules are stopped
+
+  // Will only finish after trajectory is done, so we can add additional trajectories and timers to intake & shoot
+}
+
+void Robot::AutonomousPeriodic()
+{
+  // This is what gets called after Init()
+std::cout << "here1 \n";
+  Drivetrain::stop();
 }
 
 //  Drivetrain::stop();
