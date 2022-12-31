@@ -8,6 +8,10 @@
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <wpi/array.h>
+#include "ngr.hpp"
+#include "Drivetrain.hpp"
+#include "SwerveModule.hpp"
+
 namespace Odometry
 {
 /*    const wpi::array<frc::SwerveModulePosition, 4> module_position{

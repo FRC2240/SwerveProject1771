@@ -1,11 +1,6 @@
 #ifndef ODOMETRY_CPP
 #define ODOMETRY_CPP
-#include "Drivetrain.hpp"
-//Lord help me
-#include "Drivetrain.cpp"
-#include "ngr.hpp"
 #include "Odometry.hpp"
-#include "SwerveModule.hpp"
 #include <frc/smartdashboard/SmartDashboard.h>
 
 /******************************************************************/
@@ -16,10 +11,10 @@ frc::Field2d field2d;
 
 // The numbers in pose2d have no bearing in reality and are stolen from docs.
 // YOLO
-    const static frc::SwerveDriveOdometry<4> odometry{
+    static frc::SwerveDriveOdometry<4> odometry{
         Odometry::kinematics,
         Drivetrain::getCCWHeading(),
-        Drivetrain::getModuleStates(),
+        Drivetrain::get_module_pos(),
         frc::Pose2d{5_m, 13.5_m, 0_rad}
         };
 
@@ -34,8 +29,8 @@ void Odometry::putField2d()
 
 void Odometry::update()
 {
-    frc::Pose2d const pose = odometry.Update(Drivetrain::getCCWHeading(),
-                                             Drivetrain::getModuleStates());
+    frc::Pose2d pose = odometry.Update(Drivetrain::getCCWHeading(),
+                                       Drivetrain::get_module_pos());
     if constexpr (debugging)
         frc::SmartDashboard::PutString("Odometry: ", fmt::format("Pose X: {}, Y: {}, Z (Degrees): {}\n", pose.X().value(), pose.Y().value(), pose.Rotation().Degrees().value()));
 }
@@ -69,7 +64,7 @@ frc::ChassisSpeeds const Odometry::getFieldRelativeSpeeds()
 
 void Odometry::resetPosition(const frc::Pose2d &pose, const frc::Rotation2d &gyro_angle)
 {
-    odometry.ResetPosition(pose, gyro_angle);
+    odometry.ResetPosition(gyro_angle, Drivetrain::get_module_pos(), pose);
 }
 
 frc::FieldObject2d *Odometry::getField2dObject(std::string_view name)

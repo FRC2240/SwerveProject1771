@@ -1,3 +1,7 @@
+#ifndef SWERVE_MODULE_CPP
+#define SWERVE_MODULE_CPP
+#pragma once
+
 #include "SwerveModule.hpp"
 #include "ngr.hpp"
 
@@ -94,7 +98,7 @@ frc::SwerveModuleState SwerveModule::getState()
 units::degree_t SwerveModule::getAngle() { return units::degree_t{cancoder.GetAbsolutePosition()}; }
 
 
-frc::SwerveModulePosition SwerveModule::get_position() const {
+frc::SwerveModulePosition SwerveModule::get_position() {
     return {
         units::meter_t{driver.GetSelectedSensorPosition()},
         units::degree_t{cancoder.GetAbsolutePosition()}
@@ -159,3 +163,5 @@ void SwerveModule::manualVelocityContol(double const &velocity_ticks_per_100ms)
     driver.Set(TalonFXControlMode::Velocity, velocity_ticks_per_100ms);
     turner.Set(TalonFXControlMode::Position, 0);
 }
+
+#endif

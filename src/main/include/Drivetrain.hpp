@@ -64,9 +64,9 @@ namespace Drivetrain
     // Returns values with 0 being front and positive angles going CW
     [[nodiscard]] units::degree_t getAngle();
 
-    [[nodiscard]] frc::Rotation2d getCCWHeading();
+    frc::Rotation2d getCCWHeading();
 
-    [[nodiscard]] frc::Rotation2d getCWHeading();
+    frc::Rotation2d getCWHeading();
 
     [[nodiscard]] frc::Rotation2d test_heading();
 
@@ -77,6 +77,8 @@ namespace Drivetrain
     [[nodiscard]] frc::ChassisSpeeds getRobotRelativeSpeeds();
 
     [[nodiscard]] const wpi::array<frc::SwerveModuleState, 4> getModuleStates();
+
+    wpi::array<frc::SwerveModulePosition, 4> get_module_pos();
 
     // Handles inversing
     void tankDrive(double const &x_speed, double const &y_speed);

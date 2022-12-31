@@ -1,3 +1,5 @@
+#ifndef SWERVE_MODULE_H
+#define SWERVE_MODULE_H
 #pragma once
 
 #include <frc/kinematics/SwerveModuleState.h>
@@ -30,7 +32,7 @@ public:
     void manualVelocityContol(double const &velocity_ticks_per_100ms);
 
 
-    frc::SwerveModulePosition get_position() const;
+    frc::SwerveModulePosition get_position();
     // No copies/moves should be occuring (Talons don't support this)
     SwerveModule(SwerveModule const &) = delete;
     SwerveModule(SwerveModule &&) = delete;
@@ -45,3 +47,4 @@ private:
     double const magnet_offset;
     int turner_addr;
 };
+#endif

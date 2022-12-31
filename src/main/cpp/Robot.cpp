@@ -1,11 +1,9 @@
 #include "Robot.hpp"
-#include "Drivetrain.hpp"
 #include "Buttons.hpp"
+#include "Odometry.hpp"
 #include "RobotState.hpp"
 #include "ngr.hpp"
 #include "TempMonitoring.hpp"
-#include "Odometry.hpp"
-#include "Trajectory.hpp"
 
 
 #include <frc/MathUtil.h>
@@ -207,7 +205,7 @@ void Robot::RobotInit()
 
 void Robot::RobotPeriodic()
 {
-  Trajectory::reverse_trajectory = frc::SmartDashboard::GetBoolean("Traj Reversed", Trajectory::reverse_trajectory);
+  //Trajectory::reverse_trajectory = frc::SmartDashboard::GetBoolean("Traj Reversed", Trajectory::reverse_trajectory);
   //monitorTemps();
 }
 
@@ -233,7 +231,7 @@ void Robot::AutonomousInit()
       deployDirectory = "Straight Line";
    }
 
- Trajectory::follow(deployDirectory);
+// Trajectory::follow(deployDirectory);
  Drivetrain::stop();
 
   // If driving after "stop" is called is a problem, I will add a "stop" method
@@ -266,8 +264,8 @@ void Robot::TeleopPeriodic()
 
   if constexpr (debugging)
   {
-    Trajectory::printRobotRelativeSpeeds();
-    Trajectory::printFieldRelativeSpeeds();
+//    Trajectory::printRobotRelativeSpeeds();
+//    Trajectory::printFieldRelativeSpeeds();
   }
 }
 

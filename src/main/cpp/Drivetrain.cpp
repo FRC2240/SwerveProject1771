@@ -1,5 +1,7 @@
 #ifndef DRIVETRAIN_CPP
 #define DRIVETRAIN_CPP
+#pragma once
+
 #include "Drivetrain.hpp"
 #include "ngr.hpp"
 
@@ -74,8 +76,18 @@ frc::Rotation2d Drivetrain::getCCWHeading() { return {getAngle()}; }
 frc::Rotation2d Drivetrain::getCWHeading() { return {-getAngle()}; }
 
 //Names are hard. This is to fix type isssues.
-frc::Rotation2d Drivetrain::test_heading() { navx->GetRotation2d(); }
+frc::Rotation2d Drivetrain::test_heading() { return navx->GetRotation2d(); }
 
+wpi::array<frc::SwerveModulePosition, 4> Drivetrain::get_module_pos()
+  {
+    return
+      {
+        Module::front_left.get_position(),
+        Module::front_right.get_position(),
+        Module::back_left.get_position(),
+        Module::back_right.get_position()
+      };
+  }
 wpi::array<double, 4> Drivetrain::getDriverTemps()
 {
   using namespace Module;
