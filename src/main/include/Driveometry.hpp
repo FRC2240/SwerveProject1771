@@ -1,15 +1,32 @@
-#ifndef DRIVETRAIN_H
-#define DRIVETRAIN_H
-#pragma once
+#ifndef DRIVEOMETRY_H_
+#define DRIVEOMETRY_H_
 
+/*
+Oh, code of sorrow and despair
+Proceed with caution, if you dare
+For within these lines lies heartache and pain
+And the tears that will fall like acid rain
+
+The bugs that lurk, the crashes that come
+The endless debugging, it never is done
+The late nights, the hair tearing out
+The endless frustration, there is no doubt.
+
+
+To anyone reading this, turn back now.
+No wisdom, prosperity nor joy awaits you here, only mistakes.
+Abandon hope, all who enter.
+*/
+
+/* Drivetrain HPP */
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/kinematics/SwerveModuleState.h>
 #include <wpi/array.h>
 #include <units/acceleration.h>
 #include <units/angular_acceleration.h>
 #include <numbers>
-#include "Odometry.hpp"
 #include "SwerveModule.hpp"
+#include <frc/smartdashboard/SmartDashboard.h>
 
 namespace Module
 {
@@ -114,4 +131,46 @@ namespace Drivetrain
 
     void manualVelocity(double const &velocity_ticks_per_100ms);
 }
-#endif
+
+// Odometry hpp
+
+
+#include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/smartdashboard/Field2d.h>
+#include <frc/geometry/Pose2d.h>
+#include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/kinematics/SwerveDriveOdometry.h>
+#include <wpi/array.h>
+#include "ngr.hpp"
+
+#include "SwerveModule.hpp"
+
+namespace Odometry
+{
+/*    const wpi::array<frc::SwerveModulePosition, 4> module_position{
+    frc::Translation2d{0_in, 0_deg},
+    frc::Translation2d{0_deg},
+    frc::Translation2d{0_deg},
+    frc::Translation2d{0_deg},
+    }
+*/
+
+    const frc::SwerveDriveKinematics<4> kinematics{frc::Translation2d{9.125_in, -9.125_in},
+                                         frc::Translation2d{9.125_in, 9.125_in},
+                                         frc::Translation2d{-9.125_in, -9.125_in},
+                                         frc::Translation2d{-9.125_in, 9.125_in}};
+
+    void putField2d();
+
+    [[nodiscard]] frc::Pose2d getPose();
+
+    void update();
+
+    void resetPosition(const frc::Pose2d &pose, const frc::Rotation2d &gyroAngle);
+
+    [[nodiscard]] frc::FieldObject2d *getField2dObject(std::string_view name);
+
+    [[nodiscard]] frc::ChassisSpeeds const getFieldRelativeSpeeds();
+}
+
+#endif // DRIVEOMETRY_H_
