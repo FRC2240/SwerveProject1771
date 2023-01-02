@@ -13,6 +13,8 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc/trajectory/TrajectoryGenerator.h>
 
+
+#include "Driveometry.hpp"
 class Robot : public frc::TimedRobot
 {
 public:

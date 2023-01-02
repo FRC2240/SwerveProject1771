@@ -1,5 +1,19 @@
 #include "Driveometry.hpp"
 
+
+// hehehehaw
+namespace Module
+{
+    SwerveModule front_left{60,61,14,-20.0};
+    SwerveModule front_right{50,51,13,-245.0};
+    SwerveModule back_left{30,31,11,22.0};
+    SwerveModule back_right{40,41,12,520.0};
+    //front_left  = std::d::make_unique<SwerveModule>(60, 61, 14, -20.0);
+//    front_right = std::make_unique<SwerveModule>(50, 51, 13, -245.0);
+//    back_left   = std::make_unique<SwerveModule>(30, 31, 11, 22.0);
+//    back_right  = std::make_unique<SwerveModule>(40, 41, 12, 520.0);
+}
+
 // Odometry.cpp
 
 frc::Field2d field2d;
