@@ -5,7 +5,6 @@
 #include <frc/kinematics/SwerveModuleState.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveModulePosition.h>
-
 #include <ctre/Phoenix.h>
 
 class SwerveModule
