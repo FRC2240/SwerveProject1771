@@ -1,4 +1,5 @@
 #include "Driveometry.hpp"
+#include <iostream>
 
 
 // hehehehaw
@@ -119,8 +120,8 @@ void Drivetrain::print_angle()
 
 void Drivetrain::init()
 {
+  std::cout << "Drivetrain init" << "\n";
   navx = std::make_unique<AHRS>(frc::SPI::Port::kMXP);
-
 }
 
 // Returns values with 0 being front and positive angles going CW

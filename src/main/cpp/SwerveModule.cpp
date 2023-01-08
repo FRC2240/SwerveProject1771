@@ -9,7 +9,7 @@
 #include <units/angular_velocity.h>
 #include <units/velocity.h>
 #include <iostream>
-#define CAN_BUS_NAME "rio"
+
 
 /******************************************************************/
 /*                       Private Constants                        */
@@ -44,9 +44,9 @@ constexpr auto TICKS_PER_CANCODER_DEGREE = CANCODER_TICKS_PER_ROTATION / 360;
 
 // Set Variables
 SwerveModule::SwerveModule(int const &driver_adr, int const &turner_adr, int const &cancoder_adr, double const &magnet_offset)
-    : driver{driver_adr, CAN_BUS_NAME},
-      turner{turner_adr, CAN_BUS_NAME},
-      cancoder{cancoder_adr, CAN_BUS_NAME},
+    : driver{driver_adr},
+      turner{turner_adr},
+      cancoder{cancoder_adr},
       magnet_offset{magnet_offset}
 {
     turner_addr = turner_adr;

@@ -175,7 +175,9 @@ Robot::Robot()
 
   // Call the inits for all subsystems here
   Drivetrain::init();
+  std::cout << "drivetrain init finished" << "\n";
   Odometry::putField2d();
+  std::cout << "putfeild2done" << "\n";
 
   /* legacy
   frc::SmartDashboard::PutData("Traj Selector", &traj_selector);
@@ -250,6 +252,7 @@ std::cout << "here1 \n";
 
 void Robot::TeleopInit()
 {
+  std::cout << "teleop init \n";
 }
 
 void Robot::TeleopPeriodic()
@@ -279,6 +282,7 @@ void Robot::TestPeriodic()
 #ifndef RUNNING_FRC_TESTS
 int main()
 {
+  std::cout << "main \n";
   return frc::StartRobot<Robot>();
 }
 #endif
